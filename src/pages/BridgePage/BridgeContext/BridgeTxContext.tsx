@@ -43,7 +43,7 @@ export const BridgeTxContextProvider = (props) => {
    */
 
   const userCanPayOriginFee = () => {
-    if (!senderNativeAssetCurrentBalance || !senderAssetTargetBalance || !originChain) {
+    if (!senderNativeAssetCurrentBalance || !senderAssetTargetBalance || !originChain || !originFee) {
       return null;
     } else if (senderNativeAssetCurrentBalance.assetType.assetId !== originFee.assetType.assetId) {
       return null;
@@ -122,6 +122,8 @@ export const BridgeTxContextProvider = (props) => {
             const decoded = originApi.registry.findMetaError(error.asModule.toU8a());
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);
+            console.log('error', error);
+            console.log('decoded', decoded);
           } else {
             console.error(error.toString());
           }

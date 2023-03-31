@@ -83,7 +83,7 @@ export default class Chain {
       'calamariLogo',
       config.CALAMARI_SOCKET,
       config.CALAMARI_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config)],
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config), AssetType.Dai(config), AssetType.UsdCoin(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -110,7 +110,7 @@ export default class Chain {
       'Statemine',
       1000,
       'statemine',
-      config.STATEMINE_SOCKET, // todo: find
+      config.STATEMINE_SOCKET,
       config.STATEMINE_SUBSCAN_URL,
       [AssetType.Tether(config)],
       AssetType.Kusama(config),
@@ -127,7 +127,7 @@ export default class Chain {
       'kar',
       config.KARURA_SOCKET,
       config.KARURA_SUBSCAN_URL,
-      [AssetType.Karura(config)],
+      [AssetType.Karura(config), AssetType.UsdCoin(config), AssetType.Dai(config)],
       AssetType.Karura(config),
       KaruraAdapter,
       null,

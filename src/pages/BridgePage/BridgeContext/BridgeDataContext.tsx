@@ -1,5 +1,7 @@
 // @ts-nocheck
 import React, { useReducer, useContext, useEffect } from 'react';
+import { Wallet, WalletConfigs } from '@acala-network/sdk/wallet';
+import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
 import Balance from 'types/Balance';
@@ -105,11 +107,24 @@ export const BridgeDataContextProvider = (props) => {
           handleApiConnect(chain);
           // only runs on initial connection
           api.isReady.then(() => {
-            adapter.init(api);
-            dispatch({
-              type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-              chain
-            });
+            if (chain.name === 'karura' || chain.name === 'acala') {
+              const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
+              const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
+              const wallet = new Wallet(api, acalaConfigs);
+              wallet.isReady.then(() => {
+                adapter.init(api, wallet);
+                dispatch({
+                  type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+                  chain
+                });
+              });
+            } else {
+              adapter.init(api);
+              dispatch({
+                type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+                chain
+              });
+            }
           });
         });
         api.on('error', () => handleApiDisconnect(chain));
@@ -187,7 +202,6 @@ export const BridgeDataContextProvider = (props) => {
       senderAssetType,
       originAddress
     );
-
     dispatch({
       type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
       senderAssetCurrentBalance

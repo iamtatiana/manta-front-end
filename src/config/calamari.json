@@ -17,5 +17,6 @@
     "KARURA_SOCKET": "wss://karura-rpc-0.aca-api.network",
     "MOONRIVER_SOCKET": "wss://wss.api.moonriver.moonbeam.network",
     "STATEMINE_SOCKET": "wss://statemine-rpc.polkadot.io",
+    "KARURA_EVM_SOCKET": "wss://eth-rpc-karura.aca-api.network",
     "MOONRIVER_RPC": "https://rpc.moonriver.moonbeam.network"
 }

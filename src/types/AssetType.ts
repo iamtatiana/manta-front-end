@@ -241,11 +241,13 @@ export default class AssetType {
       'USD Coin',
       'USDC',
       'usdc',
-      18,
+      6,
       new BN('10000'),
       isPrivate,
       'usd-coin',
       config.IS_TESTNET,
+      false,
+      'USDCet'
     );
   }
 
@@ -272,8 +274,8 @@ export default class AssetType {
         AssetType.Tether(config, isPrivate),
         // AssetType.WrappedBitcoin(config, isPrivate),
         // AssetType.WrappedEthereum(config, isPrivate),
-        // AssetType.Dai(config, isPrivate),
-        // AssetType.UsdCoin(config, isPrivate)
+        AssetType.Dai(config, isPrivate),
+        AssetType.UsdCoin(config, isPrivate)
       ];
     }
   }
