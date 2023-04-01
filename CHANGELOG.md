@@ -216,15 +216,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - [\#755](https://github.com/Manta-Network/manta-front-end/pull/755) Fix dotmenu content height style
 
-## [5.0.3] - 2023-3-15
+## [5.0.4] - 2023-3-28
 
 ### Fixed
-- [\#755](https://github.com/Manta-Network/manta-front-end/pull/755) Fix dotmenu content height style
-
-## [5.0.4] - 2023-3-23
-
-### Fixed
-- [\#753](Branch) Fix a single disconnected network on Bridge Page from preventing all transactions
+- [\#829](https://github.com/Manta-Network/manta-front-end/pull/829) Fix a single disconnected network on Bridge Page from preventing all transactions
+- [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Fix a single disconnected network on Bridge Page from preventing all transactions
 
 ### Added
 - [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Enable Karura on Calamari MantaPay and Bridge Page

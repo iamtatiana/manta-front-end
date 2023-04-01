@@ -90,9 +90,6 @@ export const BridgeDataContextProvider = (props) => {
       isApiDisconnected: false,
       chain
     });
-    if (txStatusRef.current?.isProcessing()) {
-      setTxStatus(TxStatus.disconnected());
-    }
   };
 
   useEffect(() => {

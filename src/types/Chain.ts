@@ -178,9 +178,9 @@ export default class Chain {
       return [
         Chain.DolphinSkinnedCalamari(config),
         Chain.Kusama(config),
-        // Chain.Karura(config),
+        Chain.Karura(config),
         Chain.Moonriver(config),
-        Chain.Statemine(config)
+        // Chain.Statemine(config)
       ];
     }
   }

@@ -8,7 +8,7 @@ const GiantSquidBanner: React.FC<object> = () => {
         'flex h-68 cursor-pointer items-center justify-center bg-giant-squid font-red-hat-mono text-sm font-semibold leading-19 text-banner'
       }
       onClick={() =>
-        window.open('https://galxe.com/calamarinetwork/campaigns')
+        window.open('https://galxe.com/mantanetwork/campaigns')
       }>
       <div className="mr-4">
         KMA holders can participate in the Giant Squid Program on Galxe.com now!
