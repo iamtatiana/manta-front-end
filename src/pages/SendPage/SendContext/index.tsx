@@ -497,11 +497,11 @@ export const SendContextProvider = (props) => {
       // Correct private balances will only appear after a sync has completed
       // Until then, do not display stale balances
       privateWallet.setBalancesAreStale(true);
+      privateWallet.sync();
       senderAssetType.isPrivate && setSenderAssetCurrentBalance(
         null, senderPublicAccount?.address, senderAssetType
       );
       receiverAssetType.isPrivate && setReceiverCurrentBalance(null, receiverAssetType);
-      privateWallet.sync();
     } catch (error) {
       console.error(error);
     }
@@ -516,8 +516,8 @@ export const SendContextProvider = (props) => {
     setTxStatus(TxStatus.processing());
 
     if (usingMantaWallet) {
-      await privateWallet.sync();
-      if (!isValidToSend()) {
+      const syncSuccess = await privateWallet.sync();
+      if (!isValidToSend() || !syncSuccess) {
         setTxStatus(TxStatus.failed());
         return;
       }

@@ -1,7 +1,7 @@
-import WALLET_NAME from 'constants/WalletConstants';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
+import WALLET_NAME from 'constants/WalletConstants';
 import {
   MutableRefObject,
   ReactNode,
@@ -74,7 +74,7 @@ export const MantaWalletContextProvider = ({
   const [hasFinishedInitialBlockDownload, setHasFinishedInitialBlockDownload] =
     useState<boolean | null>(null);
   const [isBusy, setIsBusy] = useState<boolean>(false);
-  const isInitialSync = useRef<boolean>(true);
+  const isInitialSync = useRef<boolean>(false);
 
   // transaction state
   const txQueue = useRef<SubmittableExtrinsic<'promise', any>[]>([]);
@@ -158,33 +158,11 @@ export const MantaWalletContextProvider = ({
     if (privateWallet && !isBusy && isReady) {
       try {
         await privateWallet.walletSync();
-        isInitialSync.current = false;
       } catch (error) {
         console.error('error syncing wallet', error);
       }
     }
   }, [privateWallet, isBusy, isReady]);
-
-  useEffect(() => {
-    const initialSync = async () => {
-      if (isInitialSync.current) {
-        await sync();
-      }
-    };
-    initialSync();
-  }, [isBusy, isReady, isInitialSync.current, privateWallet]);
-
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval>;
-    if (usingMantaWallet) {
-      interval = setInterval(async () => {
-        if (isReady && usingMantaWallet) {
-          sync();
-        }
-      }, 60000);
-    }
-    return () => clearInterval(interval);
-  }, [isReady, usingMantaWallet]);
 
   const handleInternalTxRes = async ({
     status,
