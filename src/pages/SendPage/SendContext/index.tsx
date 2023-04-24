@@ -13,7 +13,6 @@ import TxStatus from 'types/TxStatus';
 import AssetType from 'types/AssetType';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { useConfig } from 'contexts/configContext';
-import { MantaUtilities } from 'manta.js';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 import SEND_ACTIONS from './sendActions';

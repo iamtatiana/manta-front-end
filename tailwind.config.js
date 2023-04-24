@@ -45,6 +45,7 @@ module.exports = {
       width: {
         '10.5': '42px',
         '68': '272px',
+        '118': '472px',
         '140': '560px'
       },
       lineHeight: {

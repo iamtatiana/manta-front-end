@@ -1,6 +1,6 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect } from 'react';
-import { Wallet, WalletConfigs } from '@acala-network/sdk/wallet';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
+import { Wallet } from '@acala-network/sdk/wallet';
 import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
 import { useExternalAccount } from 'contexts/externalAccountContext';
@@ -25,6 +25,7 @@ export const BridgeDataContextProvider = (props) => {
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
+  const [karuraSubscription, setKaruraSubscription] = useState(null);
 
   const {
     isApiInitialized,
@@ -51,6 +52,8 @@ export const BridgeDataContextProvider = (props) => {
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
+
+  console.log('karuraSubscription', karuraSubscription);
 
   /**
    *
@@ -93,37 +96,43 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const initBridgeApis = () => {
+    const initBridgeApis = async () => {
       if (!bridge) {
         return;
       }
       for (const chain of originChainOptions) {
+
         const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
-        const api = chain.getXcmApi();
-        api.on('connected', () => {
-          handleApiConnect(chain);
-          // only runs on initial connection
-          api.isReady.then(() => {
-            if (chain.name === 'karura' || chain.name === 'acala') {
-              const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
-              const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
-              const wallet = new Wallet(api, acalaConfigs);
-              wallet.isReady.then(() => {
-                adapter.init(api, wallet);
-                dispatch({
-                  type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-                  chain
-                });
-              });
-            } else {
-              adapter.init(api);
-              dispatch({
-                type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-                chain
-              });
-            }
+        const api = await chain.getXcmApi();
+        console.log('api', api);
+
+        handleApiConnect(chain);
+        // only runs on initial connection
+        if (chain.name === 'karura' || chain.name === 'acala') {
+          const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
+          const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
+          const wallet = new Wallet(api, acalaConfigs);
+          console.log('wallet', wallet);
+          wallet.isReady.then(async () => {
+            await adapter.init(api, wallet);
+            const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+            const subscription = observable.subscribe((balance) => {
+              console.log('balance!!!!!!!!!', balance);
+            });
+            setKaruraSubscription(subscription);
+            dispatch({
+              type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+              chain
+            });
           });
-        });
+        } else {
+          adapter.init(api);
+          dispatch({
+            type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+            chain
+          });
+        }
+        // });
         api.on('error', () => handleApiDisconnect(chain));
         api.on('disconnected', () => handleApiDisconnect(chain));
       }

@@ -5,9 +5,11 @@ import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
 import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
 import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
+import { ApiProvider } from 'manta-polkawallet-bridge/build/api-provider';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { firstValueFrom } from 'rxjs';
 import types from '../config/types.json';
 import AssetType from './AssetType';
 
@@ -169,26 +171,39 @@ export default class Chain {
     if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         Chain.Calamari(config),
-        Chain.Kusama(config),
+        // Chain.Kusama(config),
         Chain.Karura(config),
-        Chain.Moonriver(config),
-        Chain.Statemine(config)
+        // Chain.Moonriver(config),
+        // Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
       return [
         Chain.DolphinSkinnedCalamari(config),
-        Chain.Kusama(config),
+        // Chain.Kusama(config),
         Chain.Karura(config),
-        Chain.Moonriver(config),
+        // Chain.Moonriver(config),
         // Chain.Statemine(config)
       ];
     }
   }
 
-  getXcmApi() {
+
+
+  async getXcmApi() {
+
     const provider = new WsProvider(this.socket);
+    // if KARURA, need to construct like this to avoid subscription error
+    const apiProvider = new ApiProvider();
+    async function connect(chains: ChainId[]) {
+      // return firstValueFrom(provider.connectFromChain([chain], { karura: ["wss://crosschain-dev.polkawallet.io:9907"] }));
+      return firstValueFrom(apiProvider.connectFromChain(chains, { karura: ['wss://karura-rpc-0.aca-api.network'] }));
+    }
     if (this.apiOptions) {
-      const api = new ApiPromise(options({ provider, types: this.apiTypes}));
+      const connected = await connect(['karura']);
+      // console.log('apiProvider', apiProvider);
+      // console.log('connected', connected);
+      const api = apiProvider.getApi('karura');
+      // console.log('api', api);
       return api;
     } else {
       const api = new ApiPromise({provider, types: this.apiTypes, typesBundle: this.apiTypesBundle});

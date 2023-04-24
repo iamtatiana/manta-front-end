@@ -97,7 +97,7 @@ export const PrivateWalletContextProvider = (props) => {
       const privateWallet = await MantaPrivateWallet.init(privateWalletConfig);
       const privateAddress = await privateWallet.getZkAddress();
       setPrivateAddress(privateAddress);
-      await privateWallet.initalWalletSync();
+      await privateWallet.initialWalletSync();
       setPrivateAddress(privateAddress);
       setPrivateWallet(privateWallet);
       isInitialSync.current = false;
