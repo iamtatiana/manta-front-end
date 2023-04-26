@@ -25,7 +25,7 @@ export const BridgeDataContextProvider = (props) => {
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
-  const [karuraSubscription, setKaruraSubscription] = useState(null);
+  const [karuraSubscription, setKaruraSubscription] = useState([]);
 
   const {
     isApiInitialized,
@@ -140,21 +140,24 @@ export const BridgeDataContextProvider = (props) => {
     initBridgeApis();
   }, [bridge, originChainOptions]);
 
+
   useEffect(() => {
     const test = async () => {
       const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
-      if (adapter && adapter.api && originChain.name === 'karura' && !karuraSubscription) {
-        const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+      if (adapter && adapter.api) {
+        console.log('senderAssetType.name', senderAssetType.name);
+        const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
         const subscription = observable.subscribe((balance) => {
           console.log('balance!!!!!!!!!', balance);
         });
+        // karuraSubscription?.unsubscribe();
         // karuraSubscription.unsubscribe();
         console.log('settign karuraSubscription');
-        setKaruraSubscription(subscription);
+        setKaruraSubscription([...karuraSubscription, subscription]);
       }
     };
     test();
-  });
+  }, [senderAssetType]);
 
   /**
    *
