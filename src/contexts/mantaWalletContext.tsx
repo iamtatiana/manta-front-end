@@ -1,7 +1,7 @@
-import WALLET_NAME from 'constants/WalletConstants';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
+import WALLET_NAME from 'constants/WalletConstants';
 import {
   MutableRefObject,
   ReactNode,
@@ -166,9 +166,7 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     const initialSync = async () => {
-      if (mantaWalletInitialSync) {
-        await sync();
-      }
+      await sync();
     };
     initialSync();
   }, [isReady, mantaWalletInitialSync, privateWallet]);
