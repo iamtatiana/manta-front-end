@@ -115,11 +115,11 @@ export const BridgeDataContextProvider = (props) => {
           console.log('wallet', wallet);
           wallet.isReady.then(async () => {
             await adapter.init(api, wallet);
-            const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-            const subscription = observable.subscribe((balance) => {
-              console.log('balance!!!!!!!!!', balance);
-            });
-            setKaruraSubscription(subscription);
+            // const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+            // const subscription = observable.subscribe((balance) => {
+            //   console.log('balance!!!!!!!!!', balance);
+            // });
+            // setKaruraSubscription(subscription);
             dispatch({
               type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
               chain
@@ -140,6 +140,21 @@ export const BridgeDataContextProvider = (props) => {
     initBridgeApis();
   }, [bridge, originChainOptions]);
 
+  useEffect(() => {
+    const test = async () => {
+      const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
+      if (adapter && adapter.api && originChain.name === 'karura' && !karuraSubscription) {
+        const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+        const subscription = observable.subscribe((balance) => {
+          console.log('balance!!!!!!!!!', balance);
+        });
+        // karuraSubscription.unsubscribe();
+        console.log('settign karuraSubscription');
+        setKaruraSubscription(subscription);
+      }
+    };
+    test();
+  });
 
   /**
    *
