@@ -226,3 +226,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#753](https://github.com/Manta-Network/manta-front-end/pull/753) Enable Karura on Calamari MantaPay and Bridge Page
 - [\#821](https://github.com/Manta-Network/manta-front-end/pull/821) Allow users to connect a source account when sending to or from Moonriver by clicking on button next to the address input form
 - [\#754](https://github.com/Manta-Network/manta-front-end/pull/754) Get Coingecko asset prices in USD by querying our own proxy server that holds an API key, instead of using the public Coingecko endpoint.
+
+## [5.1.0] - 2023-4-11
+
+### Fixed
+- [\#872](https://github.com/Manta-Network/manta-front-end/pull/872) Fix bug preventing bridging between Kusama and Calamari
+
+
+## [5.1.1] - 2023-4-18
+
+### Fixed
+- [\#908](https://github.com/Manta-Network/manta-front-end/pull/908) Fix Calamari websocket
+
+## [6.0.0] - 2023-4-25
+
+### Added
+- [\#873](https://github.com/Manta-Network/manta-front-end/pull/873) Support both Manta Wallet and Manta Signer for MantaPay on Calamari
