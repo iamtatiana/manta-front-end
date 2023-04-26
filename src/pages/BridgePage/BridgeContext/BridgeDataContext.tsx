@@ -147,7 +147,11 @@ export const BridgeDataContextProvider = (props) => {
       if (adapter && adapter.api) {
         console.log('senderAssetType.name', senderAssetType.name);
         const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-        const subscription = observable.subscribe((balance) => {
+        let subscription = observable.subscribe((balance) => {
+          console.log('balance!!!!!!!!!', balance);
+        });
+        subscription.unsubscribe();
+        subscription = observable.subscribe((balance) => {
           console.log('balance!!!!!!!!!', balance);
         });
         // karuraSubscription?.unsubscribe();
