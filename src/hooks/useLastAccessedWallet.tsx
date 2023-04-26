@@ -3,6 +3,7 @@ import { useGlobal } from 'contexts/globalContexts';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useCallback } from 'react';
+import { setAuthedWalletListStorage } from 'utils/persistence/connectAuthorizationStorage';
 import { setLastAccessedWallet } from 'utils/persistence/walletStorage';
 import getSubstrateWallets from '../utils/getSubstrateWallets';
 import { getLastAccessedWallet } from '../utils/persistence/walletStorage';
@@ -50,6 +51,7 @@ export default () => {
       // reset state if no wallet exists
       changeExternalAccountOptions(null, []);
       setLastAccessedWallet(null);
+      setAuthedWalletListStorage([]);
     }
   }, [authedWalletList]);
 
