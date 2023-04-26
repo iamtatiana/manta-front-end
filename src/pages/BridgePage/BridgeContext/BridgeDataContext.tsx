@@ -25,9 +25,7 @@ export const BridgeDataContextProvider = (props) => {
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
-  const [karuraObservables, setKaruraObservables] = useState({});
-  const [activeSubscription, setActiveSubscription] = useState(null);
-
+  const [karuraSubscriptions, setKaruraSubscriptions] = useState({});
   const {
     isApiInitialized,
     senderAssetType,
@@ -52,9 +50,6 @@ export const BridgeDataContextProvider = (props) => {
 
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
-
-
-  console.log('karuraSubscription, activeSubscription', karuraObservables, activeSubscription);
 
   /**
    *
@@ -116,11 +111,6 @@ export const BridgeDataContextProvider = (props) => {
           console.log('wallet', wallet);
           wallet.isReady.then(async () => {
             await adapter.init(api, wallet);
-            // const observable = await adapter.subscribeTokenBalance('Dai', '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-            // const subscription = observable.subscribe((balance) => {
-            //   console.log('balance!!!!!!!!!', balance);
-            // });
-            // setKaruraSubscription(subscription);
             dispatch({
               type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
               chain
@@ -141,34 +131,34 @@ export const BridgeDataContextProvider = (props) => {
     initBridgeApis();
   }, [bridge, originChainOptions]);
 
+  console.log('karuraSubscriptions', karuraSubscriptions);
 
   useEffect(() => {
     const test = async () => {
       const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
       if (adapter && adapter.api) {
-        console.log('senderAssetType.name', senderAssetType.name);
-        const newObservables = {...karuraObservables};
-        if (!newObservables[senderAssetType.name]) {
-          console.log('setting new observable');
+        const newSubscriptions = {...karuraSubscriptions};
+        const key = `${senderAssetType.name}-${externalAccount.address}`;
+        if (!newSubscriptions[key]) {
+          console.log('setting new subscription');
           const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-          newObservables[senderAssetType.name] = observable;
+          const newSubscription = observable.subscribe((balance) => {
+            console.log('balance!!!!!!!!!', balance.free.inner.toNumber(), senderAssetType.name);
+            const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
+            dispatch({
+              type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+              senderAssetCurrentBalance
+            });
+          });
+          newSubscriptions[key] = newSubscription;
         } else {
-          console.log('not setting new observable');
+          console.log('not setting new subscription');
         }
-        activeSubscription?.unsubscribe();
-
-        const newSubscription = newObservables[senderAssetType.name].subscribe((balance) => {
-          console.log('balance!!!!!!!!!', balance);
-        });
-        // karuraSubscription?.unsubscribe();
-        // karuraSubscription.unsubscribe();
-        console.log('settign karuraSubscription');
-        setActiveSubscription(newSubscription);
-        setKaruraObservables(newObservables);
+        setKaruraSubscriptions(newSubscriptions);
       }
     };
     test();
-  }, [senderAssetType]);
+  }, [senderAssetType, externalAccount]);
 
   /**
    *
