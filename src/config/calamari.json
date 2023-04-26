@@ -14,7 +14,7 @@
     "CALAMARI_URL": "https://calamari.network/",
     "CALAMARI_SOCKET": "wss://calamari.systems/",
     "KUSAMA_SOCKET": "wss://kusama-rpc.polkadot.io",
-    "KARURA_SOCKET": "wss://karura-rpc-0.aca-api.network",
+    "KARURA_SOCKET": "wss://karura.api.onfinality.io/public-ws",
     "MOONRIVER_SOCKET": "wss://wss.api.moonriver.moonbeam.network",
     "STATEMINE_SOCKET": "wss://statemine-rpc.polkadot.io",
     "KARURA_EVM_SOCKET": "wss://eth-rpc-karura.aca-api.network",

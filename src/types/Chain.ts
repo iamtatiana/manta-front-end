@@ -196,7 +196,7 @@ export default class Chain {
     const apiProvider = new ApiProvider();
     async function connect(chains: ChainId[]) {
       // return firstValueFrom(provider.connectFromChain([chain], { karura: ["wss://crosschain-dev.polkawallet.io:9907"] }));
-      return firstValueFrom(apiProvider.connectFromChain(chains, { karura: ['wss://karura-rpc-0.aca-api.network'] }));
+      return firstValueFrom(apiProvider.connectFromChain(chains, { karura: ['wss://karura.api.onfinality.io/public-ws'] }));
     }
     if (this.apiOptions) {
       const connected = await connect(['karura']);

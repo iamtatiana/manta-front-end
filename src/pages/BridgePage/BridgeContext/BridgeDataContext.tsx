@@ -25,7 +25,8 @@ export const BridgeDataContextProvider = (props) => {
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
-  const [karuraSubscription, setKaruraSubscription] = useState([]);
+  const [karuraObservables, setKaruraObservables] = useState({});
+  const [activeSubscription, setActiveSubscription] = useState(null);
 
   const {
     isApiInitialized,
@@ -53,7 +54,7 @@ export const BridgeDataContextProvider = (props) => {
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
 
-  console.log('karuraSubscription', karuraSubscription);
+  console.log('karuraSubscription, activeSubscription', karuraObservables, activeSubscription);
 
   /**
    *
@@ -146,18 +147,24 @@ export const BridgeDataContextProvider = (props) => {
       const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
       if (adapter && adapter.api) {
         console.log('senderAssetType.name', senderAssetType.name);
-        const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-        let subscription = observable.subscribe((balance) => {
-          console.log('balance!!!!!!!!!', balance);
-        });
-        subscription.unsubscribe();
-        subscription = observable.subscribe((balance) => {
+        const newObservables = {...karuraObservables};
+        if (!newObservables[senderAssetType.name]) {
+          console.log('setting new observable');
+          const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+          newObservables[senderAssetType.name] = observable;
+        } else {
+          console.log('not setting new observable');
+        }
+        activeSubscription?.unsubscribe();
+
+        const newSubscription = newObservables[senderAssetType.name].subscribe((balance) => {
           console.log('balance!!!!!!!!!', balance);
         });
         // karuraSubscription?.unsubscribe();
         // karuraSubscription.unsubscribe();
         console.log('settign karuraSubscription');
-        setKaruraSubscription([...karuraSubscription, subscription]);
+        setActiveSubscription(newSubscription);
+        setKaruraObservables(newObservables);
       }
     };
     test();

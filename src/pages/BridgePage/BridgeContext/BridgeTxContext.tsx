@@ -173,7 +173,7 @@ export const BridgeTxContextProvider = (props) => {
     });
     try {
       setApiSigner(originApi);
-      await tx.signAndSend(externalAccountSigner, handleTxRes);
+      await tx.signAndSend(externalAccountSigner, handleTxRes).toPromise();
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed('Transaction declined'));
