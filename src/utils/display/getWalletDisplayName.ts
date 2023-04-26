@@ -10,7 +10,7 @@ const getWalletDisplayName = (name: string) => {
   } else if (name === WALLET_NAME.SUBWALLET) {
     return 'SubWallet';
   } else if (name === WALLET_NAME.MANTA) {
-    return 'Manta Wallet';
+    return 'MantaWallet';
   } else {
     return name.charAt(0).toUpperCase() + name.slice(1);
   }
