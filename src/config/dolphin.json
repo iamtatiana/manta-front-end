@@ -11,7 +11,7 @@
     "MOONRIVER_SUBSCAN_URL": null,
     "TWITTER_URL": "https://twitter.com/mantanetwork",
     "CALAMARI_URL": "https://calamari.network/",
-    "DOLPHIN_SOCKET": "wss://ws.calamari.seabird.systems",
+    "DOLPHIN_SOCKET": "wss://c1.calamari.seabird.systems",
     "KUSAMA_SOCKET": "wss://ws.internal.kusama.systems",
     "KARURA_SOCKET": "wss://ws.archive.acala.seabird.systems",
     "MOONRIVER_SOCKET": "wss://ws.moonriver.seabird.systems",
