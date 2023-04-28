@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { BN } from 'bn.js';
-import { Environment, MantaPrivateWallet, MantaUtilities } from 'manta.js';
+import { useActive } from 'hooks/useActive';
+import { Environment, MantaPrivateWallet, MantaUtilities } from 'manta-pre.js';
 import PropTypes from 'prop-types';
 import {
   createContext,
@@ -16,7 +17,6 @@ import TxStatus from 'types/TxStatus';
 import Version from 'types/Version';
 import { removePendingTxHistoryEvent } from 'utils/persistence/privateTransactionHistory';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
-import { useActive } from 'hooks/useActive';
 import { useConfig } from './configContext';
 import { useGlobal } from './globalContexts';
 import { usePublicAccount } from './publicAccountContext';
