@@ -3,7 +3,7 @@ import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { Wallet } from '@acala-network/sdk/wallet';
 import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
-import { useExternalAccount } from 'contexts/externalAccountContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
@@ -15,14 +15,16 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
+import { useActive } from 'hooks/useActive';
 
 const BridgeDataContext = React.createContext();
 
 export const BridgeDataContextProvider = (props) => {
   const { ethAddress } = useMetamask();
   const config = useConfig();
-  const { externalAccount } = useExternalAccount();
+  const { externalAccount } = usePublicAccount();
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
+  const isActive = useActive();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
   const [karuraSubscriptions, setKaruraSubscriptions] = useState({});
@@ -235,7 +237,7 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      if (txStatus?.isProcessing() || !isApiInitialized) {
+      if (!isActive || txStatus?.isProcessing() || !isApiInitialized) {
         return;
       }
       fetchSenderBalance();

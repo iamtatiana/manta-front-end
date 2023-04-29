@@ -237,3 +237,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Fixed
 - [\#908](https://github.com/Manta-Network/manta-front-end/pull/908) Fix Calamari websocket
+
+## [6.0.0] - 2023-4-25
+
+### Added
+- [\#873](https://github.com/Manta-Network/manta-front-end/pull/873) Support both Manta Wallet and Manta Signer for MantaPay on Calamari
+
+## [6.0.1] - 2023-4-26
+
+### Added
+- [\#988](https://github.com/Manta-Network/manta-front-end/pull/988) Add Trading Incentive activity banner
