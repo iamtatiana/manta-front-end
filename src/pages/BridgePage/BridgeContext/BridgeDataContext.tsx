@@ -13,9 +13,9 @@ import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
+import { useActive } from 'hooks/useActive';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
-import { useActive } from 'hooks/useActive';
 
 const BridgeDataContext = React.createContext();
 
@@ -99,41 +99,38 @@ export const BridgeDataContextProvider = (props) => {
         return;
       }
       for (const chain of originChainOptions) {
-
         const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
         const api = await chain.getXcmApi();
-        console.log('api', api);
-
-        handleApiConnect(chain);
-        // only runs on initial connection
-        if (chain.name === 'karura' || chain.name === 'acala') {
-          const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
-          const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
-          const wallet = new Wallet(api, acalaConfigs);
-          console.log('wallet', wallet);
-          wallet.isReady.then(async () => {
-            await adapter.init(api, wallet);
-            dispatch({
-              type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-              chain
-            });
+        api.on('connected', () => {
+          handleApiConnect(chain);
+          api.isReady.then(() => {
+          // only runs on initial connection
+            if (chain.name === 'karura' || chain.name === 'acala') {
+              const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
+              const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
+              const wallet = new Wallet(api, acalaConfigs);
+              wallet.isReady.then(async () => {
+                await adapter.init(api, wallet);
+                dispatch({
+                  type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+                  chain
+                });
+              });
+            } else {
+              adapter.init(api);
+              dispatch({
+                type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+                chain
+              });
+            }
           });
-        } else {
-          adapter.init(api);
-          dispatch({
-            type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-            chain
-          });
-        }
-        // });
+        });
         api.on('error', () => handleApiDisconnect(chain));
         api.on('disconnected', () => handleApiDisconnect(chain));
       }
     };
     initBridgeApis();
   }, [bridge, originChainOptions]);
-
-  console.log('karuraSubscriptions', karuraSubscriptions);
 
   useEffect(() => {
     const test = async () => {

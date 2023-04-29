@@ -94,6 +94,19 @@ export const BridgeTxContextProvider = (props) => {
 
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
+    console.log(
+      'debug',
+      isApiInitialized,
+      !isApiDisconnected,
+      destinationAddress,
+      senderAssetTargetBalance,
+      senderAssetCurrentBalance,
+      userCanSign(),
+      userHasSufficientFunds(),
+      txIsOverMinAmount(),
+      userCanPayOriginFee()
+    );
+
     return (
       isApiInitialized &&
       !isApiDisconnected &&
@@ -173,7 +186,7 @@ export const BridgeTxContextProvider = (props) => {
     });
     try {
       setApiSigner(originApi);
-      await tx.signAndSend(externalAccountSigner, handleTxRes).toPromise();
+      await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed('Transaction declined'));
