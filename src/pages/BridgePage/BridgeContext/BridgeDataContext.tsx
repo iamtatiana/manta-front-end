@@ -27,7 +27,7 @@ export const BridgeDataContextProvider = (props) => {
   const isActive = useActive();
 
   const [state, dispatch] = useReducer(bridgeReducer, buildInitState(config));
-  const [karuraSubscriptions, setKaruraSubscriptions] = useState({});
+  const [karuraObservables, setKaruraObservables] = useState({});
   const {
     isApiInitialized,
     senderAssetType,
@@ -197,21 +197,14 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      const newSubscriptions = {...karuraSubscriptions};
+      const newObservables = {...karuraObservables};
       const key = `${senderAssetType.name}-${externalAccount.address}`;
-      if (!newSubscriptions[key]) {
+      if (!newObservables[key]) {
         const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === originChain.name);
         const observable = adapter.subscribeTokenBalance(senderAssetType.name, originAddress);
-        const newSubscription = observable.subscribe((balance) => {
-          const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
-          dispatch({
-            type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-            senderAssetCurrentBalance
-          });
-        });
-        newSubscriptions[key] = newSubscription;
+        newObservables[key] = observable;
       }
-      setKaruraSubscriptions(newSubscriptions);
+      setKaruraObservables(newObservables);
     };
     subscribeKaruraErc20Balance();
   }, [senderAssetType, originAddress, isApiInitialized, originChain, isActive, bridge, externalAccount]);
@@ -258,9 +251,7 @@ export const BridgeDataContextProvider = (props) => {
         return;
       }
       nativeTokenUnsub = subscribeSenderNativeTokenBalance();
-      if (!isKaruraErc20()) {
-        senderBalanceUnsub = subscribeSenderBalance();
-      }
+      senderBalanceUnsub = subscribeSenderBalance();
     };
     subscribeBalances();
     return () => {
