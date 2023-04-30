@@ -257,9 +257,9 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      nativeTokenUnsub = subscribeSenderBalance();
+      nativeTokenUnsub = subscribeSenderNativeTokenBalance();
       if (!isKaruraErc20()) {
-        senderBalanceUnsub = subscribeSenderNativeTokenBalance();
+        senderBalanceUnsub = subscribeSenderBalance();
       }
     };
     subscribeBalances();
