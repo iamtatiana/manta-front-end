@@ -132,32 +132,32 @@ export const BridgeDataContextProvider = (props) => {
     initBridgeApis();
   }, [bridge, originChainOptions]);
 
-  useEffect(() => {
-    const test = async () => {
-      const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
-      if (adapter && adapter.api) {
-        const newSubscriptions = {...karuraSubscriptions};
-        const key = `${senderAssetType.name}-${externalAccount.address}`;
-        if (!newSubscriptions[key]) {
-          console.log('setting new subscription');
-          const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-          const newSubscription = observable.subscribe((balance) => {
-            console.log('balance!!!!!!!!!', balance.free.inner.toNumber(), senderAssetType.name);
-            const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
-            dispatch({
-              type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-              senderAssetCurrentBalance
-            });
-          });
-          newSubscriptions[key] = newSubscription;
-        } else {
-          console.log('not setting new subscription');
-        }
-        setKaruraSubscriptions(newSubscriptions);
-      }
-    };
-    test();
-  }, [senderAssetType, externalAccount]);
+  // useEffect(() => {
+  //   const test = async () => {
+  //     const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
+  //     if (adapter && adapter.api) {
+  //       const newSubscriptions = {...karuraSubscriptions};
+  //       const key = `${senderAssetType.name}-${externalAccount.address}`;
+  //       if (!newSubscriptions[key]) {
+  //         console.log('setting new subscription');
+  //         const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
+  //         const newSubscription = observable.subscribe((balance) => {
+  //           console.log('balance!!!!!!!!!', balance.free.inner.toNumber(), senderAssetType.name);
+  //           const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
+  //           dispatch({
+  //             type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+  //             senderAssetCurrentBalance
+  //           });
+  //         });
+  //         newSubscriptions[key] = newSubscription;
+  //       } else {
+  //         console.log('not setting new subscription');
+  //       }
+  //       setKaruraSubscriptions(newSubscriptions);
+  //     }
+  //   };
+  //   test();
+  // }, [senderAssetType, externalAccount]);
 
   /**
    *
@@ -217,12 +217,12 @@ export const BridgeDataContextProvider = (props) => {
 
   const subscribeSenderNativeTokenBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      originChain.nativeToken.logicalTicker, originAddress
+      originChain.nativeAsset.logicalTicker, originAddress
     );
     const unsub = balanceObserveable.subscribe((balanceRaw) => {
-      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(originChain.nativeToken, balanceRaw.free);
+      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(originChain.nativeAsset, balanceRaw.free);
       dispatch({
-        type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_TOKEN_PUBLIC_BALANCE,
+        type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
         senderNativeAssetCurrentBalance
       });
     });
@@ -233,15 +233,17 @@ export const BridgeDataContextProvider = (props) => {
     let nativeTokenUnsub = null;
     let senderBalanceUnsub = null;
     const subscribeBalances = async () => {
+      console.log('subscribing balances 1');
       if (
         !senderAssetType
         || !originAddress
         || !isApiInitialized
         || !originChain
-        || !!isActive
+        || !isActive
       ) {
         return;
       }
+      console.log('subscribing balances');
       nativeTokenUnsub = subscribeSenderBalance();
       senderBalanceUnsub = subscribeSenderNativeTokenBalance();
     };
@@ -251,6 +253,7 @@ export const BridgeDataContextProvider = (props) => {
       senderBalanceUnsub?.unsubscribe();
     };
   }, [
+    isActive,
     originXcmAdapter,
     senderAssetType,
     externalAccount,
@@ -320,7 +323,8 @@ export const BridgeDataContextProvider = (props) => {
 
     const subscribeInputConfig = async () => {
       if (
-        !senderAssetType
+        !isActive
+        || !senderAssetType
         || !originAddress
         || !isApiInitialized
         || !originChain
@@ -336,7 +340,7 @@ export const BridgeDataContextProvider = (props) => {
     };
     subscribeInputConfig();
   },[
-    senderAssetType, senderAssetCurrentBalance, senderAssetTargetBalance,
+    isActive, senderAssetType, senderAssetCurrentBalance, senderAssetTargetBalance,
     originAddress, destinationAddress, originChain, destinationChain, isApiInitialized
   ]);
 
