@@ -132,33 +132,6 @@ export const BridgeDataContextProvider = (props) => {
     initBridgeApis();
   }, [bridge, originChainOptions]);
 
-  // useEffect(() => {
-  //   const test = async () => {
-  //     const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === 'karura');
-  //     if (adapter && adapter.api) {
-  //       const newSubscriptions = {...karuraSubscriptions};
-  //       const key = `${senderAssetType.name}-${externalAccount.address}`;
-  //       if (!newSubscriptions[key]) {
-  //         console.log('setting new subscription');
-  //         const observable = await adapter.subscribeTokenBalance(senderAssetType.name, '5F1XoUut9z8TCMPX7ydXnExc63ouhSa18qLkUS3NU4ANTAYX');
-  //         const newSubscription = observable.subscribe((balance) => {
-  //           console.log('balance!!!!!!!!!', balance.free.inner.toNumber(), senderAssetType.name);
-  //           const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
-  //           dispatch({
-  //             type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-  //             senderAssetCurrentBalance
-  //           });
-  //         });
-  //         newSubscriptions[key] = newSubscription;
-  //       } else {
-  //         console.log('not setting new subscription');
-  //       }
-  //       setKaruraSubscriptions(newSubscriptions);
-  //     }
-  //   };
-  //   test();
-  // }, [senderAssetType, externalAccount]);
-
   /**
    *
    * Destination address logic
@@ -201,6 +174,48 @@ export const BridgeDataContextProvider = (props) => {
    *
    */
 
+
+  const isKaruraErc20 = () => {
+    if (originChain.name !== 'karura' && originChain.name !== 'acala' ) {
+      return false;
+    }
+    if (senderAssetType.baseTicker !== 'DAI' && senderAssetType.baseTicker !== 'USDC') {
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    const subscribeKaruraErc20Balance = () => {
+      if (
+        !senderAssetType
+        || !originAddress
+        || !isApiInitialized
+        || !originChain
+        || !isActive
+        || !isKaruraErc20()
+      ) {
+        return;
+      }
+      const newSubscriptions = {...karuraSubscriptions};
+      const key = `${senderAssetType.name}-${externalAccount.address}`;
+      if (!newSubscriptions[key]) {
+        const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === originChain.name);
+        const observable = adapter.subscribeTokenBalance(senderAssetType.name, originAddress);
+        const newSubscription = observable.subscribe((balance) => {
+          const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
+          dispatch({
+            type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+            senderAssetCurrentBalance
+          });
+        });
+        newSubscriptions[key] = newSubscription;
+      }
+      setKaruraSubscriptions(newSubscriptions);
+    };
+    subscribeKaruraErc20Balance();
+  }, [senderAssetType, originAddress, isApiInitialized, originChain, isActive, bridge, externalAccount]);
+
   const subscribeSenderBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
       senderAssetType.logicalTicker, originAddress
@@ -233,7 +248,6 @@ export const BridgeDataContextProvider = (props) => {
     let nativeTokenUnsub = null;
     let senderBalanceUnsub = null;
     const subscribeBalances = async () => {
-      console.log('subscribing balances 1');
       if (
         !senderAssetType
         || !originAddress
@@ -243,9 +257,10 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      console.log('subscribing balances');
       nativeTokenUnsub = subscribeSenderBalance();
-      senderBalanceUnsub = subscribeSenderNativeTokenBalance();
+      if (!isKaruraErc20()) {
+        senderBalanceUnsub = subscribeSenderNativeTokenBalance();
+      }
     };
     subscribeBalances();
     return () => {
