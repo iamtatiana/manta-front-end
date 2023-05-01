@@ -216,15 +216,25 @@ export const BridgeDataContextProvider = (props) => {
     subscribeKaruraErc20Balance();
   }, [senderAssetType, originAddress, isApiInitialized, originChain, isActive, bridge, externalAccount]);
 
+  const waitForTxFinished = async () => {
+    while (txStatusRef.current?.isProcessing()) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  };
+
   const subscribeSenderBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
       senderAssetType.logicalTicker, originAddress
     );
-    const unsub = balanceObserveable.subscribe((balanceRaw) => {
-      const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balanceRaw.free);
+    const unsub = balanceObserveable.subscribe(async (balanceRaw) => {
+      const newBalance = Balance.fromBaseUnits(senderAssetType, balanceRaw.free);
+      if (senderAssetCurrentBalance && newBalance.eq(senderAssetCurrentBalance)) {
+        return;
+      }
+      await waitForTxFinished();
       dispatch({
         type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
-        senderAssetCurrentBalance
+        senderAssetCurrentBalance: newBalance
       });
     });
     return unsub;
