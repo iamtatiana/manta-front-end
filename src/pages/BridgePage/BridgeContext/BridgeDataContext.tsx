@@ -201,7 +201,7 @@ export const BridgeDataContextProvider = (props) => {
       const key = `${senderAssetType.name}-${externalAccount.address}`;
       if (!newSubscriptions[key]) {
         const adapter = bridge?.adapters.find((adapter) => adapter.chain.id === originChain.name);
-        const observable = adapter.subscribeTokenBalance(senderAssetType.name, originAddress);
+        const observable = adapter.subscribeTokenBalance(senderAssetType.logicalTicker, originAddress);
         const newSubscription = observable.subscribe((balance) => {
           const senderAssetCurrentBalance = Balance.fromBaseUnits(senderAssetType, balance.free);
           dispatch({
