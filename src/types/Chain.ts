@@ -127,7 +127,7 @@ export default class Chain {
       'kar',
       config.KARURA_SOCKET,
       config.KARURA_SUBSCAN_URL,
-      [AssetType.Karura(config), AssetType.UsdCoin(config), AssetType.Dai(config)],
+      [AssetType.Karura(config), AssetType.UsdCoin(config), AssetType.Dai(config), AssetType.Tether(config)],
       AssetType.Karura(config),
       KaruraAdapter,
       null,
