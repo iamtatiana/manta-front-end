@@ -93,13 +93,13 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   useEffect(() => {
-    const initBridgeApis = async () => {
+    const initBridgeApis = () => {
       if (!bridge) {
         return;
       }
       for (const chain of originChainOptions) {
         const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
-        const api = await chain.getXcmApi();
+        const api = chain.getXcmApi();
         api.on('connected', () => {
           handleApiConnect(chain);
           api.isReady.then(() => {
