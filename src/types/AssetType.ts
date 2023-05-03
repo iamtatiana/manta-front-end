@@ -151,20 +151,6 @@ export default class AssetType {
     );
   }
 
-  // static KintsugiBTC(config, isPrivate) {
-  //   return new AssetType(
-  //     getAssetIds(config).KBTC,
-  //     'Kintsugi BTC',
-  //     'kBTC',
-  //     'kbtc',
-  //     8,
-  //     new BN('1'),
-  //     isPrivate,
-  //     'bitcoin',
-  //     config.IS_TESTNET,
-  //   );
-  // }
-
   static Moonriver(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).MOVR,

@@ -122,8 +122,6 @@ export const BridgeTxContextProvider = (props) => {
             const decoded = originApi.registry.findMetaError(error.asModule.toU8a());
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);
-            console.log('error', error);
-            console.log('decoded', decoded);
           } else {
             console.error(error.toString());
           }

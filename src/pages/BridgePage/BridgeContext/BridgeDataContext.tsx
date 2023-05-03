@@ -103,7 +103,6 @@ export const BridgeDataContextProvider = (props) => {
         api.on('connected', () => {
           handleApiConnect(chain);
           api.isReady.then(() => {
-          // only runs on initial connection
             if (chain.name === 'karura' || chain.name === 'acala') {
               const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
               const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
