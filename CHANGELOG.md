@@ -247,3 +247,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Added
 - [\#988](https://github.com/Manta-Network/manta-front-end/pull/988) Add Trading Incentive activity banner
+
+## Unreleased
+
+### Added
+- [\#981](https://github.com/Manta-Network/manta-front-end/pull/981) Enable privatization and bridging for USDC, USDT, and DAI
