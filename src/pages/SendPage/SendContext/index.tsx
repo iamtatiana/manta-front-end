@@ -615,7 +615,7 @@ export const SendContextProvider = (props) => {
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (e) {
       console.error('Failed to send transaction', e);
-      setTxStatus(TxStatus.failed('Transaction declined'));
+      setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
     }
   };
 

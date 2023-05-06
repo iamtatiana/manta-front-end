@@ -224,8 +224,8 @@ export const MantaWalletContextProvider = ({
       try {
         const internalTx: any = txQueue.current.shift();
         await internalTx.signAndSend(publicAddress, handleInternalTxRes);
-      } catch (e) {
-        setTxStatus(TxStatus.failed('internalTx failed'));
+      } catch (e:any) {
+        setTxStatus(TxStatus.failed(`internalTx failed: ${e?.message}`));
         txQueue.current = [];
       }
     };
@@ -275,8 +275,8 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e) {
-        setTxStatus(TxStatus.failed('Transaction declined'));
+      } catch (e:any) {
+        setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },
     [privateWallet, publicAddress, network, api]
@@ -298,8 +298,8 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e) {
-        setTxStatus(TxStatus.failed('Transaction declined'));
+      } catch (e:any) {
+        setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },
     [privateWallet, publicAddress, network, api]
@@ -316,8 +316,8 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e) {
-        setTxStatus(TxStatus.failed('Transaction declined'));
+      } catch (e:any) {
+        setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },
     [privateWallet, publicAddress, network, api]
