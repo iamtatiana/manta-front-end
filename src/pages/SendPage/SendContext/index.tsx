@@ -397,7 +397,7 @@ export const SendContextProvider = (props) => {
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       suggestedMinFeeBalance = Balance.fromBaseUnits(
         AssetType.Native(config),
-        5
+        10
       );
     } else {
       throw new Error('Unknown network');
