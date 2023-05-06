@@ -56,8 +56,9 @@ export const MantaWalletContextProvider = ({
   children: ReactNode;
 }) => {
   // external contexts
-  const { NETWORK_NAME: network } = useConfig();
-  const { usingMantaWallet } = useGlobal();
+  const config = useConfig();
+  const { NETWORK_NAME: network } = config;
+  const { usingMantaWallet, setSuggestedMinFeeBalance } = useGlobal();
   const { api } = useSubstrate();
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
@@ -203,11 +204,17 @@ export const MantaWalletContextProvider = ({
           setTxStatus(TxStatus.failed(''));
           return;
         }
+        const info = await lastTx.paymentInfo(publicAddress);
+        const [fee] = info.partialFee.toHuman().split(' ');
+        if (fee) {
+          const balance = Balance.fromBaseUnits(AssetType.Native(config), fee);
+          setSuggestedMinFeeBalance(balance);
+        }
         await lastTx.signAndSend(publicAddress, finalTxResHandler.current);
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
-      } catch (e) {
+      } catch (e: any) {
         console.error('Error publishing private transaction batch', e);
-        setTxStatus(TxStatus.failed('Transaction declined'));
+        setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
         removePendingTxHistoryEvent();
         txQueue.current = [];
       }

@@ -19,6 +19,7 @@ const GlobalContextProvider = ({ children }) => {
   const initValue = store.get(localStorageKeys.UsingMantaWallet, true);
   const [usingMantaWallet, _setUsingMantaWallet] = useState(initValue);
   const [mantaWalletInitialSync, _setMantaWalletInitialSync] = useState(true);
+  const [suggestedMinFeeBalance, setSuggestedMinFeeBalance] = useState();
   const { pathname } = useLocation();
   const isDolphinPage = pathname.includes('dolphin');
 
@@ -44,13 +45,17 @@ const GlobalContextProvider = ({ children }) => {
       usingMantaWallet,
       setUsingMantaWallet,
       mantaWalletInitialSync,
-      setMantaWalletInitialSync
+      setMantaWalletInitialSync,
+      suggestedMinFeeBalance,
+      setSuggestedMinFeeBalance
     }),
     [
       usingMantaWallet,
       setUsingMantaWallet,
       mantaWalletInitialSync,
-      setMantaWalletInitialSync
+      setMantaWalletInitialSync,
+      suggestedMinFeeBalance,
+      setSuggestedMinFeeBalance
     ]
   );
 

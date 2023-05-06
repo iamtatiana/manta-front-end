@@ -42,6 +42,7 @@ export const SendContextProvider = (props) => {
     receiverAddress,
     receiverCurrentBalance
   } = state;
+  const {suggestedMinFeeBalance, setSuggestedMinFeeBalance} = useGlobal();
 
   /**
    * Initialization logic
@@ -386,6 +387,24 @@ export const SendContextProvider = (props) => {
     return feeEstimate.add(existentialDeposit);
   };
 
+  useEffect(() => {
+    let suggestedMinFeeBalance;
+    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+      suggestedMinFeeBalance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        150
+      );
+    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+      suggestedMinFeeBalance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        5
+      );
+    } else {
+      throw new Error('Unknown network');
+    }
+    setSuggestedMinFeeBalance(suggestedMinFeeBalance);
+  }, [config.NETWORK_NAME]);
+
   // Returns true if the current tx would cause the user to go below a
   // recommended min fee balance of 150. This helps prevent users from
   // accidentally becoming unable to transact because they cannot pay fees
@@ -395,20 +414,6 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       (isToPrivate() || isPublicTransfer())
     ) {
-      let suggestedMinFeeBalance;
-      if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          150
-        );
-      } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          5
-        );
-      } else {
-        throw new Error('Unknown network');
-      }
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );
