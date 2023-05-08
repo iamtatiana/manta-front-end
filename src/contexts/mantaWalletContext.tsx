@@ -2,6 +2,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
 import WALLET_NAME from 'constants/WalletConstants';
+import Decimal from 'decimal.js';
 import {
   MutableRefObject,
   ReactNode,
@@ -88,6 +89,27 @@ export const MantaWalletContextProvider = ({
     );
     return mantaWallet;
   }, []);
+
+  const getEstimatedMinFee = async () => {
+    if (api && publicAddress) {
+      const dummyTx = await api.tx.balances
+        .transfer(publicAddress, 123)
+        .paymentInfo(publicAddress);
+      const fee = dummyTx.partialFee.toString() / 10 ** 12; //  senderAssetType numberOfDecimals
+      const balance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        new Decimal(fee)
+      );
+      if (balance) setSuggestedMinFeeBalance(balance);
+      return balance;
+    }
+    return undefined;
+  };
+
+  // initial setSuggestedMin gas fee
+  useEffect(() => {
+    getEstimatedMinFee();
+  }, [api, publicAddress]);
 
   useEffect(() => {
     const getPrivateWallet = async () => {
@@ -204,12 +226,6 @@ export const MantaWalletContextProvider = ({
           setTxStatus(TxStatus.failed(''));
           return;
         }
-        const info = await lastTx.paymentInfo(publicAddress);
-        const [fee] = info.partialFee.toHuman().split(' ');
-        if (fee) {
-          const balance = Balance.fromBaseUnits(AssetType.Native(config), fee);
-          setSuggestedMinFeeBalance(balance);
-        }
         await lastTx.signAndSend(publicAddress, finalTxResHandler.current);
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e: any) {
@@ -224,7 +240,7 @@ export const MantaWalletContextProvider = ({
       try {
         const internalTx: any = txQueue.current.shift();
         await internalTx.signAndSend(publicAddress, handleInternalTxRes);
-      } catch (e:any) {
+      } catch (e: any) {
         setTxStatus(TxStatus.failed(`internalTx failed: ${e?.message}`));
         txQueue.current = [];
       }
@@ -275,7 +291,7 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e:any) {
+      } catch (e: any) {
         setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },
@@ -298,7 +314,7 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e:any) {
+      } catch (e: any) {
         setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },
@@ -316,7 +332,7 @@ export const MantaWalletContextProvider = ({
         });
         const batches = await getBatches(signResult as string[]);
         await publishBatchesSequentially(batches, txResHandler);
-      } catch (e:any) {
+      } catch (e: any) {
         setTxStatus(TxStatus.failed(`Transaction declined: ${e?.message}`));
       }
     },

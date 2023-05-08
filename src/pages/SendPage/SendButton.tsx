@@ -1,9 +1,9 @@
 // @ts-nocheck
-import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
+import WALLET_NAME from 'constants/WalletConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -126,8 +126,6 @@ const ValidationSendButton = ({ showModal }) => {
     validationMsg = 'Connecting to network';
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
-  } else if (userCanPayFee() === false) {
-    validationMsg = `Insufficient ${senderNativeTokenPublicBalance?.assetType?.baseTicker} to pay transaction fee`;
   } else if (userHasSufficientFunds() === false) {
     validationMsg = 'Insufficient balance';
   } else if (

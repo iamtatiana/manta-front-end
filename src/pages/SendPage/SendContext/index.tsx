@@ -42,7 +42,7 @@ export const SendContextProvider = (props) => {
     receiverAddress,
     receiverCurrentBalance
   } = state;
-  const {suggestedMinFeeBalance, setSuggestedMinFeeBalance} = useGlobal();
+  const { suggestedMinFeeBalance, setSuggestedMinFeeBalance } = useGlobal();
 
   /**
    * Initialization logic
@@ -410,20 +410,28 @@ export const SendContextProvider = (props) => {
   // accidentally becoming unable to transact because they cannot pay fees
   const txWouldDepleteSuggestedMinFeeBalance = () => {
     if (
-      senderAssetCurrentBalance?.assetType.isNativeToken &&
-      senderAssetTargetBalance?.assetType.isNativeToken &&
+      senderAssetCurrentBalance?.assetType &&
+      senderAssetTargetBalance?.assetType &&
       (isToPrivate() || isPublicTransfer())
     ) {
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );
-      return suggestedMinFeeBalance.gte(balanceAfterTx);
+      const isNativeToken =
+        senderNativeTokenPublicBalance?.assetType?.assetId ===
+        senderAssetCurrentBalance?.assetType?.assetId;
+      return isNativeToken
+        ? suggestedMinFeeBalance.gte(balanceAfterTx)
+        : suggestedMinFeeBalance.gte(senderNativeTokenPublicBalance);
     }
     return false;
   };
 
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
+    if (!senderAssetTargetBalance || !senderAssetCurrentBalance) return null;
+    return senderAssetCurrentBalance.gte(senderAssetTargetBalance);
+
     if (
       !senderAssetTargetBalance ||
       !senderAssetCurrentBalance ||
@@ -473,8 +481,6 @@ export const SendContextProvider = (props) => {
       receiverAddress &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
-      userHasSufficientFunds() &&
-      userCanPayFee() &&
       receiverAmountIsOverExistentialBalance()
     );
   };
