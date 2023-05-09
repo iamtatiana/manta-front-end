@@ -649,7 +649,7 @@ export const SendContextProvider = (props) => {
    */
   const debouncedGetEstimatedMinFee = useDebouncedCallback(() => {
     getEstimatedMinFee();
-  }, 1000);
+  }, 10000);
 
   useEffect(() => {
     debouncedGetEstimatedMinFee();

@@ -110,7 +110,7 @@ export const MantaWalletContextProvider = ({
   useEffect(() => {
     const interval = setInterval(async () => {
       getEstimatedMinFee();
-    }, 5000);
+    }, 10000);
     return () => {
       interval && clearInterval(interval);
     };
