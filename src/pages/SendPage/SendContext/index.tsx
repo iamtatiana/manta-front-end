@@ -415,9 +415,6 @@ export const SendContextProvider = (props) => {
 
   // Checks if the user has enough funds to pay for a transaction
   const userHasSufficientFunds = () => {
-    if (!senderAssetTargetBalance || !senderAssetCurrentBalance) return null;
-    return senderAssetCurrentBalance.gte(senderAssetTargetBalance);
-
     if (
       !senderAssetTargetBalance ||
       !senderAssetCurrentBalance ||
