@@ -4,6 +4,7 @@ import BN from 'bn.js';
 import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
+import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useSubstrate } from 'contexts/substrateContext';
@@ -15,6 +16,7 @@ import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 import TxStatus from 'types/TxStatus';
+import { useDebouncedCallback } from 'use-debounce';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
 import SEND_ACTIONS from './sendActions';
@@ -43,6 +45,7 @@ export const SendContextProvider = (props) => {
     receiverCurrentBalance
   } = state;
   const { suggestedMinFeeBalance } = useGlobal();
+  const { getEstimatedMinFee } = useMantaWallet();
 
   /**
    * Initialization logic
@@ -639,6 +642,23 @@ export const SendContextProvider = (props) => {
   const receiverIsPublic = () => {
     return isPublicTransfer() || isToPublic();
   };
+
+  /**
+   *
+   * Gas fee updates
+   */
+  const debouncedGetEstimatedMinFee = useDebouncedCallback(() => {
+    getEstimatedMinFee();
+  }, 1000);
+
+  useEffect(() => {
+    debouncedGetEstimatedMinFee();
+  }, [
+    senderAssetCurrentBalance,
+    senderAssetTargetBalance,
+    isToPrivate(),
+    isPublicTransfer()
+  ]);
 
   const value = {
     userHasSufficientFunds,

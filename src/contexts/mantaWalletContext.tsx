@@ -108,7 +108,12 @@ export const MantaWalletContextProvider = ({
 
   // initial setSuggestedMin gas fee
   useEffect(() => {
-    getEstimatedMinFee();
+    const interval = setInterval(async () => {
+      getEstimatedMinFee();
+    }, 5000);
+    return () => {
+      interval && clearInterval(interval);
+    };
   }, [api, publicAddress]);
 
   useEffect(() => {
@@ -351,7 +356,8 @@ export const MantaWalletContextProvider = ({
       privateWallet,
       sync,
       isInitialSync: { current: false },
-      signerIsConnected
+      signerIsConnected,
+      getEstimatedMinFee
     }),
     [
       isReady,
@@ -365,7 +371,8 @@ export const MantaWalletContextProvider = ({
       privateTransfer,
       sync,
       privateWallet,
-      signerIsConnected
+      signerIsConnected,
+      getEstimatedMinFee
     ]
   );
 
