@@ -64,6 +64,7 @@ export const MantaWalletContextProvider = ({
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
   const { setTxStatus } = useTxStatus();
+  const { numberOfDecimals } = AssetType.Native(config);
 
   // private wallet
   const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(
@@ -95,7 +96,8 @@ export const MantaWalletContextProvider = ({
       const dummyTx = await api.tx.balances
         .transfer(publicAddress, 123)
         .paymentInfo(publicAddress);
-      const fee = (dummyTx.partialFee.toString() / 10 ** 12) * 1.2; //  senderAssetType numberOfDecimals
+      const fee =
+        (dummyTx.partialFee.toString() / 10 ** numberOfDecimals) * 1.2;
       const balance = Balance.fromBaseUnits(
         AssetType.Native(config),
         new Decimal(fee)
