@@ -97,7 +97,7 @@ export const MantaWalletContextProvider = ({
         .transfer(publicAddress, 123)
         .paymentInfo(publicAddress);
       const fee =
-        (dummyTx.partialFee.toString() / 10 ** numberOfDecimals) * 1.2;
+        (dummyTx.partialFee.toString() / 10 ** numberOfDecimals) * 1.1 + 0.3; // KMA
       const balance = Balance.fromBaseUnits(
         AssetType.Native(config),
         new Decimal(fee)
