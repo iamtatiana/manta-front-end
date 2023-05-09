@@ -52,6 +52,8 @@ export const BridgeDataContextProvider = (props) => {
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
+
+  console.log('senderAssetCurrentBalance', senderAssetCurrentBalance?.toStringUnrounded());
   /**
    *
    * Initialization logic

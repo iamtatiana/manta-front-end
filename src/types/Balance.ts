@@ -51,9 +51,12 @@ export default class Balance {
     return valueBaseUnits;
   }
 
-  toString(decimals = 3) {
+  toString(decimals: number | null = null) {
+    if (decimals === null) {
+      decimals = this.assetType.displayDecimals;
+    }
     return this.valueBaseUnits()
-      .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
+      .toDecimalPlaces(decimals as number, Decimal.ROUND_DOWN)
       .toString();
   }
 

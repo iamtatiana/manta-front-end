@@ -19,6 +19,9 @@ import { ReactComponent as statemine } from 'resources/icons/coins/statemine-ico
 import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
 import { ReactComponent as usdc } from 'resources/icons/coins/usdc-icon.svg';
 import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc-icon.svg';
+import { ReactComponent as arbitrum } from 'resources/icons/coins/arbitrum-icon.svg';
+import { ReactComponent as bnb } from 'resources/icons/coins/bnb-icon.svg';
+import { ReactComponent as busd } from 'resources/icons/coins/busd-icon.svg';
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
@@ -118,6 +121,9 @@ const icons = {
   dai,
   usdc,
   wbtc,
+  arbitrum,
+  bnb,
+  busd,
   statemine,
   audit,
   close,
