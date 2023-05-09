@@ -127,7 +127,7 @@ const ValidationSendButton = ({ showModal }) => {
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
   } else if (txWouldDepleteSuggestedMinFeeBalance()) {
-    validationMsg = `Insufficient ${senderNativeTokenPublicBalance?.assetType?.baseTicker} to pay transaction fee`;
+    validationMsg = `Insufficient ${senderNativeTokenPublicBalance?.assetType?.baseTicker} for transaction fee`;
   } else if (userHasSufficientFunds() === false) {
     validationMsg = 'Insufficient balance';
   } else if (
