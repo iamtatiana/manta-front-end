@@ -110,6 +110,7 @@ export const MantaWalletContextProvider = ({
 
   // initial setSuggestedMin gas fee
   useEffect(() => {
+    if (api && publicAddress) getEstimatedMinFee();
     const interval = setInterval(async () => {
       getEstimatedMinFee();
     }, 10000);
