@@ -90,33 +90,8 @@ export const MantaWalletContextProvider = ({
     return mantaWallet;
   }, []);
 
-  const getEstimatedMinFee = async () => {
-    const { numberOfDecimals } = AssetType.Native(config);
-    if (api && publicAddress) {
-      const dummyTx = await api.tx.balances
-        .transfer(publicAddress, 123)
-        .paymentInfo(publicAddress);
-      const fee =
-        (Number(dummyTx.partialFee.toString()) / 10 ** numberOfDecimals) * 1.1 +
-        0.3;
-      const balance = Balance.fromBaseUnits(
-        AssetType.Native(config),
-        new Decimal(fee)
-      );
-      if (balance) setSuggestedMinFeeBalance(balance);
-    }
-  };
 
-  // initial setSuggestedMin gas fee
-  useEffect(() => {
-    if (api && publicAddress) getEstimatedMinFee();
-    const interval = setInterval(async () => {
-      getEstimatedMinFee();
-    }, 10000);
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [api, publicAddress]);
+
 
   useEffect(() => {
     const getPrivateWallet = async () => {
@@ -359,7 +334,6 @@ export const MantaWalletContextProvider = ({
       sync,
       isInitialSync: { current: false },
       signerIsConnected,
-      getEstimatedMinFee
     }),
     [
       isReady,
@@ -374,7 +348,6 @@ export const MantaWalletContextProvider = ({
       sync,
       privateWallet,
       signerIsConnected,
-      getEstimatedMinFee
     ]
   );
 

@@ -4,11 +4,11 @@ import BN from 'bn.js';
 import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
-import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import Decimal from 'decimal.js';
 import { useActive } from 'hooks/useActive';
 import PropTypes from 'prop-types';
 import React, { useContext, useEffect, useReducer } from 'react';
@@ -41,11 +41,10 @@ export const SendContextProvider = (props) => {
     senderNativeTokenPublicBalance,
     senderPublicAccount,
     receiverAssetType,
-    receiverAddress,
-    receiverCurrentBalance
+    receiverAddress
   } = state;
-  const { suggestedMinFeeBalance } = useGlobal();
-  const { getEstimatedMinFee } = useMantaWallet();
+  const { suggestedMinFeeBalance, setSuggestedMinFeeBalance } = useGlobal();
+  const publicAddress = externalAccount?.address;
 
   /**
    * Initialization logic
@@ -644,10 +643,39 @@ export const SendContextProvider = (props) => {
    *
    * Gas fee updates
    */
+  const getEstimatedMinFee = async () => {
+    const { numberOfDecimals } = AssetType.Native(config);
+    if (api && publicAddress) {
+      const dummyTx = await api.tx.balances
+        .transfer(publicAddress, 123)
+        .paymentInfo(publicAddress);
+      const fee =
+        (Number(dummyTx.partialFee.toString()) / 10 ** numberOfDecimals) * 1.1 +
+        0.3;
+      const balance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        new Decimal(fee)
+      );
+      if (balance) setSuggestedMinFeeBalance(balance);
+    }
+  };
+
   const debouncedGetEstimatedMinFee = useDebouncedCallback(() => {
     getEstimatedMinFee();
   }, 10000);
 
+  // initial
+  useEffect(() => {
+    if (api && publicAddress) getEstimatedMinFee();
+    const interval = setInterval(async () => {
+      getEstimatedMinFee();
+    }, 10000);
+    return () => {
+      interval && clearInterval(interval);
+    };
+  }, [api, publicAddress]);
+
+  // when user inputting
   useEffect(() => {
     debouncedGetEstimatedMinFee();
   }, [
