@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import IPBlockingModal from 'components/Modal/IPBlockingModal';
 import Navbar from 'components/Navbar';
 import PageContent from 'components/PageContent';
