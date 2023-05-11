@@ -48,7 +48,7 @@ export default class AssetType {
   logicalTicker: string;
   icon: string;
   numberOfDecimals: number;
-  publicExistentialDeposit: BN;
+  existentialDeposit: BN;
   existentialDeposit: BN;
   isPrivate: boolean;
   isTestnet: boolean;
@@ -61,7 +61,7 @@ export default class AssetType {
     baseTicker,
     icon,
     numberOfDecimals,
-    publicExistentialDeposit,
+    existentialDeposit,
     isPrivate,
     coingeckoId,
     isTestnet,
@@ -76,8 +76,7 @@ export default class AssetType {
     this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
     this.icon = icon;
     this.numberOfDecimals = numberOfDecimals;
-    this.publicExistentialDeposit = publicExistentialDeposit;
-    this.existentialDeposit = isPrivate ? new BN(0) : publicExistentialDeposit;
+    this.existentialDeposit = existentialDeposit;
     this.isPrivate = isPrivate;
     this.isTestnet = isTestnet;
     this.isNativeToken = isNativeToken;
@@ -285,7 +284,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.publicExistentialDeposit,
+      this.existentialDeposit,
       true,
       this.coingeckoId,
       this.isTestnet,
@@ -301,7 +300,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.publicExistentialDeposit,
+      this.existentialDeposit,
       false,
       this.coingeckoId,
       this.isTestnet,
