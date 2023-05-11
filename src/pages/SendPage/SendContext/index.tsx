@@ -359,6 +359,9 @@ export const SendContextProvider = (props) => {
         zeroBalance
       );
     }
+    if (senderAssetType.isPrivate) {
+      return senderAssetCurrentBalance;
+    }
     return senderAssetCurrentBalance.valueOverExistentialDeposit();
   };
 
