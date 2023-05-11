@@ -463,6 +463,20 @@ export const SendContextProvider = (props) => {
 
   // Checks that it is valid to attempt a transaction
   const isValidToSend = () => {
+    // Debug logging for issue #1005 ("Sometimes when I click 'To Private', there is no response")
+    // Committed intentionally, but should be removed after issue is resolved
+    console.log('isValidToSend', {
+      privateWalletIsReady: privateWallet?.isReady,
+      isPublicTransfer: isPublicTransfer(),
+      api,
+      externalAccountSigner,
+      receiverAddress,
+      senderAssetTargetBalance,
+      senderAssetCurrentBalance,
+      userHasSufficientFunds: userHasSufficientFunds(),
+      userCanPayFee: userCanPayFee(),
+      receiverAmountIsOverExistentialBalance: receiverAmountIsOverExistentialBalance()
+    });
     return (
       (privateWallet?.isReady || isPublicTransfer()) &&
       api &&
