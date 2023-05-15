@@ -70,6 +70,7 @@ const ValidationSendButton = ({ showModal }) => {
     userHasSufficientFunds,
     receiverAssetType,
     receiverAmountIsOverExistentialBalance,
+    senderAssetType,
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
@@ -146,8 +147,8 @@ const ValidationSendButton = ({ showModal }) => {
     }`;
   } else if (receiverAmountIsOverExistentialBalance() === false) {
     const existentialDeposit = new Balance(
-      receiverAssetType,
-      receiverAssetType.existentialDeposit
+      senderAssetType,
+      senderAssetType.existentialDeposit
     );
     validationMsg = `Min transaction is ${existentialDeposit.toDisplayString(
       3,

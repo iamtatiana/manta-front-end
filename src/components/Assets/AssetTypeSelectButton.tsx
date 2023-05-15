@@ -30,14 +30,14 @@ const AssetTypeOption = ({option, index, hideModal, setSelectedAssetType, balanc
               </div>
             </div>
           </div>
-          <div className="text-white font-red-hat-mono pr-7">{balance}</div>
+          {/* <div className="text-white font-red-hat-mono pr-7">{balance}</div> */}
         </div>
       </div>
     </div>
   );
 };
 
-const AssetSelectModal = ({assetTypeOptions, setSelectedAssetType, hideModal, assetBalances}) => {
+const AssetSelectModal = ({ assetTypeOptions, setSelectedAssetType, hideModal }) => {
   const [filterText, setFilterText] = useState('');
   const filteredOptions = assetTypeOptions.filter((option) => {
     return (
@@ -63,7 +63,6 @@ const AssetSelectModal = ({assetTypeOptions, setSelectedAssetType, hideModal, as
       <div className="mt-1 ml-2 overflow-y-auto h-64">
         {filteredOptions.map((option, i) => {
           return <AssetTypeOption
-            balance={assetBalances[option.assetId]}
             key={option.assetId}
             hideModal={hideModal}
             setSelectedAssetType={setSelectedAssetType}
@@ -79,19 +78,10 @@ const AssetTypeSelectButton = ({
   assetType,
   assetTypeOptions,
   setSelectedAssetType,
-  assetBalances
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const { ModalWrapper, showModal, hideModal } = useModal();
-  if (!assetBalances) {
-    assetBalances = {};
-    assetTypeOptions.forEach((option) => {
-      assetBalances[option.assetId] = 999;
-    });
-  }
-
-
   const onClick = () => {
     if (disabled) {
       return;
@@ -129,7 +119,6 @@ const AssetTypeSelectButton = ({
           hideModal={hideModal}
           assetTypeOptions={assetTypeOptions}
           setSelectedAssetType={setSelectedAssetType}
-          assetBalances={assetBalances}
         />
       </ModalWrapper>
     </div>
