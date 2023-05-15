@@ -1,15 +1,17 @@
 // @ts-nocheck
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
 import { useModal } from 'hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
 
-const AssetTypeOption = ({option, index, hideModal, setSelectedAssetType, balance}) => {
+const AssetTypeOption = ({index, hideModal, setSelectedAssetType, balance, assetType}) => {
   const onClick = () => {
-    setSelectedAssetType(option);
+    setSelectedAssetType(assetType);
     hideModal();
   };
   return (
@@ -17,38 +19,56 @@ const AssetTypeOption = ({option, index, hideModal, setSelectedAssetType, balanc
       {index !== 0 ? <hr className="h-px mx-6 bg-gray-200 border-0 dark:bg-gray-700" /> : null}
       <div className="w-full cursor-pointer my-1 hover:bg-dropdown-hover">
         <div
-          id={option.ticker}
+          id={assetType.ticker}
           className="flex justify-between items-center inline w-full">
           <div className="flex inline">
-            <Icon className="ml-5 w-8 rounded-full" name={option?.icon} />
+            <Icon className="ml-5 w-8 rounded-full" name={assetType.icon} />
             <div className="p-2 pl-3">
               <div className="text-sm block text-white">
-                <p className="text-white unselectable-text">{option.ticker}</p>
+                <p className="text-white text-lg unselectable-text">{assetType.ticker}</p>
               </div>
               <div className="text-xs block text-white unselectable-text text-opacity-60">
-                {option.name}
+                {assetType.name}
               </div>
             </div>
           </div>
-          {/* <div className="text-white font-red-hat-mono pr-7">{balance}</div> */}
+          <div className="text-white text-md font-red-hat-mono pr-7">{balance?.toString()}</div>
         </div>
       </div>
     </div>
   );
 };
 
-const AssetSelectModal = ({ assetTypeOptions, setSelectedAssetType, hideModal }) => {
+const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideModal, balances }) => {
   const [filterText, setFilterText] = useState('');
-  const filteredOptions = assetTypeOptions.filter((option) => {
+  const { privateWallet } = usePrivateWallet();
+  const { fetchPrivateBalances } = useZkAccountBalances();
+
+  const filteredAssetTypes = senderAssetTypeOptions.filter((assetType) => {
     return (
-      option.ticker.toLowerCase().includes(filterText.toLowerCase())
-    || option.name.toLowerCase().includes(filterText.toLowerCase())
+      assetType.ticker.toLowerCase().includes(filterText.toLowerCase())
+    || assetType.name.toLowerCase().includes(filterText.toLowerCase())
     );
   });
 
+  const filteredBlances = filteredAssetTypes.map((option) => {
+    return balances.find((balance) => balance?.assetType.assetId === option.assetId) || null;
+  });
+
+  const options = filteredAssetTypes.map((assetType, i) => {
+    return {
+      assetType,
+      balance: filteredBlances[i]
+    };
+  });
+
+  useEffect(() => {
+    fetchPrivateBalances();
+  }, [privateWallet]);
+
   return (
     <div className="w-96 bg-fourth -mx-6 -my-6 rounded-lg pt-4 pb-2">
-      <div className="text-white text-lg pl-8 pt-1">Select a Token</div>
+      <div className="text-white unselectable-text text-lg pl-8 pt-1">Select a Token</div>
       <div className="w-58 p-2 pl-2 mt-3 mx-8 rounded-md border border-white border-opacity-20 flex items-center text-secondary bg-secondary">
         <span>
           <FontAwesomeIcon icon={faSearch} />
@@ -61,13 +81,15 @@ const AssetSelectModal = ({ assetTypeOptions, setSelectedAssetType, hideModal })
         </span>
       </div>
       <div className="mt-1 ml-2 overflow-y-auto h-64">
-        {filteredOptions.map((option, i) => {
+        {options.map((option, i) => {
           return <AssetTypeOption
-            key={option.assetId}
+            key={option.assetType.assetId}
             hideModal={hideModal}
             setSelectedAssetType={setSelectedAssetType}
             index={i}
-            option={option}/>;
+            assetType={option.assetType}
+            balance={option.balance}
+          />;
         })}
       </div>
     </div>
@@ -76,8 +98,9 @@ const AssetSelectModal = ({ assetTypeOptions, setSelectedAssetType, hideModal })
 
 const AssetTypeSelectButton = ({
   assetType,
-  assetTypeOptions,
+  balances,
   setSelectedAssetType,
+  senderAssetTypeOptions
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
@@ -117,8 +140,9 @@ const AssetTypeSelectButton = ({
         <AssetSelectModal
           showModal={showModal}
           hideModal={hideModal}
-          assetTypeOptions={assetTypeOptions}
+          balances={balances}
           setSelectedAssetType={setSelectedAssetType}
+          senderAssetTypeOptions={senderAssetTypeOptions}
         />
       </ModalWrapper>
     </div>
