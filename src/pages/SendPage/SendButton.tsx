@@ -68,7 +68,7 @@ const ValidationSendButton = ({ showModal }) => {
     receiverAddress,
     userCanPayFee,
     userHasSufficientFunds,
-    receiverAssetType,
+    isValidToSend,
     receiverAmountIsOverExistentialBalance,
     senderAssetType,
     senderAssetTargetBalance,
@@ -196,7 +196,8 @@ const ValidationSendButton = ({ showModal }) => {
           <button
             onClick={() => showModal()}
             className={classNames(
-              'gradient-button py-2 unselectable-text text-center text-white rounded-lg w-full'
+              'gradient-button py-2 unselectable-text text-center text-white rounded-lg w-full',
+              {'filter brightness-50 cursor-not-allowed': !isValidToSend()}
             )}>
             Connect Wallet and Signer
           </button>
