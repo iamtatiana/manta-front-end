@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import SendBalanceInput from 'pages/SendPage/SendBalanceInput';
-import AssetTypeSelect from 'components/Assets/AssetTypeSelect';
+import AssetTypeSelectButton from 'components/Assets/AssetTypeSelectButton';
 import { useSend } from '../SendContext';
 
 const SendAssetSelect = () => {
@@ -13,7 +13,7 @@ const SendAssetSelect = () => {
 
   return (
     <div className="w-100 relative">
-      <AssetTypeSelect
+      <AssetTypeSelectButton
         assetType={senderAssetType}
         assetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}

@@ -56,6 +56,8 @@ import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-a
 import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
 import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
 import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
+import { ReactComponent as assetSelector } from 'resources/icons/asset-selector.svg';
+
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -172,6 +174,7 @@ const icons = {
   cancel,
   heart,
   upDownArrow,
+  assetSelector,
   txSuccess,
   txFailed,
   txPending,
