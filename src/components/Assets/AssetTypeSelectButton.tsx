@@ -25,14 +25,14 @@ const AssetTypeOption = ({index, hideModal, setSelectedAssetType, balance, asset
             <Icon className="ml-5 w-8 rounded-full" name={assetType.icon} />
             <div className="p-2 pl-3">
               <div className="text-sm block text-white">
-                <p className="text-white text-lg unselectable-text">{assetType.ticker}</p>
+                <p className="text-white text-md unselectable-text">{assetType.ticker}</p>
               </div>
               <div className="text-xs block text-white unselectable-text text-opacity-60">
                 {assetType.name}
               </div>
             </div>
           </div>
-          <div className="text-white text-md font-red-hat-mono pr-7">{balance?.toString()}</div>
+          <div className="text-white text-sm font-red-hat-mono pr-7">{balance?.toString()}</div>
         </div>
       </div>
     </div>
@@ -51,9 +51,7 @@ const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideMo
     );
   });
 
-  const filteredBlances = filteredAssetTypes.map((option) => {
-    return balances.find((balance) => balance?.assetType.assetId === option.assetId) || null;
-  });
+  const filteredBlances = filteredAssetTypes.map((option) => balances[option.assetId]);
 
   const options = filteredAssetTypes.map((assetType, i) => {
     return {

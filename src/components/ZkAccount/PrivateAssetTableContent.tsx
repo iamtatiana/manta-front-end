@@ -1,22 +1,22 @@
 import {
   useZkAccountBalances,
-  ZkAccountBalance
+  ZkAccount
 } from 'contexts/zkAccountBalancesContext';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import PrivateAssetItem from './PrivateAssetItem';
 
 const PrivateAssetTableContent = () => {
-  const { balances } = useZkAccountBalances();
+  const { zkAccounts } = useZkAccountBalances();
   const { balancesAreStaleRef, isInitialSync } = usePrivateWallet();
-  const nonzeroBalances = balances?.filter(
-    (balance: ZkAccountBalance) => balance && !balance.privateBalance.isZero()
+  const nonzeroAccounts = zkAccounts?.filter(
+    (account: ZkAccount) => account && !account.privateBalance.isZero()
   );
 
-  if (nonzeroBalances?.length) {
+  if (nonzeroAccounts?.length) {
     return (
       <div className="divide-y divide-dashed divide-manta-gray-secondary">
-        {nonzeroBalances.map((balance: ZkAccountBalance) => (
-          <PrivateAssetItem balance={balance} key={balance.assetType.assetId} />
+        {nonzeroAccounts.map((zkAccount: ZkAccount) => (
+          <PrivateAssetItem zkAccount={zkAccount} key={zkAccount.assetType.assetId} />
         ))}
       </div>
     );

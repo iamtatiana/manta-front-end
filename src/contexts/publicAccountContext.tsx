@@ -9,9 +9,9 @@ import {
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
 import Version from 'types/Version';
+import { useActive } from 'hooks/useActive';
 import { useKeyring } from './keyringContext';
 import { useSubstrate } from './substrateContext';
-import { useActive } from 'hooks/useActive';
 
 const PublicAccountContext = createContext();
 

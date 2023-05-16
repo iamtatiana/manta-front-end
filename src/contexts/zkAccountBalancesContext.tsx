@@ -4,7 +4,7 @@ import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useUsdPrices } from 'contexts/usdPricesContext';
 import Decimal from 'decimal.js';
 import PropTypes from 'prop-types';
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Usd from 'types/Usd';
@@ -14,7 +14,7 @@ import { useGlobal } from './globalContexts';
 
 const ZkAccountBalancesContext = createContext();
 
-export type ZkAccountBalance = {
+export type ZkAccount = {
   assetType: AssetType;
   usdBalance: Usd | null;
   usdBalanceString: string;
@@ -29,16 +29,34 @@ export const ZkAccountBalancesContextProvider = (props) => {
 
   const assets = AssetType.AllCurrencies(config, true);
   const [totalBalanceString, setTotalBalanceString] = useState('$0.00');
-  const [balances, setBalances] = useState([]);
   const { usingMantaWallet } = useGlobal();
   const isActive = useActive();
 
+  const [zkAccountsById, setZkAccountsById] = useState({});
+
+  const zkAccounts = useMemo(() => {
+    return Object.values(zkAccountsById);
+  }, [zkAccountsById]);
+
+  const zkBalancesById = useMemo(() => {
+    return Object.values(zkAccountsById).reduce((acc, balance) => {
+      return {
+        ...acc,
+        [balance.assetType.assetId]: balance.privateBalance
+      };
+    }, {});
+  }, [zkAccountsById]);
+
+  const zkBalances = useMemo(() => {
+    return Object.values(zkBalancesById);
+  }, [zkBalancesById]);
+
   useEffect(() => {
-    const clearBalancesOnSwitchMode = () => {
-      setBalances([]);
+    const clearAccountsOnSwitchMode = () => {
+      setZkAccountsById({});
       setTotalBalanceString('$0.00');
     };
-    clearBalancesOnSwitchMode();
+    clearAccountsOnSwitchMode();
   }, [usingMantaWallet]);
 
   const fetchPrivateBalanceMantaSigner = async (assetType) => {
@@ -71,7 +89,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
     const assets = AssetType.AllCurrencies(config, true);
     const assetIds = assets.map(asset => asset.assetId.toString());
     const balancesRaw = await privateWallet.getMultiZkBalance({assetIds: assetIds, network });
-    const balances = [];
+    const accounts = {};
     for (let i = 0; i < balancesRaw.length; i++) {
       const balance = new Balance(assets[i], new BN(balancesRaw[i]));
       const zkAccountBalance = {
@@ -80,22 +98,22 @@ export const ZkAccountBalancesContextProvider = (props) => {
         usdBalanceString: '',
         privateBalance: balance
       };
-      balances.push(zkAccountBalance);
+      accounts[assets[i].assetId] = zkAccountBalance;
     }
-    setBalances(balances);
+    setZkAccountsById(accounts);
     // Not tracked in Manta Wallet mode
     setTotalBalanceString('$0.00');
   };
 
   const fetchPrivateBalancesMantaSigner = async () => {
     const totalUsd = new Usd(new Decimal(0));
-    const updatedBalances = [];
+    const accounts = {};
     for (let i = 0; i < assets.length; i++) {
       const balance = await fetchPrivateBalanceMantaSigner(assets[i]);
-      updatedBalances.push(balance);
+      accounts[balance.assetType.assetId] = balance;
       balance?.usdBalance?.value && totalUsd.add(balance.usdBalance);
     }
-    setBalances(updatedBalances);
+    setZkAccountsById(accounts);
     setTotalBalanceString(totalUsd.toString());
   };
 
@@ -122,7 +140,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
   useEffect(() => {
     const clearBalancesOnDeleteZkAccount = () => {
       if (!privateAddress) {
-        setBalances([]);
+        setZkAccountsById({});
         setTotalBalanceString('$0.00');
       }
     };
@@ -130,7 +148,10 @@ export const ZkAccountBalancesContextProvider = (props) => {
   }, [privateAddress]);
 
   const value = {
-    balances,
+    zkBalances,
+    zkAccounts,
+    zkAccountsById,
+    zkBalancesById,
     totalBalanceString,
     fetchPrivateBalances
   };

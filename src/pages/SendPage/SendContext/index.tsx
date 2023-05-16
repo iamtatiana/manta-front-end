@@ -17,6 +17,7 @@ import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 import TxStatus from 'types/TxStatus';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
+import { usePublicBalances } from 'contexts/publicBalancesContext';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
@@ -28,6 +29,7 @@ export const SendContextProvider = (props) => {
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
   const { externalAccount, externalAccountSigner } = usePublicAccount();
+  const { publicBalancesById } = usePublicBalances();
   const privateWallet = usePrivateWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
@@ -191,67 +193,43 @@ export const SendContextProvider = (props) => {
     });
   };
 
-  // Gets available public balance for some public address and asset type
-  const fetchPublicBalance = async (address, assetType) => {
-    if (!api?.isConnected || !address || !assetType) {
-      return null;
-    }
-    try {
-      if (assetType.isNativeToken) {
-        const raw = await api.query.system.account(address);
-        const total = new Balance(assetType, new BN(raw.data.free.toString()));
-        const staked = new Balance(
-          assetType,
-          new BN(raw.data.miscFrozen.toString())
-        );
-        return total.sub(staked);
-      } else {
-        const assetBalance = await api.query.assets.account(
-          assetType.assetId,
-          address
-        );
-        if (assetBalance.value.isEmpty) {
-          return new Balance(assetType, new BN(0));
-        } else {
-          return new Balance(
-            assetType,
-            new BN(assetBalance.value.balance.toString())
-          );
-        }
+  // Handle changes to user public balances from upstream source of truth in `publicBalancesContext`
+  useEffect(() => {
+    const handleUpdateNativeToken = () => {
+      const nativeToken = AssetType.Native(config);
+      const nativeTokenPublicBalance = publicBalancesById?.[nativeToken.assetId] || null;
+      setSenderNativeTokenPublicBalance(nativeTokenPublicBalance);
+    };
+
+    const handleUpdateSenderPublicBalance = () => {
+      if (!externalAccount?.address || !senderAssetType || senderAssetType.isPrivate) {
+        return;
       }
-    } catch (e) {
-      console.error('Failed to fetch public balance', e);
-      return null;
-    }
-  };
-
-  // Gets available native public balance for some public address;
-  // This is currently a special case because querying native token balnces
-  // requires a different api call
-  const fetchNativeTokenPublicBalance = async (address) => {
-    if (!api?.isConnected || !address) {
-      return null;
-    }
-    const balance = await api.query.system.account(address);
-    return Balance.Native(config, new BN(balance.data.free.toString()));
-  };
-
-  // Gets the available balance for the currently selected sender account, whether public or private
-  const fetchSenderBalance = async () => {
-    if (!senderAssetType.isPrivate) {
-      const publicBalance = await fetchPublicBalance(
-        senderPublicAccount?.address,
-        senderAssetType
+      const senderPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
+      setSenderAssetCurrentBalance(
+        senderPublicBalance, externalAccount.address, senderAssetType
       );
-      publicBalance &&
-        setSenderAssetCurrentBalance(
-          publicBalance,
-          senderPublicAccount?.address,
-          senderAssetType
-        );
-      // private balances cannot be queries while a transaction is processing
-      // because web assambly wallet panics if asked to do two things at a time
-    } else if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
+    };
+
+    const handleUpdateReceiverPublicBalance = () => {
+      if (!isToPublic() || !receiverAddress || !receiverAssetType) {
+        return;
+      }
+      const receiverPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
+      setReceiverCurrentBalance(receiverPublicBalance, receiverAssetType);
+    };
+
+    handleUpdateNativeToken();
+    handleUpdateSenderPublicBalance();
+    handleUpdateReceiverPublicBalance();
+
+  }, [
+    publicBalancesById, externalAccount?.address, senderAssetType, receiverAddress, receiverAssetType
+  ]);
+
+  // Gets the available balance for the currently selected sender private account
+  const fetchSenderPrivateBalance = async () => {
+    if (senderAssetType.isPrivate && !txStatus?.isProcessing()) {
       const privateBalance = await privateWallet.getSpendableBalance(
         senderAssetType
       );
@@ -264,10 +242,9 @@ export const SendContextProvider = (props) => {
     }
   };
 
-  // Gets the available balance for the currently selected sender account, whether public or private
-  // if the user would be sending a payment internally i.e. if the user is sending a `To Private` or `To Public` transaction
-  const fetchReceiverBalance = async () => {
-    // Send pay doesn't display receiver balances if the receiver is external
+  // Gets the available balance for the currently selected receiver private account
+  const fetchReceiverPrivateBalance = async () => {
+    // Send page doesn't display receiver balances if the receiver is external
     if (isPrivateTransfer()) {
       setReceiverCurrentBalance(null, receiverAssetType);
       // private balances cannot be queried while a transaction is processing
@@ -278,30 +255,12 @@ export const SendContextProvider = (props) => {
       );
       privateBalance &&
         setReceiverCurrentBalance(privateBalance, receiverAssetType);
-    } else if (receiverIsPublic()) {
-      const publicBalance = await fetchPublicBalance(
-        receiverAddress,
-        receiverAssetType
-      );
-      publicBalance &&
-        setReceiverCurrentBalance(publicBalance, receiverAssetType);
     }
-  };
-
-  // Gets the available public balance for the user's public account set to pay transaction fee
-  const fetchFeeBalance = async () => {
-    if (!api?.isConnected || !externalAccount) {
-      return;
-    }
-    const address = externalAccount.address;
-    const balance = await fetchNativeTokenPublicBalance(address);
-    setSenderNativeTokenPublicBalance(balance, address);
   };
 
   const fetchZkBalances = async () => {
-    await fetchFeeBalance();
-    await fetchSenderBalance();
-    await fetchReceiverBalance();
+    await fetchSenderPrivateBalance();
+    await fetchReceiverPrivateBalance();
   };
 
   useEffect(() => {
@@ -682,6 +641,7 @@ export const SendContextProvider = (props) => {
     isToPublic,
     senderIsPrivate,
     receiverIsPrivate,
+    receiverIsPublic,
     senderIsPublic,
     ...state
   };

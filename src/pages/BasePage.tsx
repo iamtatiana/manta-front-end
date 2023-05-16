@@ -23,6 +23,7 @@ import {
   showWarning
 } from 'utils/ui/Notifications';
 import { useGlobal } from 'contexts/globalContexts';
+import { PublicBalancesContextProvider } from 'contexts/publicBalancesContext';
 
 const TxStatusHandler = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -53,9 +54,11 @@ const BasePage = ({ children }) => {
     <TxStatusContextProvider>
       <SubstrateContextProvider>
         <PublicAccountContextProvider>
-          <DeveloperConsole />
-          <TxStatusHandler />
-          {children}
+          <PublicBalancesContextProvider>
+            <DeveloperConsole />
+            <TxStatusHandler />
+            {children}
+          </PublicBalancesContextProvider>
         </PublicAccountContextProvider>
       </SubstrateContextProvider>
     </TxStatusContextProvider>
