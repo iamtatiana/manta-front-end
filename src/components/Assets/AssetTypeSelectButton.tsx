@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useState } from 'react';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
@@ -8,8 +7,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { useZkAccountBalances } from 'contexts/zkAccountBalancesContext';
+import Balance from 'types/Balance';
+import AssetType from 'types/AssetType';
 
-const AssetTypeOption = ({index, hideModal, setSelectedAssetType, balance, assetType}) => {
+const AssetTypeOption = (
+  {
+    index,
+    hideModal,
+    setSelectedAssetType,
+    balance,
+    assetType
+  }: {
+    index: number;
+    hideModal: () => void;
+    setSelectedAssetType: (_: AssetType) => void;
+    balance: Balance | null;
+    assetType: AssetType;
+  }) => {
   const onClick = () => {
     setSelectedAssetType(assetType);
     hideModal();
@@ -39,7 +53,18 @@ const AssetTypeOption = ({index, hideModal, setSelectedAssetType, balance, asset
   );
 };
 
-const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideModal, balances }) => {
+const AssetSelectModal = (
+  {
+    setSelectedAssetType,
+    senderAssetTypeOptions,
+    hideModal,
+    balances
+  }: {
+    setSelectedAssetType: (_: AssetType) => void;
+    senderAssetTypeOptions: AssetType[];
+    hideModal: () => void;
+    balances: Record<string, Balance>;
+  }) => {
   const [filterText, setFilterText] = useState('');
   const { privateWallet } = usePrivateWallet();
   const { fetchPrivateBalances } = useZkAccountBalances();
@@ -51,7 +76,7 @@ const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideMo
     );
   });
 
-  const filteredBlances = filteredAssetTypes.map((option) => balances[option.assetId]);
+  const filteredBlances = filteredAssetTypes.map((option) => balances ? balances[option.assetId] : null);
 
   const options = filteredAssetTypes.map((assetType, i) => {
     return {
@@ -65,21 +90,24 @@ const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideMo
   }, [privateWallet]);
 
   return (
-    <div className="w-96 bg-fourth -mx-6 -my-6 rounded-lg pt-4 pb-2">
+    <div className="w-96 bg-fourth -mx-6 -my-6 rounded-xl pt-4 pb-2">
       <div className="text-white unselectable-text text-lg pl-8 pt-1">Select a Token</div>
-      <div className="w-58 p-2 pl-2 mt-3 mx-8 rounded-md border border-white border-opacity-20 flex items-center text-secondary bg-secondary">
-        <span>
+      <div className={classNames(
+        'w-58 p-2 pl-2 mt-3 mx-8 rounded-md border border-white border-opacity-20',
+        'flex items-center text-secondary bg-secondary'
+      )}>
+        <div className="flex inline">
           <FontAwesomeIcon icon={faSearch} />
           <input
-            className="pl-2 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
+            className="pl-2 w-64 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
             placeholder="Search Name"
             onChange={(e) => setFilterText(e.target.value)}
             value={filterText}
           />
-        </span>
+        </div>
       </div>
       <div className="mt-1 ml-2 overflow-y-auto h-64">
-        {options.map((option, i) => {
+        {options.length ? options.map((option, i) => {
           return <AssetTypeOption
             key={option.assetType.assetId}
             hideModal={hideModal}
@@ -88,7 +116,8 @@ const AssetSelectModal = ({ setSelectedAssetType, senderAssetTypeOptions, hideMo
             assetType={option.assetType}
             balance={option.balance}
           />;
-        })}
+        }) : <div className="text-manta-gray text-sm text-center mt-4">No results found.</div>}
+        {}
       </div>
     </div>
   );
@@ -99,9 +128,14 @@ const AssetTypeSelectButton = ({
   balances,
   setSelectedAssetType,
   senderAssetTypeOptions
+}: {
+  assetType: AssetType | null;
+  balances: Record<string, Balance>;
+  setSelectedAssetType: (_: AssetType) => void;
+  senderAssetTypeOptions: AssetType[];
 }) => {
   const { txStatus } = useTxStatus();
-  const disabled = txStatus?.isProcessing();
+  const disabled = txStatus?.isProcessing() || !senderAssetTypeOptions || !assetType;
   const { ModalWrapper, showModal, hideModal } = useModal();
   const onClick = () => {
     if (disabled) {
@@ -136,7 +170,6 @@ const AssetTypeSelectButton = ({
       </div>
       <ModalWrapper>
         <AssetSelectModal
-          showModal={showModal}
           hideModal={hideModal}
           balances={balances}
           setSelectedAssetType={setSelectedAssetType}

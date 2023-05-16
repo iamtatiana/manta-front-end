@@ -172,6 +172,12 @@ export const BridgeDataContextProvider = (props) => {
    *
    */
 
+  const waitForTxFinished = async () => {
+    while (txStatusRef.current?.isProcessing()) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  };
+
   const subscribeSenderBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
       senderAssetType.logicalTicker, originAddress
