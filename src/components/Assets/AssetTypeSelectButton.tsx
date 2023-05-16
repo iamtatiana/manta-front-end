@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTxStatus } from 'contexts/txStatusContext';
 import classNames from 'classnames';
-import Icon from 'components/Icon';
+import Icon, { IconName } from 'components/Icon';
 import { useModal } from 'hooks';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from '@fortawesome/free-solid-svg-icons';
@@ -36,7 +36,7 @@ const AssetTypeOption = (
           id={assetType.ticker}
           className="flex justify-between items-center inline w-full">
           <div className="flex inline">
-            <Icon className="ml-5 w-8 rounded-full" name={assetType.icon} />
+            <Icon className="ml-5 w-8 rounded-full" name={assetType.icon as IconName} />
             <div className="p-2 pl-3">
               <div className="text-sm block text-white">
                 <p className="text-white text-md unselectable-text">{assetType.ticker}</p>
@@ -157,7 +157,7 @@ const AssetTypeSelectButton = ({
         <div>
           <Icon
             className="w-6 h-6 rounded-full"
-            name={assetType?.icon}
+            name={assetType?.icon as IconName}
           />
         </div>
         <div className="text-black dark:text-white place-self-center">
