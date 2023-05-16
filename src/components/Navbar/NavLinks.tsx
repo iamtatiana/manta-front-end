@@ -2,6 +2,7 @@ import classNames from 'classnames';
 import { dolphinConfig } from 'config';
 import { useConfig } from 'contexts/configContext';
 import { NavLink } from 'react-router-dom';
+import NavNPO from './NavNPO';
 
 const NAVLINKPATH = {
   Transact: '/transact',
@@ -24,13 +25,16 @@ const NavLinks = () => {
     NAVLINKPATH.Stake
   );
   return (
-    <div className="ml-5 flex flex-row justify-between w-118 shadow-2xl items-center text-sm font-red-hat-text">
+    <div
+      className={`ml-5 flex flex-row justify-between ${
+        isDolphinPage ? 'w-96' : 'w-128'
+      }  shadow-2xl items-center text-sm font-red-hat-text`}>
       <NavLink
         to={`${networkUrlParam}${NAVLINKPATH.Transact}`}
         className={classNames(
-          'py-3 w-1/3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
+          'py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100',
           {
-            ' text-white text-opacity-100 font-bold': isActiveTransactPage
+            ' text-white text-opacity-100': isActiveTransactPage
           }
         )}>
         MantaPay
@@ -38,30 +42,22 @@ const NavLinks = () => {
       <NavLink
         to={`${networkUrlParam}${NAVLINKPATH.Bridge}`}
         className={classNames(
-          'pl-3 py-3 w-1/3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
+          'py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100',
           {
-            'text-white text-opacity-100 font-bold': isActiveBridgePage
+            'text-white text-opacity-100': isActiveBridgePage
           }
         )}>
         Bridge
       </NavLink>
-      {!isDolphinPage && (
-        <a
-          href="https://npo.manta.network"
-          className="py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
-          target="_blank"
-          rel="noreferrer">
-          NPO
-        </a>
-      )}
+      {!isDolphinPage && <NavNPO />}
 
       {!isDolphinPage && (
         <NavLink
           to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
           className={classNames(
-            'py-3 w-1/3  text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold',
+            'py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100',
             {
-              ' text-white text-opacity-100 font-bold': isActiveStakePage
+              ' text-white text-opacity-100': isActiveStakePage
             }
           )}>
           Staking
@@ -69,14 +65,14 @@ const NavLinks = () => {
       )}
       <a
         href="https://forum.manta.network/"
-        className="py-3 w-1/3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
+        className="py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100"
         target="_blank"
         rel="noreferrer">
         Govern
       </a>
       <a
         href={`https://${NETWORK_NAME.toLowerCase()}.subscan.io/`}
-        className="py-3 w-3/5 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100 hover:font-bold"
+        className="py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100"
         target="_blank"
         rel="noreferrer">
         Block Explorer
