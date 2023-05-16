@@ -11,10 +11,7 @@ const CalamariAssetIds = {
   KSM: 12,
   USDT: 14,
   DAI: 15,
-  USDC: 16,
-  // WBTC: 17, // todo: check this
-  // WETH: 18, // todo: check this
-
+  USDC: 16
 };
 
 const DolphinAssetIds = {
@@ -24,11 +21,7 @@ const DolphinAssetIds = {
   LKSM: 10,
   MOVR: 11,
   KSM: 12,
-  USDT: 14, // todo: check this
-  DAI: 16, // todo: check this
-  USDC: 17, // todo: check this
-  // WBTC: 14, // todo: check this
-  // WETH: 15, // todo: check this
+  USDT: 14
 };
 
 const getAssetIds = (config) => {

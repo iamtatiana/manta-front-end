@@ -26,15 +26,15 @@ export const PublicBalancesContextProvider = (props) => {
   const { externalAccount } = usePublicAccount();
   const { txStatusRef } = useTxStatus();
 
+  const [publicBalancesById, setPublicBalancesById] = useState<
+  IPublicBalances | undefined
+  >();
+
   const waitForTxFinished = async () => {
     while (txStatusRef.current?.isProcessing()) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   };
-
-  const [publicBalancesById, setPublicBalancesById] = useState<
-    IPublicBalances | undefined
-  >();
 
   const subscribeBalanceChange = async (
     address: string,
