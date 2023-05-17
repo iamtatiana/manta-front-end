@@ -1,7 +1,8 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
+import { dummyPrivateTransfer, dummyToPrivate, dummyToPublic } from 'constants/DummyTransactions';
 import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
-import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -607,12 +608,38 @@ export const SendContextProvider = (props) => {
       receiverAddress
     );
     try {
+      console.log('tx', tx);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (e) {
       console.error('Failed to send transaction', e);
       setTxStatus(TxStatus.failed('Transaction declined'));
     }
   };
+
+  useEffect(() => {
+    const getFeeEstimate = async () => {
+      if (!api || !externalAccount) {
+        return;
+      }
+      let tx = null;
+      if (isPublicTransfer()) {
+        const dummyTxAddress = 'dmyHk98WvfPxoZhLH1HBe7si5AjaGgdSeYDcWDgYFExrxroMP';
+        tx = buildPublicTransfer(Balance.Native(config, new BN(1)), dummyTxAddress);
+      } else if (isToPrivate()) {
+        tx = api.tx(dummyToPrivate);
+      } else if (isPrivateTransfer()) {
+        tx = api.tx(dummyPrivateTransfer);
+      } else if (isToPublic()) {
+        tx = api.tx(dummyToPublic);
+      }
+      if (tx) {
+        const paymentInfo = await tx.paymentInfo(externalAccount);
+        const feeEstimate = Balance.Native(config, new BN(paymentInfo.partialFee.toString())).mul(1.2);
+        console.log('feeEstimate', feeEstimate);
+      }
+    };
+    getFeeEstimate();
+  }, [externalAccount, api, config, senderAssetType, receiverAssetType]);
 
   const isToPrivate = () => {
     return !senderAssetType?.isPrivate && receiverAssetType?.isPrivate;

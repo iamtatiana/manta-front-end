@@ -1,7 +1,7 @@
+import WALLET_NAME from 'constants/WalletConstants';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
-import WALLET_NAME from 'constants/WalletConstants';
 import {
   MutableRefObject,
   ReactNode,
@@ -193,6 +193,8 @@ export const MantaWalletContextProvider = ({
       await publishNextBatch();
     }
   };
+
+
 
   const publishNextBatch = async () => {
     const sendExternal = async () => {
