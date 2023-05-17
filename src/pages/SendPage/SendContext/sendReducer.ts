@@ -92,13 +92,12 @@ const getDefaultReceiver = (
   }
 };
 
-const balanceUpdateIsStale = (stateAssetType, updateAssetType, stateAddress, updateAddress) => {
+const balanceUpdateIsStale = (stateAssetType, updateAssetType) => {
   if (!updateAssetType) {
     return false;
   }
   if (stateAssetType.assetId === updateAssetType.assetId
     && stateAssetType.isPrivate === updateAssetType.isPrivate
-    && stateAddress === updateAddress
   ) {
     return false;
   }
@@ -221,12 +220,7 @@ const setSenderPublicAccount = (state, action) => {
 };
 
 const setSenderAssetCurrentBalance = (state, action) => {
-  const stateAddress = state.senderAssetType?.isPrivate
-    ? state.senderPrivateAddress
-    : state.senderPublicAccount?.address;
-  if (balanceUpdateIsStale(
-    state?.senderAssetType, action.senderAssetType, stateAddress, action.senderAddress)
-  ) {
+  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetType)) {
     return state;
   }
   return {
@@ -257,12 +251,7 @@ const setReceiver  = (state, action) => {
 };
 
 const setReceiverCurrentBalance = (state, action) => {
-  if (balanceUpdateIsStale(
-    state?.receiverAssetType,
-    action.receiverAssetType,
-    state.receiverAddress,
-    action.receiverAddress)
-  ) {
+  if (balanceUpdateIsStale(state?.receiverAssetType, action.receiverAssetType)) {
     return state;
   }
   return {
