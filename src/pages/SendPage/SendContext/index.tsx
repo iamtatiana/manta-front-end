@@ -160,12 +160,14 @@ export const SendContextProvider = (props) => {
   // i.e. if the user is sending a `To Private` or `To Public` transaction
   const setReceiverCurrentBalance = (
     receiverCurrentBalance,
-    receiverAssetType = null
+    receiverAssetType = null,
+    receiverAddress = null
   ) => {
     dispatch({
       type: SEND_ACTIONS.SET_RECEIVER_CURRENT_BALANCE,
       receiverCurrentBalance,
-      receiverAssetType
+      receiverAssetType,
+      receiverAddress
     });
   };
 
@@ -173,13 +175,15 @@ export const SendContextProvider = (props) => {
   const setSenderAssetCurrentBalance = (
     senderAssetCurrentBalance,
     senderPublicAddress,
-    senderAssetType
+    senderAssetType,
+    senderAddress
   ) => {
     dispatch({
       type: SEND_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
       senderAssetCurrentBalance,
       senderPublicAddress,
-      senderAssetType
+      senderAssetType,
+      senderAddress
     });
   };
 
@@ -207,16 +211,19 @@ export const SendContextProvider = (props) => {
       }
       const senderPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
       setSenderAssetCurrentBalance(
-        senderPublicBalance, externalAccount.address, senderAssetType
+        senderPublicBalance, externalAccount.address, senderAssetType, externalAccount?.address
       );
     };
 
     const handleUpdateReceiverPublicBalance = () => {
-      if (!isToPublic() || !receiverAddress || !receiverAssetType) {
+      if (!receiverAddress || !receiverAssetType) {
         return;
+      } else if (isToPublic()) {
+        const receiverPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
+        setReceiverCurrentBalance(receiverPublicBalance, receiverAssetType, externalAccount?.address);
+      } else if (isPublicTransfer()) {
+        setReceiverCurrentBalance(null, receiverAssetType, receiverAddress);
       }
-      const receiverPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
-      setReceiverCurrentBalance(receiverPublicBalance, receiverAssetType);
     };
 
     handleUpdateNativeToken();
@@ -237,7 +244,8 @@ export const SendContextProvider = (props) => {
         setSenderAssetCurrentBalance(
           privateBalance,
           senderPublicAccount?.address,
-          senderAssetType
+          senderAssetType,
+          privateAddress
         );
     }
   };
@@ -246,7 +254,7 @@ export const SendContextProvider = (props) => {
   const fetchReceiverPrivateBalance = async () => {
     // Send page doesn't display receiver balances if the receiver is external
     if (isPrivateTransfer()) {
-      setReceiverCurrentBalance(null, receiverAssetType);
+      setReceiverCurrentBalance(null, receiverAssetType, receiverAddress);
       // private balances cannot be queried while a transaction is processing
       // because the private web assambly wallet panics if asked to do two things at a time
     } else if (isToPrivate() && !txStatus?.isProcessing()) {
@@ -254,7 +262,7 @@ export const SendContextProvider = (props) => {
         receiverAssetType
       );
       privateBalance &&
-        setReceiverCurrentBalance(privateBalance, receiverAssetType);
+        setReceiverCurrentBalance(privateBalance, receiverAssetType, privateAddress);
     }
   };
 
