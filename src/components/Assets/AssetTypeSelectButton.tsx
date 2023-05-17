@@ -97,9 +97,9 @@ const AssetSelectModal = (
         'flex items-center text-secondary bg-secondary'
       )}>
         <div className="flex inline">
-          <FontAwesomeIcon icon={faSearch} />
+          <FontAwesomeIcon icon={faSearch} className="pl-2 pt-0.75"/>
           <input
-            className="pl-2 w-64 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
+            className="pl-4 w-64 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
             placeholder="Search Name"
             onChange={(e) => setFilterText(e.target.value)}
             value={filterText}
