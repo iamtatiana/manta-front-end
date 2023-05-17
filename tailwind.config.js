@@ -82,7 +82,8 @@ module.exports = {
         'light-warning': '#FF8A0020',
         'dropdown-hover': '#00AFA580',
         'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
-        'green-light-half': 'rgba(41, 204, 185, 0.5)'
+        'green-light-half': 'rgba(41, 204, 185, 0.5)',
+        nav: 'var(--color-bg-nav)'
       },
       textColor: {
         accent: 'var(--color-text-accent)',
@@ -128,7 +129,8 @@ module.exports = {
     extend: {
       fill: ['group-hover', 'active', 'hover'],
       textColor: ['active'],
-      fontWeight: ['hover']
+      fontWeight: ['hover'],
+      display: ['group-hover']
     }
   },
   plugins: []
