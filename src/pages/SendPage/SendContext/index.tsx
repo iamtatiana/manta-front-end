@@ -202,6 +202,10 @@ export const SendContextProvider = (props) => {
     };
 
     const handleUpdateSenderPublicBalance = () => {
+      console.log('handleUpdateSenderPublicBalance',
+        senderPublicAccount?.address,
+        externalAccount?.address,
+        senderAssetType);
       if (
         !senderPublicAccount?.address
         || !senderAssetType
@@ -211,6 +215,7 @@ export const SendContextProvider = (props) => {
         return;
       }
       const senderPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
+      console.log('senderPublicBalance', senderPublicBalance);
       setSenderAssetCurrentBalance(
         senderPublicBalance, senderPublicAccount.address, senderAssetType
       );
