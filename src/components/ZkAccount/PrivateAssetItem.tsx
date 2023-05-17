@@ -1,22 +1,22 @@
 import Icon, { IconName } from 'components/Icon';
-import { ZkAccount } from 'contexts/zkAccountBalancesContext';
+import { ZkAccountBalance } from 'contexts/zkAccountBalancesContext';
 import { Tooltip } from 'element-react';
 import { useEllipsis } from 'hooks';
 import React, { useRef } from 'react';
 
 type PrivateAssetItemProps = {
-  zkAccount: ZkAccount;
+  balance: ZkAccountBalance;
   key: number;
 };
 
 
-const PrivateAssetItem = ({ zkAccount }: PrivateAssetItemProps) => {
+const PrivateAssetItem = ({ balance }: PrivateAssetItemProps) => {
   const privateBalanceRef = useRef(null);
   const isEllipsis = useEllipsis(privateBalanceRef);
 
   const tip = (
     <div className="zkAddressTooltip">
-      {zkAccount.privateBalance.toStringUnrounded()}
+      {balance.privateBalance.toStringUnrounded()}
     </div>
   );
 
@@ -25,10 +25,10 @@ const PrivateAssetItem = ({ zkAccount }: PrivateAssetItemProps) => {
       <div className="flex gap-3 items-center">
         <Icon
           className={'rounded-full w-8 h-8'}
-          name={zkAccount.assetType.icon as IconName}
+          name={balance.assetType.icon as IconName}
         />
         <div className="overflow-hidden zkAddressTooltipWrapper">
-          <div className="text-white">{zkAccount.assetType.ticker}</div>
+          <div className="text-white">{balance.assetType.ticker}</div>
           <Tooltip
             visibleArrow={false}
             content={isEllipsis ? tip : ''}
@@ -36,12 +36,12 @@ const PrivateAssetItem = ({ zkAccount }: PrivateAssetItemProps) => {
             <div
               ref={privateBalanceRef}
               className="text-secondary overflow-hidden overflow-ellipsis">
-              {zkAccount.privateBalance.toStringUnrounded()}
+              {balance.privateBalance.toStringUnrounded()}
             </div>
           </Tooltip>
         </div>
       </div>
-      <div className="text-white">{zkAccount.usdBalanceString}</div>
+      <div className="text-white">{balance.usdBalanceString}</div>
     </div>
   );
 };

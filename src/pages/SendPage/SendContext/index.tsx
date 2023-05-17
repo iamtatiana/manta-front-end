@@ -10,7 +10,7 @@ import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useActive } from 'hooks/useActive';
 import PropTypes from 'prop-types';
-import React, { useContext, useEffect, useReducer } from 'react';
+import React, { useContext, useEffect, useReducer, useState } from 'react';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
@@ -32,6 +32,7 @@ export const SendContextProvider = (props) => {
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const isActive = useActive();
+  const [publicBalances, setPublicBalances] = useState(null);
   const {
     senderAssetType,
     senderAssetCurrentBalance,
@@ -41,6 +42,8 @@ export const SendContextProvider = (props) => {
     receiverAssetType,
     receiverAddress
   } = state;
+
+  console.log('senderPublicAccount', senderPublicAccount);
 
   /**
    * Initialization logic
@@ -226,6 +229,22 @@ export const SendContextProvider = (props) => {
       return null;
     }
   };
+
+  const fetchPublicBalances = async () => {
+    const balances = [];
+    const assetTypes = AssetType.AllCurrencies(config, false);
+    for (const assetType of assetTypes) {
+      const balance = await fetchPublicBalance(senderPublicAccount?.address, assetType);
+      console.log('!!!', senderPublicAccount, assetType, balance?.toString());
+      balance && balances.push(balance);
+    }
+    console.log('fetchPublicBalances', balances);
+    setPublicBalances(balances);
+  };
+
+  useEffect(() => {
+    fetchPublicBalances();
+  }, [senderPublicAccount, txStatus, api?.isConnected]);
 
   // Gets available native public balance for some public address;
   // This is currently a special case because querying native token balnces
@@ -691,6 +710,8 @@ export const SendContextProvider = (props) => {
     senderIsPrivate,
     receiverIsPrivate,
     senderIsPublic,
+    publicBalances,
+    fetchPublicBalances,
     ...state
   };
 
