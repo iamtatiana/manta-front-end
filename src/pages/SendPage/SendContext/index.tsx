@@ -202,12 +202,17 @@ export const SendContextProvider = (props) => {
     };
 
     const handleUpdateSenderPublicBalance = () => {
-      if (!externalAccount?.address || !senderAssetType || senderAssetType.isPrivate) {
+      if (
+        !senderPublicAccount?.address
+        || !senderAssetType
+        || senderAssetType.isPrivate
+        || !(externalAccount?.address === senderPublicAccount?.address))
+      {
         return;
       }
       const senderPublicBalance = publicBalancesById?.[senderAssetType.assetId] || null;
       setSenderAssetCurrentBalance(
-        senderPublicBalance, externalAccount.address, senderAssetType
+        senderPublicBalance, senderPublicAccount.address, senderAssetType
       );
     };
 
@@ -224,7 +229,7 @@ export const SendContextProvider = (props) => {
     handleUpdateReceiverPublicBalance();
 
   }, [
-    publicBalancesById, externalAccount?.address, senderAssetType, receiverAddress, receiverAssetType
+    publicBalancesById, senderPublicAccount?.address, externalAccount?.address, senderAssetType, receiverAddress, receiverAssetType
   ]);
 
   // Gets the available balance for the currently selected sender private account
@@ -268,7 +273,7 @@ export const SendContextProvider = (props) => {
       fetchZkBalances();
     }
   }, [
-    externalAccount,
+    senderPublicAccount,
     senderPublicAccount,
     senderAssetType?.ticker,
     receiverAssetType?.ticker,
@@ -284,7 +289,7 @@ export const SendContextProvider = (props) => {
       if (
         !isActive ||
         txStatus?.isProcessing() ||
-        !externalAccount ||
+        !senderPublicAccount ||
         !senderPublicAccount
       ) {
         return;
@@ -294,7 +299,7 @@ export const SendContextProvider = (props) => {
     return () => clearInterval(interval);
   }, [
     senderPublicAccount,
-    externalAccount,
+    senderPublicAccount,
     isActive,
     txStatus?.isProcessing()
   ]);
@@ -459,7 +464,7 @@ export const SendContextProvider = (props) => {
     if (status.isInBlock) {
       const extrinsic = await getExtrinsicGivenBlockHash(
         status.asInBlock,
-        externalAccount,
+        senderPublicAccount,
         api
       );
       for (const event of events) {
@@ -492,7 +497,7 @@ export const SendContextProvider = (props) => {
       // Don't show success if the tx was interrupted by disconnection
       const extrinsic = await getExtrinsicGivenBlockHash(
         status.asFinalized,
-        externalAccount,
+        senderPublicAccount,
         api
       );
       const extrinsicHash = extrinsic.hash.toHex();
