@@ -193,11 +193,13 @@ export const SendContextProvider = (props) => {
 
   // Gets available public balance for some public address and asset type
   const fetchPublicBalance = async (address, assetType) => {
+    console.log('fetchPublicBalance', address, assetType);
     if (!api?.isConnected || !address || !assetType) {
       return null;
     }
     try {
       if (assetType.isNativeToken) {
+        console.log('fetching native token');
         const raw = await api.query.system.account(address);
         const total = new Balance(assetType, new BN(raw.data.free.toString()));
         const staked = new Balance(
@@ -239,10 +241,12 @@ export const SendContextProvider = (props) => {
   // Gets the available balance for the currently selected sender account, whether public or private
   const fetchSenderBalance = async () => {
     if (!senderAssetType.isPrivate) {
+      console.log('fetchSenderBalance', senderPublicAccount?.address, senderAssetType);
       const publicBalance = await fetchPublicBalance(
         senderPublicAccount?.address,
         senderAssetType
       );
+      console.log('sender public Balance', publicBalance?.toString());
       publicBalance &&
         setSenderAssetCurrentBalance(
           publicBalance,
@@ -267,18 +271,22 @@ export const SendContextProvider = (props) => {
   // Gets the available balance for the currently selected sender account, whether public or private
   // if the user would be sending a payment internally i.e. if the user is sending a `To Private` or `To Public` transaction
   const fetchReceiverBalance = async () => {
+    console.log('fetchReceiverBalance', receiverAddress, receiverAssetType);
     // Send pay doesn't display receiver balances if the receiver is external
     if (isPrivateTransfer()) {
+      console.log('isPrivateTransfer');
       setReceiverCurrentBalance(null, receiverAssetType);
       // private balances cannot be queried while a transaction is processing
       // because the private web assambly wallet panics if asked to do two things at a time
     } else if (isToPrivate() && !txStatus?.isProcessing()) {
+      console.log('isToPrivate');
       const privateBalance = await privateWallet.getSpendableBalance(
         receiverAssetType
       );
       privateBalance &&
         setReceiverCurrentBalance(privateBalance, receiverAssetType);
     } else if (receiverIsPublic()) {
+      console.log('receiverIsPublic');
       const publicBalance = await fetchPublicBalance(
         receiverAddress,
         receiverAssetType
