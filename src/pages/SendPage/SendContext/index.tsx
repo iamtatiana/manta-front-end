@@ -41,7 +41,7 @@ export const SendContextProvider = (props) => {
     senderPublicAccount,
     receiverAssetType,
     receiverAddress,
-    receiverCurrentBalance
+    feeEstimate
   } = state;
 
   /**
@@ -369,16 +369,8 @@ export const SendContextProvider = (props) => {
   // native token, the transaction will fail.
   // Note that estimates are conservative (2x observed fees) and inexact
   const getReservedNativeTokenBalance = () => {
-    if (!senderNativeTokenPublicBalance) {
+    if (!senderNativeTokenPublicBalance || !feeEstimate) {
       return null;
-    }
-    let feeEstimate;
-    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
-    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
-      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
-    } else {
-      throw new Error('Unknown network');
     }
     const existentialDeposit = Balance.Native(
       config,
@@ -438,7 +430,7 @@ export const SendContextProvider = (props) => {
 
   // Checks if the user has enough native token to pay fees & publish a transaction
   const userCanPayFee = () => {
-    if (!senderNativeTokenPublicBalance || !senderAssetTargetBalance) {
+    if (!senderNativeTokenPublicBalance || !senderAssetTargetBalance || !feeEstimate) {
       return null;
     }
     let requiredNativeTokenBalance = getReservedNativeTokenBalance();
@@ -608,7 +600,6 @@ export const SendContextProvider = (props) => {
       receiverAddress
     );
     try {
-      console.log('tx', tx);
       await tx.signAndSend(externalAccountSigner, handleTxRes);
     } catch (e) {
       console.error('Failed to send transaction', e);
@@ -618,13 +609,13 @@ export const SendContextProvider = (props) => {
 
   useEffect(() => {
     const getFeeEstimate = async () => {
-      if (!api || !externalAccount) {
+      if (!api || !externalAccount || !senderAssetType || !receiverAssetType) {
         return;
       }
       let tx = null;
       if (isPublicTransfer()) {
         const dummyTxAddress = 'dmyHk98WvfPxoZhLH1HBe7si5AjaGgdSeYDcWDgYFExrxroMP';
-        tx = buildPublicTransfer(Balance.Native(config, new BN(1)), dummyTxAddress);
+        tx = await buildPublicTransfer(Balance.Native(config, new BN(1)), dummyTxAddress);
       } else if (isToPrivate()) {
         tx = api.tx(dummyToPrivate);
       } else if (isPrivateTransfer()) {
@@ -634,8 +625,13 @@ export const SendContextProvider = (props) => {
       }
       if (tx) {
         const paymentInfo = await tx.paymentInfo(externalAccount);
-        const feeEstimate = Balance.Native(config, new BN(paymentInfo.partialFee.toString())).mul(1.2);
-        console.log('feeEstimate', feeEstimate);
+        const feeEstimate = Balance.Native(config, new BN(paymentInfo.partialFee.toString()));
+        dispatch({
+          type: SEND_ACTIONS.SET_FEE_ESTIMATE,
+          feeEstimate,
+          senderAssetType,
+          receiverAssetType
+        });
       }
     };
     getFeeEstimate();
