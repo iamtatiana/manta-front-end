@@ -17,8 +17,6 @@ const CalamariAssetIds = {
   BUSD: 23,
   WBTC: 26,
   WETH: 27,
-
-
 };
 
 const DolphinAssetIds = {
@@ -28,11 +26,6 @@ const DolphinAssetIds = {
   LKSM: 10,
   MOVR: 11,
   KSM: 12,
-  // USDT: 14 // todo: check this
-  // DAI: 16, // todo: check this
-  // USDC: 17, // todo: check this
-  // WBTC: 14, // todo: check this
-  // WETH: 15, // todo: check this
 };
 
 const getAssetIds = (config) => {
@@ -191,14 +184,13 @@ export default class AssetType {
       'Wrapped Bitcoin',
       'WBTC',
       'bitcoin',
-      8, // pretty sure, check
-      new BN('1'), // not sure
+      8,
+      new BN('35'),
       isPrivate,
       'wrapped-bitcoin',
       config.IS_TESTNET,
       false,
-      null,
-      5
+      displayDecimals=5
     );
   }
 
@@ -208,58 +200,57 @@ export default class AssetType {
       'Wrapped Ethereum',
       'WETH',
       'ethereum',
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      18,
+      new BN('5555555555555'),
       isPrivate,
       'weth',
       config.IS_TESTNET,
       false,
       null,
-      4
+      displayDecimals=4
     );
   }
 
-
-  // todo: check all this
   static Arbitrum(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).ARB,
       'Arbitrum',
       'ARB',
       'arbitrum',
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      18,
+      new BN('9000000000000000'),
       isPrivate,
       'arb',
       config.IS_TESTNET,
     );
   }
-  // todo: check all this
+
   static BinanceCoin(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).BNB,
       'Binance Coin',
       'BNB',
       'bnb',
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      18,
+      new BN('40000000000000'),
       isPrivate,
       'weth',
       config.IS_TESTNET,
     );
   }
-  // todo: check all this
+
   static BinanceUsd(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).BUSD,
       'Binance USD',
       'BUSD',
       'busd',
-      18, // pretty sure, check
-      new BN('1'), // not sure
+      18,
+      new BN('10000000000000000'),
       isPrivate,
       'weth',
       config.IS_TESTNET,
+      displayDecimals=4
     );
   }
 
