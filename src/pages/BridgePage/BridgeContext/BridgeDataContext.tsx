@@ -216,7 +216,6 @@ export const BridgeDataContextProvider = (props) => {
       const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
         assetType.logicalTicker, originAddress
       );
-
       const balance = await firstValueFrom(balanceObserveable);
       return Balance.fromBaseUnits(assetType, balance.free);
     };

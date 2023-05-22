@@ -16,8 +16,7 @@ const CalamariAssetIds = {
   BNB: 21,
   BUSD: 23,
   WBTC: 26,
-  WETH: 27,
-
+  WETH: 27
 };
 
 const DolphinAssetIds = {

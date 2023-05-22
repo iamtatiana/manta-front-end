@@ -70,7 +70,6 @@ export const ZkAccountBalancesContextProvider = (props) => {
   const fetchPrivateBalancesMantaWallet = async () => {
     const assets = AssetType.AllCurrencies(config, true);
     const assetIds = assets.map(asset => asset.assetId.toString());
-    console.log('privateWallet', privateWallet);
     const balancesRaw = await privateWallet.getMultiZkBalance({assetIds: assetIds, network });
     const balances = [];
     for (let i = 0; i < balancesRaw.length; i++) {
