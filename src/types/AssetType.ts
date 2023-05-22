@@ -17,6 +17,7 @@ const CalamariAssetIds = {
   BUSD: 23,
   WBTC: 26,
   WETH: 27,
+
 };
 
 const DolphinAssetIds = {
@@ -190,7 +191,8 @@ export default class AssetType {
       'wrapped-bitcoin',
       config.IS_TESTNET,
       false,
-      displayDecimals=5
+      null,
+      5
     );
   }
 
@@ -207,7 +209,7 @@ export default class AssetType {
       config.IS_TESTNET,
       false,
       null,
-      displayDecimals=4
+      4
     );
   }
 
@@ -250,10 +252,11 @@ export default class AssetType {
       isPrivate,
       'weth',
       config.IS_TESTNET,
-      displayDecimals=4
+      false,
+      null,
+      4
     );
   }
-
 
   static Dai(config, isPrivate) {
     return new AssetType(

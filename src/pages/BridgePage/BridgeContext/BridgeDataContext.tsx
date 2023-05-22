@@ -213,13 +213,11 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     const fetchBalance = async (assetType) => {
-      console.log('!assetType', assetType);
       const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
         assetType.logicalTicker, originAddress
       );
 
       const balance = await firstValueFrom(balanceObserveable);
-      console.log('!balance', balance);
       return Balance.fromBaseUnits(assetType, balance.free);
     };
 
