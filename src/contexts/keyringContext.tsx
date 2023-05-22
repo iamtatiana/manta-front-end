@@ -27,6 +27,7 @@ import {
 } from 'utils/persistence/walletStorage';
 import isObjectEmpty from 'utils/validation/isEmpty';
 import { useActive } from 'hooks/useActive';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 type KeyringContextValue = {
   keyring: Keyring;
@@ -64,9 +65,6 @@ export const KeyringContextProvider = ({
 }) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState<string[]>([]);
-  const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
-    []
-  );
   const [selectedWallet, setSelectedWallet] = useState<Wallet>(
     getLastAccessedWallet()
   );
@@ -253,7 +251,8 @@ export const KeyringContextProvider = ({
   }, [selectedWallet, keyringAddresses]);
 
   const initKeyring = useCallback(async () => {
-    if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
+    try {
+      await cryptoWaitReady();
       const isCalamari = window?.location?.pathname?.includes('calamari');
       keyring.loadAll(
         {
@@ -262,29 +261,23 @@ export const KeyringContextProvider = ({
         []
       );
       setIsKeyringInit(true);
+    } catch (e: any) {
+      console.error('initKeyring', e.message);
     }
-  }, [isKeyringInit, web3ExtensionInjected.length]);
+  }, []);
 
-  const getWeb3ExtensionInjected = useCallback(async () => {
-    if (!isKeyringInit) {
-      if (
-        (window as any).injectedWeb3 &&
-        Object.getOwnPropertyNames((window as any).injectedWeb3).length !== 0
-      ) {
-        setWeb3ExtensionInjected(
-          Object.getOwnPropertyNames((window as any).injectedWeb3)
-        );
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!isKeyringInit) {
+        initKeyring();
+      } else {
+        clearInterval(timer);
       }
-    }
-  }, [isKeyringInit]);
-
-  useEffect(() => {
-    getWeb3ExtensionInjected();
-  }, [getWeb3ExtensionInjected]);
-
-  useEffect(() => {
-    initKeyring();
-  }, [initKeyring]);
+    }, 5000);
+    return () => {
+      clearInterval(timer);
+    };
+  }, [initKeyring, isKeyringInit]);
 
   /** Keyring Init Logic */
   useEffect(() => {
