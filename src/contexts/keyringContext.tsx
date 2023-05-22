@@ -273,7 +273,7 @@ export const KeyringContextProvider = ({
       } else {
         clearInterval(timer);
       }
-    }, 5000);
+    }, 500);
     return () => {
       clearInterval(timer);
     };
