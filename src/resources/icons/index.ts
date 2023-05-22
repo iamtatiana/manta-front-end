@@ -33,6 +33,7 @@ import { ReactComponent as swap } from 'resources/icons/sidebar/swap.svg';
 import { ReactComponent as transact } from 'resources/icons/sidebar/transact.svg';
 
 // widesite icons
+import { ReactComponent as warningV2 } from 'resources/icons/warningV2.svg';
 import { ReactComponent as token } from 'resources/icons/token-icon.svg';
 import { ReactComponent as deposit } from 'resources/icons/deposit-icon.svg';
 import { ReactComponent as rowDown } from 'resources/icons/rowdown-icon.svg';
@@ -59,6 +60,8 @@ import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-a
 import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
 import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
 import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
+import { ReactComponent as assetSelector } from 'resources/icons/asset-selector.svg';
+
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -178,6 +181,7 @@ const icons = {
   cancel,
   heart,
   upDownArrow,
+  assetSelector,
   txSuccess,
   txFailed,
   txPending,
@@ -191,6 +195,7 @@ const icons = {
   Medium,
   Docs,
   BugReport,
-  activityRightArrow
+  activityRightArrow,
+  warningV2
 };
 export default icons;

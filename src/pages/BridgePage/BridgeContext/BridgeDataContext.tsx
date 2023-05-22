@@ -30,6 +30,7 @@ export const BridgeDataContextProvider = (props) => {
   const {
     isApiInitialized,
     senderAssetType,
+    senderAssetTypeOptions,
     senderAssetTargetBalance,
     senderAssetCurrentBalance,
     originChainOptions,
@@ -52,8 +53,6 @@ export const BridgeDataContextProvider = (props) => {
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
-
-  console.log('senderAssetCurrentBalance', senderAssetCurrentBalance?.toStringUnrounded());
   /**
    *
    * Initialization logic
@@ -211,6 +210,42 @@ export const BridgeDataContextProvider = (props) => {
     });
     return unsub;
   };
+
+  useEffect(() => {
+    const fetchBalance = async (assetType) => {
+      console.log('!assetType', assetType);
+      const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
+        assetType.logicalTicker, originAddress
+      );
+
+      const balance = await firstValueFrom(balanceObserveable);
+      console.log('!balance', balance);
+      return Balance.fromBaseUnits(assetType, balance.free);
+    };
+
+    const fetchAllSenderAssetBalances = async () => {
+      if (
+        !originChain
+        || !originAddress
+        || !originApi
+        || !isApiInitialized
+        || !isActive
+      ) {
+        return;
+      }
+      const senderAssetBalances = [];
+      for (const assetTypeOption of senderAssetTypeOptions) {
+        const balance = await fetchBalance(assetTypeOption);
+        senderAssetBalances.push(balance);
+      }
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_BALANCES,
+        senderAssetBalances
+      });
+    };
+
+    fetchAllSenderAssetBalances();
+  }, [isActive, originChain, originAddress, originApi, isApiInitialized, senderAssetTypeOptions]);
 
   useEffect(() => {
     let nativeTokenUnsub = null;

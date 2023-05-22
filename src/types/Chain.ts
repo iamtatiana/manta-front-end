@@ -4,7 +4,7 @@ import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
 import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
 import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
-import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
+// import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -116,19 +116,19 @@ export default class Chain {
     );
   }
 
-  static Statemine(config) {
-    return new Chain(
-      'statemine',
-      'Statemine',
-      1000,
-      'statemine',
-      config.STATEMINE_SOCKET,
-      config.STATEMINE_SUBSCAN_URL,
-      [AssetType.Tether(config)],
-      AssetType.Kusama(config),
-      StatemineAdapter
-    );
-  }
+  // static Statemine(config) {
+  //   return new Chain(
+  //     'statemine',
+  //     'Statemine',
+  //     1000,
+  //     'statemine',
+  //     config.STATEMINE_SOCKET,
+  //     config.STATEMINE_SUBSCAN_URL,
+  //     [AssetType.Tether(config)],
+  //     AssetType.Kusama(config),
+  //     StatemineAdapter
+  //   );
+  // }
 
 
   static Karura(config) {
@@ -194,14 +194,15 @@ export default class Chain {
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config),
-        Chain.Statemine(config)
+        // Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
       return [
         Chain.DolphinSkinnedCalamari(config),
         Chain.Kusama(config),
-        Chain.Karura(config),
-        Chain.Moonriver(config)
+        // Chain.Karura(config),
+        Chain.Moonriver(config),
+        // Chain.Statemine(config)
       ];
     }
   }

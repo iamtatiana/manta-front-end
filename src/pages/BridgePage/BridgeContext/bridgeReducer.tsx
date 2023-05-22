@@ -73,6 +73,7 @@ export const buildInitState = (config) => {
     senderAssetTypeOptions: initSenderAssetTypeOptions,
     senderAssetCurrentBalance: null,
     senderAssetTargetBalance: null,
+    senderAssetBalances: [],
     maxInput: null,
     minInput: null,
     senderNativeAssetCurrentBalance: null,
@@ -125,6 +126,9 @@ const bridgeReducer = (state, action) => {
 
   case BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE:
     return setSenderNativeAssetCurrentBalance(state, action);
+
+  case BRIDGE_ACTIONS.SET_SENDER_ASSET_BALANCES:
+    return setSenderAssetBalances(state, action);
 
   default:
     throw new Error(`Unknown type: ${action.type}`);
@@ -253,6 +257,7 @@ const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnecte
     senderAssetTypeOptions,
     senderAssetTargetBalance,
     senderNativeAssetCurrentBalance: null,
+    senderAssetBalances: [],
     senderAssetCurrentBalance: null,
     originFee: null,
     destinationFee: null
@@ -305,6 +310,7 @@ const switchOriginAndDestination = (state, { isApiInitialized, isApiDisconnected
       destinationChainOptions: getDestinationChainOptions(newOriginChain, originChainOptions),
       senderAssetType: getNewSenderAssetType(senderAssetType, senderAssetTypeOptions),
       senderNativeAssetCurrentBalance: null,
+      senderAssetBalances: [],
       senderAssetCurrentBalance: null,
       originFee: null,
       destinationFee: null,
@@ -312,6 +318,13 @@ const switchOriginAndDestination = (state, { isApiInitialized, isApiDisconnected
     };
   }
   return state;
+};
+
+const setSenderAssetBalances = (state, { senderAssetBalances }) => {
+  return {
+    ...state,
+    senderAssetBalances
+  };
 };
 
 export default bridgeReducer;
