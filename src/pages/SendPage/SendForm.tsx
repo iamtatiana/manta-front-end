@@ -60,20 +60,22 @@ const SendForm = () => {
       {warningModal}
       <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2 pt-12">
         <div
-          className={classNames('w-113.5 px-12 py-6 bg-secondary rounded-xl', {
+          className={classNames('relative w-113.5 p-8 bg-secondary rounded-xl', {
             disabled: disabled
           })}>
-          <SendFromForm />
-          <div onClick={onClickSwapSenderReceiver}>
-            <Icon
-              className={classNames('mx-auto my-4 cursor-pointer w-6 h-6', {
-                disabled: disabled || disabledSwapSenderReceiver
-              })}
-              fill={disabledSwapSenderReceiver ? 'grey' : 'white'}
-              name="upDownArrow"
-            />
+          <SendFromForm/>
+          <div className="absolute top-33 left-51.5" onClick={onClickSwapSenderReceiver}>
+            <div className="p-2.5 swap-asset-icon" >
+              <Icon
+                className={classNames('cursor-pointer w-5 h-5', {
+                  disabled: disabled || disabledSwapSenderReceiver
+                })}
+                fill={disabledSwapSenderReceiver ? 'grey' : 'white'}
+                name="upDownArrow"
+              />
+            </div>
           </div>
-          <SendToForm />
+          <SendToForm/>
         </div>
         {!isDolphinPage && <SwitchMantaWalletAndSigner />}
       </div>

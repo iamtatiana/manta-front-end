@@ -59,3 +59,11 @@ input[type='radio']:checked + label span {
 input[type='radio']:checked + label {
   color: #3490dc; //text-blue
 }
+
+.swap-asset-icon {
+  border:1px solid rgba(255, 255, 255, 0.2);
+  background-color: #050D32;
+  border-radius:50%;
+  -moz-border-radius:50%;
+  -webkit-border-radius:50%;
+}

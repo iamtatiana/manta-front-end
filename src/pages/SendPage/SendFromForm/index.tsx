@@ -11,9 +11,9 @@ const SendFromForm = () => {
   } = useSend();
 
   return (
-    <div>
-      <div className="mb-4 items-stretch">
-        <div className="flex flex-row justify-between items-center">
+    <div className="manta-bg-gray rounded-md mb-0.5">
+      <div className="items-stretch">
+        <div className="flex flex-row px-4 pt-4 justify-between items-center">
           <div className="text-black dark:text-white">From</div>
           <PublicPrivateToggle
             onToggle={toggleSenderIsPrivate}

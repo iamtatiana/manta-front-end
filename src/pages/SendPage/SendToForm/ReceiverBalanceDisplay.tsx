@@ -34,7 +34,7 @@ const ReceiverBalanceDisplay = () => {
       </div>
       <BalanceDisplay
         balance={balanceText}
-        className="absolute text-white right-0 bottom-3 mr-6 mt-2.5 text-xs"
+        className="absolute text-white right-0 bottom-3 mr-6 mt-2.5 text-xss"
         loader={shouldShowLoader}
       />
     </div>
