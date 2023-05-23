@@ -66,7 +66,7 @@ const SendForm = () => {
           <SendFromForm />
           <div onClick={onClickSwapSenderReceiver}>
             <Icon
-              className={classNames('mx-auto my-4 cursor-pointer', {
+              className={classNames('mx-auto my-4 cursor-pointer w-6 h-6', {
                 disabled: disabled || disabledSwapSenderReceiver
               })}
               fill={disabledSwapSenderReceiver ? 'grey' : 'white'}
