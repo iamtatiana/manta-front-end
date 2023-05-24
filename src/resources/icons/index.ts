@@ -6,7 +6,7 @@ import { ReactComponent as talisman } from 'resources/icons/talisman.svg';
 import { ReactComponent as metamask } from 'resources/icons/metamask.svg';
 // coin icons
 import { ReactComponent as bitcoin } from 'resources/icons/coins/bitcoin-icon.svg';
-import { ReactComponent as etherium } from 'resources/icons/coins/etherium-icon.svg';
+import { ReactComponent as ethereum } from 'resources/icons/coins/ethereum-icon.svg';
 import { ReactComponent as acala } from 'resources/icons/coins/acala-icon.svg';
 import { ReactComponent as kusama } from 'resources/icons/coins/kusama-icon.svg';
 import { ReactComponent as ausd } from 'resources/icons/coins/ausd-icon.svg';
@@ -14,6 +14,11 @@ import { ReactComponent as kar } from 'resources/icons/coins/kar-icon.svg';
 import { ReactComponent as kbtc } from 'resources/icons/coins/kbtc-icon.svg';
 import { ReactComponent as roc } from 'resources/icons/coins/roc-icon.svg';
 import { ReactComponent as movr } from 'resources/icons/coins/movr-icon.svg';
+import { ReactComponent as tether } from 'resources/icons/coins/tether-icon.svg';
+import { ReactComponent as statemine } from 'resources/icons/coins/statemine-icon.svg';
+import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
+import { ReactComponent as usdc } from 'resources/icons/coins/usdc-icon.svg';
+import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc-icon.svg';
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
@@ -25,6 +30,7 @@ import { ReactComponent as swap } from 'resources/icons/sidebar/swap.svg';
 import { ReactComponent as transact } from 'resources/icons/sidebar/transact.svg';
 
 // widesite icons
+import { ReactComponent as warningV2 } from 'resources/icons/warningV2.svg';
 import { ReactComponent as token } from 'resources/icons/token-icon.svg';
 import { ReactComponent as deposit } from 'resources/icons/deposit-icon.svg';
 import { ReactComponent as rowDown } from 'resources/icons/rowdown-icon.svg';
@@ -51,6 +57,8 @@ import { ReactComponent as threeRightArrow } from 'resources/icons/three-right-a
 import { ReactComponent as grayThinLine } from 'resources/icons/gray-thin-line.svg';
 import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line.svg';
 import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
+import { ReactComponent as assetSelector } from 'resources/icons/asset-selector.svg';
+
 
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
@@ -101,7 +109,7 @@ const icons = {
   talisman,
   metamask,
   bitcoin,
-  etherium,
+  ethereum,
   acala,
   kusama,
   ausd,
@@ -109,6 +117,11 @@ const icons = {
   kbtc,
   roc,
   movr,
+  tether,
+  dai,
+  usdc,
+  wbtc,
+  statemine,
   audit,
   close,
   govern,
@@ -162,6 +175,7 @@ const icons = {
   cancel,
   heart,
   upDownArrow,
+  assetSelector,
   txSuccess,
   txFailed,
   txPending,
@@ -175,6 +189,7 @@ const icons = {
   Medium,
   Docs,
   BugReport,
-  activityRightArrow
+  activityRightArrow,
+  warningV2
 };
 export default icons;
