@@ -6,6 +6,7 @@ import SendButton from '../SendButton';
 import { useSend } from '../SendContext';
 import ZkTransactGuideModal from '../ZkTransactGuideModal/ZkTransactGuideModal';
 import SendToAddressForm from './SendToAddressForm';
+import FeeDisplay from './FeeDisplay';
 
 const SendToForm = () => {
   const { toggleReceiverIsPrivate, receiverAssetType } = useSend();
@@ -14,7 +15,7 @@ const SendToForm = () => {
   return (
     <div>
       <div className="manta-bg-gray rounded-md">
-        <div className="mb-6 items-stretch">
+        <div className="mb-2 items-stretch">
           <div className="flex flex-row px-4 pt-4 justify-between items-center">
             <div className="text-black dark:text-white">To</div>
             <PublicPrivateToggle
@@ -25,6 +26,9 @@ const SendToForm = () => {
           </div>
           <SendToAddressForm />
         </div>
+      </div>
+      <div className="mb-5">
+        <FeeDisplay />
       </div>
       <SendButton showModal={showModal} />
       <ModalWrapper>

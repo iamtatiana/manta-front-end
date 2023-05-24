@@ -237,6 +237,8 @@ export default class AssetType {
       isPrivate,
       'weth',
       config.IS_TESTNET,
+      false,
+      'USDCet'
     );
   }
 
