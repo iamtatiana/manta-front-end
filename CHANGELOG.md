@@ -309,3 +309,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - [\#1034](https://github.com/Manta-Network/manta-front-end/pull/1034) Add mantaWallet.subscribeAccounts api/Add MantaWallet update notification and change network notification
+
+## Unreleased
+
+### Added
+- [\#981](https://github.com/Manta-Network/manta-front-end/pull/981) Enable privatization and bridging for USDC, USDT, and DAI
