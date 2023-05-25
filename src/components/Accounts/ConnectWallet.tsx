@@ -13,37 +13,6 @@ export const ConnectWalletButton = ({
   text = 'Connect Wallet',
   className = ''
 }) => {
-  const component = (
-    <button className={classNames(className)}>
-      <p className="unselectable-text">{text}</p>
-    </button>
-  );
-
-  return (
-    <ConnectWallet
-      component={component}
-      setIsMetamaskSelected={setIsMetamaskSelected}
-      className={className}
-    />
-  );
-};
-
-export const ConnectWalletIcon = ({ setIsMetamaskSelected = null }) => {
-  const component = (
-    <FontAwesomeIcon
-      className={'w-6 h-6 px-5 py-4 cursor-pointer z-10 text-secondary'}
-      icon={faPlusCircle}
-    />
-  );
-  return (
-    <ConnectWallet
-      component={component}
-      setIsMetamaskSelected={setIsMetamaskSelected}
-    />
-  );
-};
-
-const ConnectWallet = ({ component, setIsMetamaskSelected = null }) => {
   const { resetWalletConnectingErrorMessages } = useKeyring();
   const { ModalWrapper, showModal, hideModal } = useModal({
     closeCallback: () => resetWalletConnectingErrorMessages()
@@ -54,7 +23,37 @@ const ConnectWallet = ({ component, setIsMetamaskSelected = null }) => {
 
   return (
     <>
-      <div className={classNames({ disabled: disabled })} onClick={onClick}>
+      <button onClick={onClick} className={classNames(className)}>
+        <p className="unselectable-text">{text}</p>
+      </button>
+      <ModalWrapper>
+        <ConnectWalletModal
+          setIsMetamaskSelected={setIsMetamaskSelected}
+          hideModal={hideModal}
+        />
+      </ModalWrapper>
+    </>
+  );
+};
+
+export const ConnectWalletIcon = ({ setIsMetamaskSelected = null }) => {
+  const { resetWalletConnectingErrorMessages } = useKeyring();
+  const { ModalWrapper, showModal, hideModal } = useModal({
+    closeCallback: () => resetWalletConnectingErrorMessages()
+  });
+  const { txStatus } = useTxStatus();
+  const disabled = txStatus?.isProcessing();
+  const onClick = () => !disabled && showModal();
+
+  const component = (
+    <FontAwesomeIcon
+      className={'w-6 h-6 px-5 py-4 cursor-pointer z-10 text-secondary'}
+      icon={faPlusCircle}
+    />
+  );
+  return (
+    <>
+      <div onClick={onClick}>
         {component}
       </div>
       <ModalWrapper>
@@ -66,3 +65,4 @@ const ConnectWallet = ({ component, setIsMetamaskSelected = null }) => {
     </>
   );
 };
+

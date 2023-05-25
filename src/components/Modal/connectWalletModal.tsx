@@ -1,6 +1,6 @@
 // @ts-nocheck
-import Icon from 'components/Icon';
 import WALLET_NAME from 'constants/WalletConstants';
+import Icon from 'components/Icon';
 import { useGlobal } from 'contexts/globalContexts';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -83,12 +83,12 @@ const ConnectWalletBlock = ({
       ) : isWalletInstalled ? (
         <button
           onClick={connectHandler}
-          className="rounded-lg bg-button-thirdry text-white text-sm w-30 h-10">
+          className="rounded-lg bg-button-thirdry text-white font-semibold text-sm w-30 h-10">
           Connect
         </button>
       ) : (
         <a href={walletInstallLink} target="_blank" rel="noreferrer">
-          <div className="text-center rounded-lg bg-button-fourth text-white text-sm w-30 h-10 leading-10">
+          <div className="text-center rounded-lg bg-button-fourth text-white font-semibold text-sm w-30 h-10 leading-10">
             Install
           </div>
         </a>

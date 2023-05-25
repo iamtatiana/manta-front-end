@@ -15,11 +15,11 @@ export const Navbar = () => {
     <div>
       <ActivityBanner />
       <div className="h-20 py-4 px-10 flex justify-between items-center relative sticky left-0 right-0 top-0 z-50 bg-nav">
-        <div className="flex items-center">
+        <div className="flex items-center ml-16">
           <ChainSelector className="place-self-start" />
           <NavLinks />
         </div>
-        <div className="h-10 gap-4 flex flex-wrap justify-end items-center">
+        <div className="h-10 gap-4 flex flex-wrap justify-end items-cente mr-16">
           {isSendPage && !usingMantaWallet && <ZkAccountButton />}
           <AccountSelectMenu />
           <Menu />

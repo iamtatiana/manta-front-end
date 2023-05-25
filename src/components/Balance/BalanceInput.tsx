@@ -11,7 +11,8 @@ const BalanceInput = ({
   inputValue,
   onClickMax,
   balanceText,
-  shouldShowLoader
+  shouldShowLoader,
+  isBridgePage = false
 }) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
@@ -44,7 +45,10 @@ const BalanceInput = ({
       </div>
       <BalanceDisplay
         balance={balanceText}
-        className="text-xss text-white mt-2.5 mr-4 absolute right-0 bottom-3 gap-1"
+        className={classNames(
+          'text-white text-xss mt-2.5 mr-4 absolute right-0 bottom-3 gap-1',
+          { 'text-xs': isBridgePage }
+        )}
         loader={shouldShowLoader}
       />
     </div>
@@ -56,7 +60,8 @@ BalanceInput.propTypes = {
   inputValue: PropTypes.string,
   onClickMax: PropTypes.func,
   balanceText: PropTypes.string,
-  shouldShowLoader: PropTypes.bool
+  shouldShowLoader: PropTypes.bool,
+  isBridgePage: PropTypes.bool
 };
 
 const MaxButton = ({ onClickMax, isDisabled }) => {
@@ -68,11 +73,11 @@ const MaxButton = ({ onClickMax, isDisabled }) => {
       onClick={onClick}
       className={classNames(
         'cursor-pointer',
-        'text-center rounded-lg unselectable-text absolute left-4 bottom-3 flex items-center text-xss text-bg-thirdry',
+        'text-center rounded-lg unselectable-text absolute left-4 bottom-3 flex items-center text-xss text-manta-blue',
         { disabled: isDisabled }
       )}
     >
-      Select Max
+      Select max
     </span>
   );
 };

@@ -62,7 +62,7 @@ export default class Balance {
   }
 
   toStringUnrounded(): string {
-    return this.valueBaseUnits().toDecimalPlaces(this.assetType.numberOfDecimals, Decimal.ROUND_DOWN).toString();
+    return this.valueBaseUnits().toDecimalPlaces(this.assetType.numberOfDecimals, Decimal.ROUND_DOWN).toFixed();
   }
 
   toDisplayString(decimals = 3, roundDown = true): string {

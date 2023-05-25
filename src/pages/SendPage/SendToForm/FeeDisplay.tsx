@@ -6,8 +6,8 @@ const FeeDisplay = () => {
   const feeText = feeEstimate?.toDisplayString() || '-';
   return (
     <div className="flex justify-between items-center inline w-full pt-3">
-      <div className="text-white">Transaction fee</div>
-      <div className="text-white">{feeText}</div>
+      <div className="text-white text-sm">Transaction fee</div>
+      <div className="text-white text-sm">{feeText}</div>
     </div>
   );
 };

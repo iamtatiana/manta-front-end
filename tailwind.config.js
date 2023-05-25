@@ -30,6 +30,7 @@ module.exports = {
       spacing: {
         0.5: '0.125rem',
         0.75: '0.1875rem',
+        2.25: '0.5625rem',
         128: '32rem',
         120: '30rem',
         108: '27rem',
@@ -90,11 +91,13 @@ module.exports = {
         'button-fourth': 'var(--color-bg-button-fourth)',
         'connect-signer-button': '#2B49EA',
         'connect-wallet-button': '#00AFA5',
+        'teal-button': '#00AFA5',
         'gradient-button': 'var(--gradient-button-secondary)',
         'light-warning': '#FF8A0020',
         'dropdown-hover': '#00AFA580',
         'private-public-toggle': 'rgba(14, 80, 252, 0.5)',
         'green-light-half': 'rgba(41, 204, 185, 0.5)',
+        'semitransparent': 'rgba(255, 255, 255, 0.05)',
         nav: 'var(--color-bg-nav)'
       },
       textColor: {

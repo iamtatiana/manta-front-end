@@ -52,6 +52,7 @@ const BridgeBalanceInput = () => {
       onClickMax={onClickMax}
       balanceText={balanceText}
       shouldShowLoader={shouldShowLoader}
+      isBridgePage={true}
     />
   );
 };

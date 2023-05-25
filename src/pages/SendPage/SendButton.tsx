@@ -43,8 +43,8 @@ const InnerSendButton = ({ senderLoading, receiverLoading }) => {
       id="sendButton"
       onClick={onClickHandler}
       className={classNames(
-        'py-2 cursor-pointer unselectable-text',
-        'text-center text-white rounded-lg gradient-button w-full',
+        'py-2 cursor-pointer unselectable-text font-semibold ',
+        'text-center text-white rounded-lg bg-teal-button w-3/4',
         { disabled: disabled }
       )}>
       {buttonLabel}
@@ -52,7 +52,8 @@ const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   ) : (
     <div
       className={classNames(
-        'py-2 unselectable-text text-center text-white rounded-lg w-full gradient-button filter brightness-50'
+        'py-2 unselectable-text text-center text-white rounded-lg w-3/4',
+        'bg-teal-button filter brightness-50 font-semibold'
       )}>
       {buttonLabel}
     </div>
@@ -163,7 +164,9 @@ const ValidationSendButton = ({ showModal }) => {
     return (
       <div
         className={classNames(
-          'py-2 unselectable-text text-center text-white rounded-lg w-full gradient-button filter brightness-50'
+          'py-2 unselectable-text text-center text-white rounded-lg w-3/4',
+          'font-semibold bg-teal-button filter brightness-50',
+          { 'text-sm': validationMsg.length > 24}
         )}>
         {validationMsg}
       </div>
@@ -171,27 +174,30 @@ const ValidationSendButton = ({ showModal }) => {
   };
 
   return (
-    <>
+    <div className="flex justify-center">
       {shouldShowSignerMissingValidation && (
         <ZkAccountConnect
-          className={
-            'bg-connect-signer-button py-2 unselectable-text text-center text-white rounded-lg w-full'
-          }
+          className={classNames(
+            'py-2 unselectable-text text-center bg-connect-signer-button',
+            'font-semibold text-white rounded-lg w-3/4'
+          )}
         />
       )}
       {shouldShowMantaWalletMissingValidation && (
         <ConnectWalletButton
-          className={
-            'bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-full'
-          }
+          className={classNames(
+            'bg-red py-2 unselectable-text text-center',
+            'text-white rounded-lg w-3/4'
+          )}
           text="Connect Manta Wallet"
         />
       )}
       {shouldShowWalletMissingValidation && (
         <ConnectWalletButton
-          className={
-            'bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-full'
-          }
+          className={classNames(
+            'bg-teal-button py-2 unselectable-text',
+            'font-semibold text-center text-white rounded-lg w-3/4'
+          )}
         />
       )}
       {shouldShowWalletSignerMissingValidation && (
@@ -199,7 +205,8 @@ const ValidationSendButton = ({ showModal }) => {
           <button
             onClick={() => showModal()}
             className={classNames(
-              'gradient-button py-2 unselectable-text text-center text-white rounded-lg w-full',
+              'bg-teal-button py-2 unselectable-text text-center text-white',
+              'font-semibold rounded-lg w-3/4',
               {'filter brightness-50 cursor-not-allowed': !isValidToSend()}
             )}>
             Connect Wallet and Signer
@@ -212,12 +219,12 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowMantaWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
-    </>
+        <InnerSendButton
+          senderLoading={senderLoading}
+          receiverLoading={receiverLoading}
+        />
+      )}
+    </div>
   );
 };
 

@@ -69,7 +69,7 @@ const DisplayAccountsButton = () => {
       <OutsideClickHandler onOutsideClick={() => setShowAccountList(false)}>
         <div
           className={classNames(
-            'flex flex-row justify-center h-10 gap-3 border border-white-light bg-fifth dark:text-black dark:text-white font-red-hat-text w-44 text-sm cursor-pointer rounded-lg items-center'
+            'bg-semitransparent flex flex-row justify-center h-10 gap-3 border border-white-light dark:text-black dark:text-white font-red-hat-text w-44 text-sm cursor-pointer rounded-lg items-center'
           )}
           onClick={() => setShowAccountList(!showAccountList)}>
           <ExternalAccountBlock
@@ -107,7 +107,7 @@ const AccountSelectMenu = () => {
   ) : (
     <ConnectWalletButton
       className={
-        'bg-connect-wallet-button text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
+        'bg-connect-wallet-button font-semibold text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
       }
     />
   );

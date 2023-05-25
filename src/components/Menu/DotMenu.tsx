@@ -12,7 +12,7 @@ import OutsideClickHandler from 'react-outside-click-handler';
 
 const MenuItem = ({ link, name, icon }) => (
   <a
-    className="flex items-center justify-between text-sm p-1.5 font-mono font-medium cursor-pointer hover:font-bold  hover:bg-green-light-half rounded  px-3"
+    className="flex items-center justify-between text-sm p-1.5 font-mono font-medium cursor-pointer hover:font-bold hover:bg-green-light-half rounded  px-3"
     href={link}
     target="_blank"
     rel="noopener noreferrer">
@@ -57,7 +57,6 @@ ChangeThemeMenuItem.propTypes = {
 
 const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useContext(ThemeContext);
   const config = useConfig();
 
   const links = {
@@ -75,7 +74,6 @@ const Menu = () => {
 
   const DotMenuContent = () => (
     <div className="w-60 flex-column flex-grow mt-3 bg-fifth rounded-lg gap-y-4 py-4 px-1 absolute right-0 top-full z-50 border border-white-light">
-      {/* {theme === themeType.Dark ? <ChangeThemeMenuItem theme={themeType.Light} setTheme={setTheme} name={'Light Mode'} icon={faSun} /> : <ChangeThemeMenuItem theme={themeType.Dark} setTheme={setTheme} name={'Dark Mode'} icon={faMoon} />} */}
       <MenuItem
         link={config.CALAMARI_URL}
         name={'Calamari Website'}
@@ -88,13 +86,6 @@ const Menu = () => {
       {config.NETWORK_NAME === 'Dolphin' ? (
         <MenuItem link={links.DOLPHIN_GUIDE_URL} name={'Docs'} icon="Docs" />
       ) : null}
-      {/* {config.NETWORK_NAME === 'Dolphin' ? (
-        <MenuItem
-          link={links.DOLPHIN_FAUCET_URL}
-          name={'Faucet'}
-          icon={faFaucetDrip}
-        />
-      ) : null} */}
       {config.NETWORK_NAME === 'Dolphin' ? (
         <MenuItem
           link={links.DOLPHIN_BUG_REPORT}
@@ -119,7 +110,7 @@ const Menu = () => {
     <div className="relative">
       <OutsideClickHandler onOutsideClick={() => setIsOpen(false)}>
         <div
-          className="bg-fifth flex gap-3 px-4 py-2.5 font-black border border-white-light cursor-pointer rounded-xl"
+          className="bg-semitransparent flex gap-3 px-3 py-2.25 font-black border border-white-light cursor-pointer rounded-lg"
           onClick={() => {
             isOpen ? setIsOpen(false) : setIsOpen(true);
           }}>

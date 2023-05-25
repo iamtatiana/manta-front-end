@@ -86,7 +86,7 @@ const ValidationButton = () => {
       <div
         className={classNames(
           'bg-connect-wallet-button py-2 unselectable-text text-center text-white',
-          'rounded-lg w-full filter brightness-50 cursor-not-allowed'
+          'rounded-lg w-full filter  font-semibold brightness-50 cursor-not-allowed'
         )}>
         {validationMsg}
       </div>
@@ -109,7 +109,7 @@ const ValidationButton = () => {
           text={connectWalletText}
           className={classNames(
             'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-            'text-center text-white rounded-lg w-full'
+            'text-center text-white font-semibold rounded-lg w-full'
           )}
         />
       )}
@@ -131,7 +131,7 @@ const SwitchNetworkButton = () => {
       onClick={onClick}
       className={classNames(
         'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-        'text-center text-white rounded-lg w-full'
+        'text-center text-white font-semibold rounded-lg w-full'
       )}>
       Switch Network to Moonriver
     </button>
@@ -150,7 +150,7 @@ const SendButton = () => {
       onClick={onClick}
       className={classNames(
         'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-        'text-center text-white rounded-lg w-full',
+        'text-center text-white font-semibold rounded-lg w-full',
         {'filter brightness-50 cursor-not-allowed': !isValidToSend()}
       )}>
       Submit

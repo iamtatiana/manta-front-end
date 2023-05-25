@@ -120,7 +120,7 @@ const ZkAccountButton = () => {
     return (
       <ZkAccountConnect
         className={
-          'unselectable-text bg-connect-signer-button text-white font-red-hat-text text-sm h-10 w-44 cursor-pointer rounded-lg'
+          'unselectable-text bg-connect-signer-button text-white font-red-hat-text font-semibold text-sm h-10 w-44 cursor-pointer rounded-lg'
         }
       />
     );

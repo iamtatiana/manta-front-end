@@ -97,18 +97,20 @@ const AssetSelectModal = (
   return (
     <div className="w-96 bg-fourth -mx-6 -my-6 rounded-xl pt-4 pb-2">
       <div className="text-white unselectable-text text-lg pl-8 pt-1">Select a Token</div>
-      <div className={classNames(
-        'w-58 p-2 pl-2 mt-3 mx-8 rounded-md border border-white border-opacity-20',
-        'flex items-center text-secondary bg-secondary'
-      )}>
-        <div className="flex inline">
-          <FontAwesomeIcon icon={faSearch} className="pl-2 pt-0.75"/>
-          <input
-            className="pl-4 w-64 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
-            placeholder="Search Name"
-            onChange={(e) => setFilterText(e.target.value)}
-            value={filterText}
-          />
+      <div className="flex justify-center">
+        <div className={classNames(
+          'w-full p-2 mt-3 mx-8 rounded-md border border-white border-opacity-20',
+          'flex items-center text-secondary bg-secondary'
+        )}>
+          <div className="flex inline">
+            <FontAwesomeIcon icon={faSearch} className="pl-2 pt-0.75"/>
+            <input
+              className="pl-4 bg-transparent font-red-hat-text text-sm text-thirdry outline-none"
+              placeholder="Search Name"
+              onChange={(e) => setFilterText(e.target.value)}
+              value={filterText}
+            />
+          </div>
         </div>
       </div>
       <div className="mt-1 ml-2 overflow-y-auto h-64">
