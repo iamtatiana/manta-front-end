@@ -2,16 +2,6 @@
 # yarn lockfile v1
 
 
-"@acala-network/api-derive@4.1.6-30":
-  version "4.1.6-30"
-  resolved "https://registry.yarnpkg.com/@acala-network/api-derive/-/api-derive-4.1.6-30.tgz#c18800cf8091b7d91b57eb87669c503a09d86f80"
-  integrity sha512-P0RZExkgWBTJSu3UJjQwvYdJ6x1yR47kOXCee2Xq1ZFzXsJIPLQ99i8XxvhXyeX0u1gww4AeBm43FyaA8ouYYg==
-  dependencies:
-    "@acala-network/types" "4.1.6-30"
-    "@babel/runtime" "^7.10.2"
-    "@open-web3/orml-types" "^1.1.4"
-    "@polkadot/api-derive" "^8.5.1"
-
 "@acala-network/api-derive@4.1.8-7":
   version "4.1.8-7"
   resolved "https://registry.yarnpkg.com/@acala-network/api-derive/-/api-derive-4.1.8-7.tgz#2344497b80946a41a7a3fd28516e7a18cf42f4d9"
@@ -21,6 +11,13 @@
     "@babel/runtime" "^7.10.2"
     "@open-web3/orml-types" "^1.1.4"
     "@polkadot/api-derive" "^8.5.1"
+
+"@acala-network/api-derive@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@acala-network/api-derive/-/api-derive-5.1.1.tgz#b48a33f73fd1f12d4db2bc8750f08b08b9ab4ade"
+  integrity sha512-k3TpHpleiQ0gKc5I6hflSnm7ggMBru/0dwl/kUu6MvgXcD7uuFWkavHxOesyPQfdqAyyGvBJ1ps0tfTsFYSSaA==
+  dependencies:
+    "@acala-network/types" "5.1.1"
 
 "@acala-network/api@4.1.8-7":
   version "4.1.8-7"
@@ -34,17 +31,14 @@
     "@polkadot/api" "^9.9.1"
     "@polkadot/rpc-core" "^9.9.1"
 
-"@acala-network/api@^4.1.6-29":
-  version "4.1.6-30"
-  resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-4.1.6-30.tgz#479264b978b9d5595737ea9c8993303bc0fb2051"
-  integrity sha512-jyTWSdE9tjclxio3L4Zv1//g8r4A9LUgh6U7m0GcJGGC7s1H+76MbnR8JwI9jzssUFMAvSFp+hD5/9NaA++PMA==
+"@acala-network/api@^5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-5.1.1.tgz#93ab0931c6d367b485e2fffaf59f6f8fb4b22054"
+  integrity sha512-hO9fWkj5/MeD4v5XYsWlrrwBG70o6VErhwI/xzwx1rs5Fq5b/Mx39nUyZMjT3NYY5xT1o/BaCMoo6pPbudQtMA==
   dependencies:
-    "@acala-network/api-derive" "4.1.6-30"
-    "@acala-network/types" "4.1.6-30"
-    "@babel/runtime" "^7.10.2"
-    "@open-web3/orml-api-derive" "^1.1.4"
-    "@polkadot/api" "^8.5.1"
-    "@polkadot/rpc-core" "^8.5.1"
+    "@acala-network/api-derive" "5.1.1"
+    "@acala-network/types" "5.1.1"
+    "@open-web3/orml-api-derive" "^2.0.1"
 
 "@acala-network/contracts@4.3.4":
   version "4.3.4"
@@ -138,13 +132,6 @@
     lru-cache "^7.14.1"
     rxjs "^7.5.7"
 
-"@acala-network/type-definitions@4.1.6-30":
-  version "4.1.6-30"
-  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-4.1.6-30.tgz#8af03d9666b87f1aa08aaeb0270f4db74ae36884"
-  integrity sha512-zYCSTzZuKoyYjUj0U/RqMVWN6mUAgVakUAsMgoNfQ8P2AWXqRyyhI6UXyo/utC1pcTL8nG1nYdP1XuhhwQe53Q==
-  dependencies:
-    "@open-web3/orml-type-definitions" "^1.1.4"
-
 "@acala-network/type-definitions@4.1.8-7":
   version "4.1.8-7"
   resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-4.1.8-7.tgz#65b300022ddbcb5222d1907b1108cc05bab0d58b"
@@ -152,22 +139,17 @@
   dependencies:
     "@open-web3/orml-type-definitions" "^1.1.4"
 
+"@acala-network/type-definitions@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-5.1.1.tgz#16c723f0561d9d54b4877bc51399c01a43490852"
+  integrity sha512-QNhPwWePz/gFluSACKIhq0Z7rTntS21uIZUNpp9tsvc0zlJ20QjHJnv+ZfkdaKauFrL5upFfTgWqrLhN0jV0JQ==
+
 "@acala-network/type-definitions@^4.1.5":
   version "4.1.5"
   resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-4.1.5.tgz#c02624ba9bb637588ddd184a4ce35ab7d9de2bf6"
   integrity sha512-XwXtKf5ESfzGk32N1sE3MlBtnamz2JZYtjB6KcKe9eOyv+3lowQvRn4Z347rNSEp+tpenZWnLwBXk4XWhdiSoQ==
   dependencies:
     "@open-web3/orml-type-definitions" "^1.1.4"
-
-"@acala-network/types@4.1.6-30":
-  version "4.1.6-30"
-  resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-4.1.6-30.tgz#d0b1cc37ed32f5c554ef22a61158b6b6180f57e1"
-  integrity sha512-CiuIOf4c1Ul1iCiPotUvUf8I6U8ygMzcuzZMHBodfDcAp3uvlEaNfRP3ISfoe9eus38sYs6NQo+Njy4wYaE20g==
-  dependencies:
-    "@acala-network/type-definitions" "4.1.6-30"
-    "@babel/runtime" "^7.10.2"
-    "@open-web3/api-mobx" "^1.1.4"
-    "@open-web3/orml-types" "^1.1.4"
 
 "@acala-network/types@4.1.8-7":
   version "4.1.8-7"
@@ -178,6 +160,14 @@
     "@babel/runtime" "^7.10.2"
     "@open-web3/api-mobx" "^1.1.4"
     "@open-web3/orml-types" "^1.1.4"
+
+"@acala-network/types@5.1.1":
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-5.1.1.tgz#b545f4d6cf9dbe48a71dea7f30145944801c8dfd"
+  integrity sha512-pRkZSHXvtn4ZykwLLPginUwaheBAtsPgvkNGz+xeHH07Gn6D/T2uiVYQQEg0Uha5o9635TtNB+Lvp/2SlLodlQ==
+  dependencies:
+    "@acala-network/type-definitions" "5.1.1"
+    "@open-web3/orml-types" "^2.0.1"
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
@@ -2501,6 +2491,14 @@
     memoizee "^0.4.15"
     rxjs "^7.2.0"
 
+"@open-web3/orml-api-derive@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@open-web3/orml-api-derive/-/orml-api-derive-2.0.1.tgz#1f4fb448f409f8632ec93b3ee685cdc52ff10427"
+  integrity sha512-Xr7PyKVyCuNMJznddIb///VXzllcf5tCUEsiFF1PHnxzfWCUv2s9QWhkotUO/vD8udXPvOIp2skkA1sjnQTIwQ==
+  dependencies:
+    memoizee "^0.4.15"
+    rxjs "^7.5.5"
+
 "@open-web3/orml-type-definitions@0.9.4-26":
   version "0.9.4-26"
   resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-0.9.4-26.tgz#890c86b992db1241e3c99a0aed8720af46725274"
@@ -2512,6 +2510,13 @@
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-1.1.4.tgz#a036b6cf0410783aaedf7e95d27917a5d66c5bed"
   integrity sha512-diuQx0Pf7cfoBtCpZTrBQOeIur0POp6Y9qfDS3p11RBF2XKwQ7jw/YKEFYqga1AyrzTcoSEE2OYUfeW3AKU94w==
+  dependencies:
+    lodash.merge "^4.6.2"
+
+"@open-web3/orml-type-definitions@2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-2.0.1.tgz#b3db4fb5777dc05c55fa5184c34f4ec91030f012"
+  integrity sha512-wqeSBOKk8UU9CBqYhK2yQh9YqwaS7vai71WuOGFNJnzRT+6WnzY0leaLTionuzfE3M4Y/jTrc8BTL6+PVFCr6Q==
   dependencies:
     lodash.merge "^4.6.2"
 
@@ -2533,6 +2538,13 @@
   integrity sha512-/JZocbeppn2hl9h2IAzjyqLW9c8hoWfAym45KpVUyp/Ho/Ykjw2n9Rn+s6yLVoga/oYfnP5gKwt5x4PMq24BUg==
   dependencies:
     "@open-web3/orml-type-definitions" "1.1.4"
+
+"@open-web3/orml-types@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@open-web3/orml-types/-/orml-types-2.0.1.tgz#180348341d30f2bebf9e9272e8e7eca9bd9548b3"
+  integrity sha512-YkJPPtGJHqNS416dpLlyWgzUckV/O4PqYockHAzOKSB8mSv9rhzqDrUzjqvEjduznCxy+bARyLs6C4Bh0DZlvg==
+  dependencies:
+    "@open-web3/orml-type-definitions" "2.0.1"
 
 "@parallel-finance/type-definitions@1.7.13":
   version "1.7.13"
@@ -3075,7 +3087,7 @@
     "@polkadot/util" "9.7.2"
     "@substrate/ss58-registry" "^1.23.0"
 
-"@polkadot/react-identicon@^3.1.1":
+"@polkadot/react-identicon@^3.4.1":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@polkadot/react-identicon/-/react-identicon-3.4.1.tgz#306f19c33ebcc6863b26f7f7154165c61a40813d"
   integrity sha512-0S8fofxKus3IORdUSSnIaiF0HKA6F+G//3+KdwiAmAlQWyfs94njQKP4IgouFSbueVyYMh4fbthQ8civ65Bkgg==
@@ -3170,7 +3182,7 @@
     "@polkadot/util" "^8.7.1"
     rxjs "^7.5.5"
 
-"@polkadot/rpc-core@8.14.1", "@polkadot/rpc-core@^8.5.1":
+"@polkadot/rpc-core@8.14.1":
   version "8.14.1"
   resolved "https://registry.yarnpkg.com/@polkadot/rpc-core/-/rpc-core-8.14.1.tgz#0b9a408a03ecde820d0d55287efbfb4cb95b537a"
   integrity sha512-deQ8Ob59ao/1fZQdaVtFjYR/HCBdxSYvQGt7/alBu1Uig9Sahx9oKcMkU5rWY36XqGZYos4zLay98W2hDlf+6Q==
@@ -3651,7 +3663,7 @@
     rxjs "^7.3.0"
     store "^2.0.12"
 
-"@polkadot/ui-keyring@^3.1.1":
+"@polkadot/ui-keyring@^3.4.1":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@polkadot/ui-keyring/-/ui-keyring-3.4.1.tgz#4272cfd1575e402def0811e58a217cfce11cbda8"
   integrity sha512-b5xkL2j6d2VcaVIg4p0HsUZmbSO0Ebb6XtM8g3hPJc9XEJ2FCKq0pvaErOs8hAJFM71j62KBv/QasmH3/7lUyQ==
@@ -3676,7 +3688,7 @@
     eventemitter3 "^4.0.7"
     store "^2.0.12"
 
-"@polkadot/ui-settings@3.4.1", "@polkadot/ui-settings@^3.1.1":
+"@polkadot/ui-settings@3.4.1", "@polkadot/ui-settings@^3.4.1":
   version "3.4.1"
   resolved "https://registry.yarnpkg.com/@polkadot/ui-settings/-/ui-settings-3.4.1.tgz#0a74f154b8173c449826bad9bfdafefcb30225cc"
   integrity sha512-2ym8ipRl14dedExABx/+NBLxh/8W8yMukY72db+weguJBC8/AAgNAzSX4tub9IGivArSTgi2T2/zLNXEKYtA+Q==
