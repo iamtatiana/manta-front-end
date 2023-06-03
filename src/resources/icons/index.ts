@@ -84,6 +84,7 @@ import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 
 // links icons
+import { ReactComponent as MantaWebsite } from 'resources/icons/links/MantaWebsite.svg';
 import { ReactComponent as CalamariWebsite } from 'resources/icons/links/CalamariWebsite.svg';
 import { ReactComponent as twitter } from 'resources/icons/links/Twitter.svg';
 import { ReactComponent as Discord } from 'resources/icons/links/Discord.svg';
@@ -169,6 +170,7 @@ const icons = {
   grayThinLine,
   blueSolidLine,
   threeRightArrow,
+  MantaWebsite,
   CalamariWebsite,
   Twitter: twitter,
   Discord,

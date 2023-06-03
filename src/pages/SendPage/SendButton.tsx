@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
@@ -159,7 +160,9 @@ const ValidationSendButton = ({ showModal }) => {
     )}`;
   }
 
-  validationMsg = 'System Maintenance';
+  if (config.NETWORK_NAME === NETWORK.Calamari) {
+    validationMsg = 'System Maintenance';
+  }
 
   const ValidationText = ({ validationMsg }) => {
     return (
@@ -215,11 +218,11 @@ const ValidationSendButton = ({ showModal }) => {
         !shouldShowMantaWalletMissingValidation &&
         !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
-          <InnerSendButton
-            senderLoading={senderLoading}
-            receiverLoading={receiverLoading}
-          />
-        )}
+        <InnerSendButton
+          senderLoading={senderLoading}
+          receiverLoading={receiverLoading}
+        />
+      )}
     </>
   );
 };

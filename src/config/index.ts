@@ -2,6 +2,7 @@
 import configCommon from './common.json';
 import configDolphin from './dolphin.json';
 import configCalamari from './calamari.json';
+import configManta from './manta.json';
 
 // Using `require` as `import` does not support dynamic loading (yet).
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -21,3 +22,6 @@ dolphinConfig.PROVIDER_SOCKET = dolphinConfig.DOLPHIN_SOCKET;
 export const calamariConfig = { ...configCommon, ...configCalamari, ...configEnv, ...envVars };
 calamariConfig.PROVIDER_SOCKET = calamariConfig.CALAMARI_SOCKET;
 
+
+export const mantaConfig = { ...configCommon, ...configManta, ...configEnv, ...envVars };
+mantaConfig.PROVIDER_SOCKET = mantaConfig.MANTA_SOCKET;

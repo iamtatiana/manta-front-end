@@ -15,7 +15,7 @@ function IPBlockingModal() {
 
   useEffect(() => {
     async function getUserGeolocation() {
-      if (!window.location.pathname.includes('/calamari/transact')) {
+      if (!window.location.pathname.includes('/transact')) {
         hideModal();
         return;
       }
@@ -50,11 +50,11 @@ function IPBlockingModal() {
     },
     {
       name: 'Bridge',
-      path: '/calamari/bridge'
+      path: '/bridge'
     },
     {
       name: '$KMA Staking',
-      path: '/calamari/stake'
+      path: '/stake'
     },
   ];
 

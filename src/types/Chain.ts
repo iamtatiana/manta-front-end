@@ -1,7 +1,7 @@
 // @ts-nocheck
 import NETWORK from 'constants/NetworkConstants';
 import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
-import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
+import { CalamariAdapter, MantaAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
 import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
@@ -100,6 +100,21 @@ export default class Chain {
       [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
+      types
+    );
+  }
+
+  static Manta(config) {
+    return new Chain(
+      'manta',
+      'Manta',
+      2104,
+      'mantaLogo',
+      config.MANTA_SOCKET,
+      config.MANTA_SUBSCAN_URL,
+      [AssetType.Manta(config)],
+      AssetType.Manta(config),
+      MantaAdapter,
       types
     );
   }

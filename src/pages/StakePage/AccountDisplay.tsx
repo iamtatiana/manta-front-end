@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import DotLoader from 'components/Loaders/DotLoader';
 import { usePublicAccount } from 'contexts/publicAccountContext';
@@ -15,7 +16,6 @@ const AccountDisplay = () => {
     userTotalRecentRewards,
     secondsSinceReward
   } = useStakeData();
-
   const { externalAccount } = usePublicAccount();
 
   const getBalanceDisplayString = (balance) => {
@@ -48,6 +48,10 @@ const AccountDisplay = () => {
       inline: 'nearest'
     });
   };
+
+  // todo: add Manta Network specific links to these
+  const web3GoLink = 'https://app.web3go.xyz/#/CalamariStaking';
+  const collatorDashboardLink = 'https://sparta.calamari.systems';
 
   return (
     <div className="text-center font-red-hat-text">
@@ -130,34 +134,36 @@ const AccountDisplay = () => {
                 className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer">
-                Calamari block explorer
+                {`${config.NETWORK_NAME} block explorer`}
               </a>
             </div>
-            <div className="mt-4">
-              <a
-                href="https://stakekma.com"
-                className="text-third-80 text-sm hover:text-link-hover"
-                target="_blank"
-                rel="noreferrer">
+            {config.NETWORK_NAME === NETWORK.CALAMARI ? (
+              <div className="mt-4">
+                <a
+                  href="https://stakekma.com"
+                  className="text-third-80 text-sm hover:text-link-hover"
+                  target="_blank"
+                  rel="noreferrer">
                 StakeKMA collator dashboard
+                </a>
+              </div>
+            ) : null}
+            <div className="mt-4">
+              <a
+                href={collatorDashboardLink}
+                className="text-third-80 text-sm hover:text-link-hover"
+                target="_blank"
+                rel="noreferrer">
+                {`${config.NETWORK_NAME} collator dashboard`}
               </a>
             </div>
             <div className="mt-4">
               <a
-                href="https://sparta.calamari.systems"
+                href={web3GoLink}
                 className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer">
-                Calamari collator dashboard
-              </a>
-            </div>
-            <div className="mt-4">
-              <a
-                href="https://app.web3go.xyz/#/CalamariStaking"
-                className="text-third-80 text-sm hover:text-link-hover"
-                target="_blank"
-                rel="noreferrer">
-                web3go Calamari staking
+                {`web3go ${config.NETWORK_NAME} staking`}
               </a>
             </div>
           </div>

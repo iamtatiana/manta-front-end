@@ -9,6 +9,7 @@ import { useModal } from 'hooks';
 import Collator from 'types/Collator';
 import Delegation from 'types/Delegation';
 import getTableHeight from 'utils/ui/getTableHeight';
+import AssetType from 'types/AssetType';
 import { StakeModal } from '../Modals';
 import { UnstakeModal } from '../Modals/UnstakeModal';
 import { useStakeData } from '../StakeContext/StakeDataContext';
@@ -16,6 +17,7 @@ import StakeErrorDisplay from '../StakeErrorDisplay';
 import CollatorDisplayCell from './CollatorDisplayCell';
 
 const NothingStakedDisplay = () => {
+  const config = useConfig();
   const { externalAccount } = usePublicAccount();
   let primaryText = '';
   let secondaryText = '';
@@ -24,7 +26,8 @@ const NothingStakedDisplay = () => {
     secondaryText =
       'polkadot.js, SubWallet, or Talisman wallet must be connected to see your balance and rewards';
   } else {
-    primaryText = 'You are not currently staking KMA';
+    const nativeTokenTicker = AssetType.Native(config).baseTicker;
+    primaryText = `You are not currently staking ${nativeTokenTicker}`;
     secondaryText = 'Select a collator below to begin staking';
   }
 

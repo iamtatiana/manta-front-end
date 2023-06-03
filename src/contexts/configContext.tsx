@@ -2,7 +2,7 @@
 import NETWORK from 'constants/NetworkConstants';
 import React, { createContext, useContext } from 'react';
 import PropTypes from 'prop-types';
-import { dolphinConfig, calamariConfig } from 'config';
+import { dolphinConfig, calamariConfig, mantaConfig } from 'config';
 
 const ConfigContext = createContext();
 
@@ -12,7 +12,10 @@ export const ConfigContextProvider = ({children, network}) => {
     config = calamariConfig;
   } else if (network === NETWORK.DOLPHIN) {
     config = dolphinConfig;
+  } else if (network === NETWORK.MANTA) {
+    config = mantaConfig;
   }
+  console.log('network', network, config);
 
   return (
     <ConfigContext.Provider value={config}>

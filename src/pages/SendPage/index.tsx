@@ -8,6 +8,7 @@ import { useEffect } from 'react';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { WarningNotification } from 'components/NotificationContent';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useLocation } from 'react-router-dom';
 import { SendContextProvider } from './SendContext';
 import SendForm from './SendForm';
 import { PrivateTxHistoryContextProvider } from './privateTxHistoryContext';
@@ -19,6 +20,12 @@ const SendPage = () => {
     config.MIN_REQUIRED_WALLET_VERSION,
     mantaWalletVersion
   );
+
+  const { pathname } = useLocation();
+  const isMantaNetworkMantaPayPage = pathname.includes('/manta/transact');
+  if (isMantaNetworkMantaPayPage) {
+    console.log('config', config);
+  }
 
   useEffect(() => {
     if (outdated) {

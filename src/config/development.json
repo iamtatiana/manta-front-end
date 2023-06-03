@@ -1,6 +1,14 @@
 {
     "DEV_CONSOLE": true,
-    "NODES": [{
+    "NODES": [
+      {
+        "name": "Manta",
+        "path": "/manta",
+        "url": "wss://c1.manta.seabird.systems",
+        "testnet": true,
+        "explorer": "manta.subscan.io"
+      },
+      {
             "name": "Calamari",
             "path": "/calamari",
             "logo": "calamariLogo",

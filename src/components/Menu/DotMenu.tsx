@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import {
   faEllipsis
 } from '@fortawesome/free-solid-svg-icons';
@@ -19,6 +20,7 @@ const MenuItem = ({ link, name, icon }) => (
     <Icon
       name={icon}
       className="w-6 h-6 items-center text-xl text-black hover:text-link dark:text-white dark:hover:text-link"
+      style={{ fill: 'white' }}
     />
     <div className="font-red-hat-mono h-6 text-black dark:text-white ">
       {name}
@@ -43,7 +45,7 @@ const ChangeThemeMenuItem = ({ theme, setTheme, name, icon }) => (
     </div>
     <FontAwesomeIcon
       icon={icon}
-      className="items-center w-4 h-5 text-xl text-white dark:hover:text-link"
+      className="items-center fill-white w-4 h-5 text-xl text-white dark:hover:text-link"
     />
   </div>
 );
@@ -64,8 +66,8 @@ const Menu = () => {
     DISCORD_URL: 'https://discord.gg/PRDBTChSsF',
     TELEGRAM_URL: 'https://t.me/mantanetworkofficial',
     MEDIUM_URL: 'https://mantanetwork.medium.com/',
-    CALAMARI_GUIDE_URL: 'https://docs.manta.network/docs/Introduction',
-    CALAMARI_BUG_REPORT: 'https://discord.gg/PRDBTChSsF',
+    MAINNET_GUIDE_URL: 'https://docs.manta.network/docs/Introduction',
+    MAINNET_BUG_REPORT: 'https://discord.gg/PRDBTChSsF',
     DOLPHIN_GUIDE_URL: 'https://docs.manta.network/docs/Introduction',
     DOLPHIN_BUG_REPORT:
       'https://docs.google.com/forms/d/e/1FAIpQLScAIuDuztZoKHOlpJNC-9FlVdYJpMBLcztQCvT3IQ0FGe7GaA/viewform',
@@ -75,12 +77,20 @@ const Menu = () => {
 
   const DotMenuContent = () => (
     <div className="w-60 flex-column flex-grow mt-3 bg-fifth rounded-lg gap-y-4 py-4 px-1 absolute right-0 top-full z-50 border border-white-light">
-      {/* {theme === themeType.Dark ? <ChangeThemeMenuItem theme={themeType.Light} setTheme={setTheme} name={'Light Mode'} icon={faSun} /> : <ChangeThemeMenuItem theme={themeType.Dark} setTheme={setTheme} name={'Dark Mode'} icon={faMoon} />} */}
-      <MenuItem
-        link={config.CALAMARI_URL}
-        name={'Calamari Website'}
-        icon="CalamariWebsite"
-      />
+      {config.NETWORK_NAME === 'Calamari' ? (
+        <MenuItem
+          link={config.CALAMARI_URL}
+          name={'Calamari Website'}
+          icon="CalamariWebsite"
+        />
+      ) :
+        (
+          <MenuItem
+            link={config.MANTA_URL}
+            name={'Manta Website'}
+            icon="MantaWebsite"
+          />
+        )}
       <MenuItem link={config.TWITTER_URL} name={'Twitter'} icon="Twitter" />
       <MenuItem link={links.DISCORD_URL} name={'Discord'} icon="Discord" />
       <MenuItem link={links.TELEGRAM_URL} name={'Telegram'} icon="Telegram" />
@@ -102,12 +112,12 @@ const Menu = () => {
           icon="BugReport"
         />
       ) : null}
-      {config.NETWORK_NAME === 'Calamari' ? (
-        <MenuItem link={links.CALAMARI_GUIDE_URL} name={'Docs'} icon="Docs" />
+      {config.NETWORK_NAME !== NETWORK.DOLPHIN ? (
+        <MenuItem link={links.MAINNET_GUIDE_URL} name={'Docs'} icon="Docs" />
       ) : null}
-      {config.NETWORK_NAME === 'Calamari' ? (
+      {config.NETWORK_NAME !==  NETWORK.DOLPHIN ? (
         <MenuItem
-          link={links.CALAMARI_BUG_REPORT}
+          link={links.MAINNET_BUG_REPORT}
           name={'Bug Report'}
           icon="BugReport"
         />

@@ -82,6 +82,27 @@ PrivateWalletImplementation.propTypes = {
   children: PropTypes.any
 };
 
+export const MantaBasePage = ({ children }) => {
+  return (
+    <ConfigContextProvider network={NETWORK.MANTA}>
+      <MantaWalletIntroModal />
+      <BasePage>
+        <UsdPricesContextProvider>
+          <MetamaskContextProvider>
+            <PrivateWalletImplementation>
+              <PrivateWalletContextProvider>
+                <ZkAccountBalancesContextProvider>
+                  {children}
+                </ZkAccountBalancesContextProvider>
+              </PrivateWalletContextProvider>
+            </PrivateWalletImplementation>
+          </MetamaskContextProvider>
+        </UsdPricesContextProvider>
+      </BasePage>
+    </ConfigContextProvider>
+  );
+};
+
 export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>

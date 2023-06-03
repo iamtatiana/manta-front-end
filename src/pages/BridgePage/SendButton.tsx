@@ -12,6 +12,7 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Chain from 'types/Chain';
+import { Network } from 'manta.js';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 
@@ -92,7 +93,9 @@ const ValidationButton = () => {
     );
   };
 
-  return <ValidationText validationMsg="System Maintenance" />;
+  if (config.NETWORK_NAME === Network.Calamari) {
+    return <ValidationText validationMsg="System Maintenance" />;
+  }
 
   const shouldShowSendButton =
     !disabled && !isConnectWallet && !validationMsg && !isSwitchNetwork;
