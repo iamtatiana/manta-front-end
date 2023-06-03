@@ -3,12 +3,15 @@ import { useModal } from 'hooks';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Icon from 'components/Icon';
+import { useConfig } from 'contexts/configContext';
+import AssetType from 'types/AssetType';
 
 const blockedCountries = ['US', 'CN', 'IR', 'CU', 'KP', 'SY', 'MM'];
 const blockedRegions = ['Crimea', 'Luhans\'k', 'Donets\'k'];
 const IPDATA_APIKEY = 'f47f1429b7dfb0d01a6d049b7cd283087b1b75fc3891f249d9c0919b';
 
 function IPBlockingModal() {
+  const config = useConfig();
   const { ModalWrapper, showModal, hideModal } = useModal({ closeDisabled: true });
   const navigate = useNavigate();
 
@@ -43,6 +46,9 @@ function IPBlockingModal() {
     navigate(path);
   };
 
+  const nativeToken = AssetType.Native(config);
+  const network = config.NETWORK_NAME.toLowerCase();
+
   const navs = [
     {
       name: 'NPO',
@@ -50,11 +56,11 @@ function IPBlockingModal() {
     },
     {
       name: 'Bridge',
-      path: '/bridge'
+      path: `/${network}/bridge`
     },
     {
-      name: '$KMA Staking',
-      path: '/stake'
+      name: `$${nativeToken.baseTicker} Staking`,
+      path: `/${network}/stake`
     },
   ];
 
