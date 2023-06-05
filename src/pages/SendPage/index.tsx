@@ -20,13 +20,6 @@ const SendPage = () => {
     config.MIN_REQUIRED_WALLET_VERSION,
     mantaWalletVersion
   );
-
-  const { pathname } = useLocation();
-  const isMantaNetworkMantaPayPage = pathname.includes('/manta/transact');
-  if (isMantaNetworkMantaPayPage) {
-    console.log('config', config);
-  }
-
   useEffect(() => {
     if (outdated) {
       // use setTimeout to fix two Notifications overlap issue

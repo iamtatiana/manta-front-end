@@ -315,3 +315,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Changed
 
 - [\#1075](https://github.com/Manta-Network/manta-front-end/pull/1075) Fix signAndSend nonce
+
+
+## [6.0.4] - 2023-6-06
+
+### Changed
+
+- [\#1090](https://github.com/Manta-Network/manta-front-end/pull/1090) Fix error building transactions while in Manta Signer mode

@@ -21,8 +21,7 @@ const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   const { send, isToPrivate, isToPublic, isPublicTransfer, isPrivateTransfer } =
     useSend();
   const { txStatus } = useTxStatus();
-  const disabled = true;
-  // const disabled = txStatus?.isProcessing() || senderLoading || receiverLoading;
+  const disabled = txStatus?.isProcessing() || senderLoading || receiverLoading;
 
   let buttonLabel;
   if (isToPrivate()) {
@@ -160,10 +159,6 @@ const ValidationSendButton = ({ showModal }) => {
     )}`;
   }
 
-  if (config.NETWORK_NAME === NETWORK.Calamari) {
-    validationMsg = 'System Maintenance';
-  }
-
   const ValidationText = ({ validationMsg }) => {
     return (
       <div
@@ -174,8 +169,6 @@ const ValidationSendButton = ({ showModal }) => {
       </div>
     );
   };
-
-  return <ValidationText validationMsg={validationMsg} />;
 
   return (
     <>

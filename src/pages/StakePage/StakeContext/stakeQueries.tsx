@@ -14,26 +14,26 @@ export const getCollatorComission = async (api) => {
   return new Decimal(collatorComissionRaw.toHuman().slice(0, -1)).div(new Decimal(100));
 };
 
-// Gets total KMA issuance across all accounts
-const _getTotalKMAIssuance = async (api, config) => {
+// Gets total native token issuance across all accounts
+const _getTotalIssuance = async (api, config) => {
   const totalIssuanceRaw = await api.query.balances.totalIssuance();
   return Balance.Native(config, new BN(totalIssuanceRaw.toString()));
 };
 
 // Gets approximate amount of the new native token generated yearly
 export const getAnnualInflation = async (api, config) => {
-  const totalKMAIssuance = await _getTotalKMAIssuance(api, config);
+  const totalIssuance = await _getTotalIssuance(api, config);
   const inflationConfig = await api.query.parachainStaking.inflationConfig();
   const annualInflationPercent = new Decimal(inflationConfig.annual.ideal.toHuman().slice(0, -1));
   const annualInflationRatio = annualInflationPercent.div(100);
-  const totalKMAIssuanceAtomicUnits = new Decimal(totalKMAIssuance.valueAtomicUnits.toString());
-  const annualInflationAtomicUnits = totalKMAIssuanceAtomicUnits.mul(annualInflationRatio);
+  const totalIssuanceAtomicUnits = new Decimal(totalIssuance.valueAtomicUnits.toString());
+  const annualInflationAtomicUnits = totalIssuanceAtomicUnits.mul(annualInflationRatio);
   return Balance.Native(config, new BN(annualInflationAtomicUnits.round().toFixed()));
 };
 
 // Gets active status for a list of collator addresses
 export const getCollatorsAreActive = async (api, collatorAddresses) => {
-  const activeCollators = (await api.query.parachainStaking.selectedCandidates()).map(collator => collator.toString());;
+  const activeCollators = (await api.query.parachainStaking.selectedCandidates()).map(collator => collator.toString());
   return collatorAddresses.map(address => activeCollators.includes(address));
 };
 

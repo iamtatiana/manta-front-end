@@ -59,9 +59,10 @@ export const StakeModal = ({ hideModal }) => {
     userAvailableBalance
   )}`;
   const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
+  const nativeTokenTicker = AssetType.Native(config).baseTicker;
   const delegationAmountNum = selectedCollatorDelegation
     ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
-    : '0 KMA';
+    : `0 ${nativeTokenTicker}`;
 
   const minimumStakeNum = `${minStakeAmountString}`;
 

@@ -46,9 +46,10 @@ export const UnstakeModal = ({ hideModal }) => {
   const [errorMessage, setErrorMessage] = useState(null);
   const [warningMessage, setWarningMessage] = useState(null);
 
+  const nativeTokenTicker = AssetType.Native(config).baseTicker;
   const delegationAmountNum = selectedCollatorDelegation
     ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
-    : '0 KMA';
+    : `0 ${nativeTokenTicker}`;
 
   const minimumStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const minimumStakeNum = `${minimumStakeAmountString}`;

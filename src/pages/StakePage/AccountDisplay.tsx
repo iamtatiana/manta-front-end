@@ -65,11 +65,11 @@ const AccountDisplay = () => {
               {totalBalanceDisplayString}
             </h1>
             <button
-              disabled
               onClick={onClickStartStaking}
               className={
-                'mt-8 p-3 cursor-not-allowed brightness-50 filter text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full'
-              }>
+                'mt-8 p-3 cursor-pointer text-sm btn-hover unselectable-text text-center rounded-lg btn-primary w-full'
+              }
+            >
               Start staking
             </button>
           </div>
@@ -106,7 +106,8 @@ const AccountDisplay = () => {
                     href={blockExplorerRewardsLink}
                     className="text-link text-xss"
                     target="_blank"
-                    rel="noreferrer">
+                    rel="noreferrer"
+                  >
                     More
                   </a>
                 </div>
@@ -116,15 +117,14 @@ const AccountDisplay = () => {
         </div>
         <div className="-mt-2 max-w-sm flex flex-grow flex-col items-center justify-center flex-shrink-0 pl-6 pr-34 py-6 bg-secondary rounded-lg relative z-20 shadow-2xl">
           <div className="text-left">
-            <h2 className="text-white font-medium text-base font-red-hat-text">
-              Resources
-            </h2>
+            <h2 className="text-white font-medium text-base font-red-hat-text">Resources</h2>
             <div className="mt-4">
               <a
                 href="https://docs.manta.network/docs/calamari/Staking/Overview"
                 className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
-                rel="noreferrer">
+                rel="noreferrer"
+              >
                 Staking documentation
               </a>
             </div>
