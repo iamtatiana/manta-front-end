@@ -65,6 +65,9 @@ export const KeyringContextProvider = ({
 }) => {
   const [isKeyringInit, setIsKeyringInit] = useState(false);
   const [keyringAddresses, setKeyringAddresses] = useState<string[]>([]);
+  const [web3ExtensionInjected, setWeb3ExtensionInjected] = useState<string[]>(
+    []
+  );
   const [selectedWallet, setSelectedWallet] = useState<Wallet>(
     getLastAccessedWallet()
   );
@@ -251,20 +254,39 @@ export const KeyringContextProvider = ({
   }, [selectedWallet, keyringAddresses]);
 
   const initKeyring = useCallback(async () => {
-    try {
-      await cryptoWaitReady();
-      const isCalamari = window?.location?.pathname?.includes('calamari');
-      keyring.loadAll(
-        {
-          ss58Format: isCalamari ? SS58.CALAMARI : SS58.DOLPHIN
-        },
-        []
-      );
-      setIsKeyringInit(true);
-    } catch (e: any) {
-      console.error('initKeyring', e.message);
+    if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
+      try {
+        await cryptoWaitReady();
+        const isCalamari = window?.location?.pathname?.includes('calamari');
+        keyring.loadAll(
+          {
+            ss58Format: isCalamari ? SS58.CALAMARI : SS58.DOLPHIN
+          },
+          []
+        );
+        setIsKeyringInit(true);
+      } catch (e: any) {
+        console.error('initKeyring', e.message);
+      }
     }
-  }, []);
+  }, [isKeyringInit, web3ExtensionInjected.length]);
+
+  const getWeb3ExtensionInjected = useCallback(async () => {
+    if (!isKeyringInit) {
+      if (
+        (window as any).injectedWeb3 &&
+        Object.getOwnPropertyNames((window as any).injectedWeb3).length !== 0
+      ) {
+        setWeb3ExtensionInjected(
+          Object.getOwnPropertyNames((window as any).injectedWeb3)
+        );
+      }
+    }
+  }, [isKeyringInit]);
+
+  useEffect(() => {
+    getWeb3ExtensionInjected();
+  }, [getWeb3ExtensionInjected]);
 
   useEffect(() => {
     const timer = setInterval(() => {
