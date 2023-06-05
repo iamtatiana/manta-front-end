@@ -289,17 +289,8 @@ export const KeyringContextProvider = ({
   }, [getWeb3ExtensionInjected]);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      if (!isKeyringInit) {
-        initKeyring();
-      } else {
-        clearInterval(timer);
-      }
-    }, 500);
-    return () => {
-      clearInterval(timer);
-    };
-  }, [initKeyring, isKeyringInit]);
+    initKeyring();
+  }, [initKeyring]);
 
   /** Keyring Init Logic */
   useEffect(() => {
