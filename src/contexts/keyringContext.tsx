@@ -25,8 +25,7 @@ import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
-import isObjectEmpty from 'utils/validation/isEmpty';
-import { useActive } from 'hooks/useActive';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 
 type KeyringContextValue = {
   keyring: Keyring;
@@ -35,17 +34,21 @@ type KeyringContextValue = {
   selectedWallet: Wallet;
   keyringIsBusy: MutableRefObject<boolean>;
   authedWalletList: string[];
+  walletConnectingErrorMessages: { [key: string]: string };
   connectWallet: (
     extensionName: string,
     saveToStorage?: boolean,
     isFromConnectModal?: boolean
   ) => Promise<boolean | undefined>;
   connectWalletExtensions: (extensionNames: string[]) => void;
-  refreshWalletAccounts: (wallet: Wallet) => Promise<string | void>;
+  refreshWalletAccounts: (
+    wallet: Wallet
+  ) => Promise<string | undefined> | undefined;
   getLatestAccountAndPairs: () => {
     account: KeyringPair;
     pairs: KeyringPair[];
   };
+  resetWalletConnectingErrorMessages: () => void;
 };
 const KeyringContext = createContext<KeyringContextValue | null>(null);
 
@@ -73,7 +76,6 @@ export const KeyringContextProvider = ({
   const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
   const [authedWalletList, setAuthedWalletList] = useState<string[]>([]);
   const keyringIsBusy = useRef(false);
-  const isActive = useActive();
 
   const [walletConnectingErrorMessages, setWalletConnectingErrorMessages] =
     useState(getInitialWalletConnectingErrorMessages());
@@ -242,15 +244,18 @@ export const KeyringContextProvider = ({
   };
 
   useEffect(() => {
-    // if not adding keyringAddresses as a dep, interval refreshWalletAccounts() is always using old keyringAddresses value
-    const hasSelectedWallet = !isObjectEmpty(selectedWallet);
-    const interval = setInterval(async () => {
-      isActive && hasSelectedWallet && refreshWalletAccounts(selectedWallet);
-    }, 1000);
-    return () => {
-      interval && clearInterval(interval);
-    };
-  }, [selectedWallet, keyringAddresses]);
+    let unsub: any = null;
+    async function subAccounts() {
+      if (!selectedWallet?.subscribeAccounts) {
+        return;
+      }
+      unsub = await selectedWallet.subscribeAccounts(() => {
+        refreshWalletAccounts(selectedWallet);
+      });
+    }
+    subAccounts().catch(console.error);
+    return () => unsub && unsub();
+  }, [selectedWallet]);
 
   const initKeyring = useCallback(async () => {
     if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
@@ -262,14 +267,18 @@ export const KeyringContextProvider = ({
       } else if (isManta) {
         ss58Format = SS58.MANTA;
       }
-
-      keyring.loadAll(
-        {
-          ss58Format
-        },
-        []
-      );
-      setIsKeyringInit(true);
+      try {
+        await cryptoWaitReady();
+        keyring.loadAll(
+          {
+            ss58Format
+          },
+          []
+        );
+        setIsKeyringInit(true);
+      } catch (e: any) {
+        console.error('initKeyring', e.message);
+      }
     }
   }, [isKeyringInit, web3ExtensionInjected.length]);
 

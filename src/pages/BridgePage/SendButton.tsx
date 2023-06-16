@@ -9,7 +9,6 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Chain from 'types/Chain';
-import { Network } from 'manta.js';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
