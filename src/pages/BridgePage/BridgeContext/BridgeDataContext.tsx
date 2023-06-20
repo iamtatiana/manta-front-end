@@ -11,9 +11,9 @@ import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
+import { useActive } from 'hooks/useActive';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
-import { useActive } from 'hooks/useActive';
 
 const BridgeDataContext = React.createContext();
 
@@ -279,7 +279,7 @@ export const BridgeDataContextProvider = (props) => {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection
-      originChain.name === 'karura' && await originXcmAdapter.wallet.isReady;
+      (originChain.name === 'karura'  || originChain.name === 'acala') && await originXcmAdapter.wallet.isReady;
       const inputConfigParams = getInputConfigParams();
       const inputConfigObservable = originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);

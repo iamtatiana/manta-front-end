@@ -21,7 +21,11 @@ const DolphinAssetIds = {
 };
 
 const MantaAssetIds = {
-  MANTA: 1
+  MANTA: 1,
+  DOT: 8,
+  USDT: 9,
+  GLMR: 10,
+  ACA: 11,
 };
 
 const getAssetIds = (config) => {
@@ -135,6 +139,20 @@ export default class AssetType {
     );
   }
 
+  static Acala(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).ACA,
+      'Acala',
+      'ACA',
+      'aca',
+      12,
+      new BN('100000000000'),
+      isPrivate,
+      'karura',
+      config.IS_TESTNET,
+    );
+  }
+
   static Karura(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).KAR,
@@ -148,6 +166,21 @@ export default class AssetType {
       config.IS_TESTNET,
     );
   }
+
+  static Polkadot(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).KSM,
+      'Polkadot',
+      'DOT',
+      'polkadot',
+      18,
+      new BN('500000000'),
+      isPrivate,
+      'polkadot',
+      config.IS_TESTNET,
+    );
+  }
+
   static Kusama(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).KSM,
@@ -221,7 +254,9 @@ export default class AssetType {
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        AssetType.Manta(config, isPrivate)
+        AssetType.Manta(config, isPrivate),
+        AssetType.Polkadot(config, isPrivate),
+        AssetType.Acala(config, isPrivate),
       ];
     }
   }

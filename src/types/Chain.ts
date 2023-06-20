@@ -1,9 +1,9 @@
 // @ts-nocheck
 import NETWORK from 'constants/NetworkConstants';
-import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
+import { KaruraAdapter, AcalaAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
 import { CalamariAdapter, MantaAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
-import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
-import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
+import { KusamaAdapter, PolkadotAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
+import { MoonriverAdapter, MoonbeamAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -112,7 +112,7 @@ export default class Chain {
       'mantaLogo',
       config.MANTA_SOCKET,
       config.MANTA_SUBSCAN_URL,
-      [AssetType.Manta(config)],
+      [AssetType.Manta(config), AssetType.Acala(config), AssetType.Polkadot(config)],
       AssetType.Manta(config),
       MantaAdapter,
       types
@@ -133,6 +133,20 @@ export default class Chain {
     );
   }
 
+  static Polkadot(config) {
+    return new Chain(
+      'polkadot',
+      'Polkadot',
+      null,
+      'polkadot',
+      config.POLKADOT_SOCKET,
+      config.POLKADOT_SUBSCAN_URL,
+      [AssetType.Polkadot(config)],
+      AssetType.Polkadot(config),
+      PolkadotAdapter
+    );
+  }
+
   static Kusama(config) {
     return new Chain(
       'kusama',
@@ -144,6 +158,22 @@ export default class Chain {
       [AssetType.Kusama(config)],
       AssetType.Kusama(config),
       KusamaAdapter
+    );
+  }
+
+  static Acala(config) {
+    return new Chain(
+      'acala',
+      'Acala',
+      2000,
+      'kar',
+      config.ACALA_SOCKET,
+      config.ACALA_SUBSCAN_URL,
+      [AssetType.Acala(config), AssetType.Polkadot(config)],
+      AssetType.Acala(config),
+      AcalaAdapter,
+      null,
+      options
     );
   }
 
@@ -208,6 +238,8 @@ export default class Chain {
         Chain.Karura(config),
         Chain.Moonriver(config)
       ];
+    } else if (config.NETWORK_NAME === NETWORK.MANTA) {
+      return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config)];
     }
   }
 
@@ -223,6 +255,7 @@ export default class Chain {
   }
 
   getXcmAdapter() {
+    console.log('this.xcmAdapterClass', this.xcmAdapterClass);
     return new this.xcmAdapterClass();
   }
 

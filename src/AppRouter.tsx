@@ -44,7 +44,7 @@ const MantaRoutes = () => {
       <Routes>
         <Route path="manta">
           <Route index element={<Navigate to="transact" />} />
-          {/* <Route path="bridge" element={<BridgePage />} exact /> */}
+          <Route path="bridge" element={<BridgePage />} exact />
           <Route path="transact" element={<SendPage />} exact />
           <Route path="stake" element={<StakePage />} exact />
         </Route>

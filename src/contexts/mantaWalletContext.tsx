@@ -1,9 +1,9 @@
+import NETWORK from 'constants/NetworkConstants';
+import WALLET_NAME from 'constants/WalletConstants';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
 import { WarningNotification } from 'components/NotificationContent';
-import NETWORK from 'constants/NetworkConstants';
-import WALLET_NAME from 'constants/WalletConstants';
 import { useKeyring } from 'contexts/keyringContext';
 import { Notification } from 'element-react';
 import {

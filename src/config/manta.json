@@ -11,8 +11,8 @@
     "TWITTER_URL": "https://twitter.com/MantaNetwork",
     "MANTA_URL": "https://manta.network/",
     "MANTA_SOCKET": "wss://c1.manta.seabird.systems",
-    "POLKADOT_SOCKET": "wss://rpc.polkadot.io",
-    "ACALA_SOCKET": "wss://acala-rpc-0.aca-api.network",
-    "MOONBEAM_SOCKET": "wss://wss.api.moonbeam.network",
-    "MOONBEAM_RPC": "https://rpc.api.moonbeam.network"
+    "POLKADOT_SOCKET": "wss://v1.paleblue.systems",
+    "ACALA_SOCKET": "wss://c1.acala.paleblue.systems",
+    "MOONBEAM_SOCKET": "wss://c1.moonbeam.paleblue.systems",
+    "MOONBEAM_RPC": "todo"
 }
