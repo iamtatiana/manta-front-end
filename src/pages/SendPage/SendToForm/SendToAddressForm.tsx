@@ -3,6 +3,7 @@ import React from 'react';
 import { useSend } from '../SendContext';
 import SendToAddressInput from './SendToAddressInput';
 import ReceiverBalanceDisplay from './ReceiverBalanceDisplay';
+import SendErrorDisplay from './SendErrorDisplay';
 
 const SendToAddressForm = () => {
   const { isPrivateTransfer, isPublicTransfer } = useSend();
@@ -13,6 +14,7 @@ const SendToAddressForm = () => {
       {
         shouldShowAddressInput ? <SendToAddressInput /> : <ReceiverBalanceDisplay />
       }
+      <SendErrorDisplay />
     </>
   );
 };
