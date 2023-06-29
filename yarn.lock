@@ -36,7 +36,7 @@
     "@polkadot/api" "^9.9.1"
     "@polkadot/rpc-core" "^9.9.1"
 
-"@acala-network/api@^5.0.2", "@acala-network/api@^5.1.1":
+"@acala-network/api@^5.0.2":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-5.1.1.tgz#93ab0931c6d367b485e2fffaf59f6f8fb4b22054"
   integrity sha512-hO9fWkj5/MeD4v5XYsWlrrwBG70o6VErhwI/xzwx1rs5Fq5b/Mx39nUyZMjT3NYY5xT1o/BaCMoo6pPbudQtMA==
@@ -2816,7 +2816,7 @@
     "@polkadot/util" "10.4.2"
     "@polkadot/util-crypto" "10.4.2"
 
-"@polkadot/keyring@^12.2.1", "@polkadot/keyring@^12.3.1", "@polkadot/keyring@^12.3.2":
+"@polkadot/keyring@^12.3.1", "@polkadot/keyring@^12.3.2":
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-12.3.2.tgz#112a0c28816a1f47edad6260dc94222c29465a54"
   integrity sha512-NTdtDeI0DP9l/45hXynNABeP5VB8piw5YR+CbUxK2e36xpJWVXwbcOepzslg5ghE9rs8UKJb30Z/HqTU4sBY0Q==
@@ -3439,7 +3439,7 @@
     ed2curve "^0.3.0"
     tweetnacl "^1.0.3"
 
-"@polkadot/util-crypto@12.3.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.3.1", "@polkadot/util-crypto@^12.3.2":
+"@polkadot/util-crypto@12.3.2", "@polkadot/util-crypto@^12.3.1", "@polkadot/util-crypto@^12.3.2":
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-12.3.2.tgz#42d810886904e06fa6e5db254c15f6ef80f4ab72"
   integrity sha512-pTpx+YxolY0BDT4RcGmgeKbHHD/dI6Ll9xRsqmVdIjpcVVY20uDNTyXs81ZNtfKgyod1y9JQkfNv2Dz9iEpTkQ==
@@ -8323,7 +8323,7 @@ ethereum-blockies-base64@^1.0.2:
   dependencies:
     pnglib "0.0.1"
 
-ethers@^5.6.2, ethers@^5.6.9, ethers@~5.7.0:
+ethers@^5.6.2, ethers@^5.6.4, ethers@^5.6.9, ethers@~5.7.0:
   version "5.7.2"
   resolved "https://registry.yarnpkg.com/ethers/-/ethers-5.7.2.tgz#3a7deeabbb8c030d4126b24f84e525466145872e"
   integrity sha512-wswUsmWo1aOK8rR7DIKiWSw9DbLWe6x98Jrn8wcTflTVvaXhAMaB5zGAXy0GYQEQp9iO1iSHWVyARQm11zUtyg==
@@ -11262,16 +11262,17 @@ manta-extension-connect@^1.2.3:
   resolved "https://registry.yarnpkg.com/manta-extension-connect/-/manta-extension-connect-1.2.3.tgz#c6662ddc3a2ac34d104cd609e64d0bbe8b0cdc42"
   integrity sha512-YbxPSkGxImq5SR+morZHo12sVlZWRJeOzibyBXbstVrQITe0Um3Hesi+dNT24yd/+pfh14U/QPJssirAZUydJA==
 
-"manta-polkawallet-bridge@file:../bridge":
-  version "0.5.3-dev1"
+manta-polkawallet-bridge@1.0.0-dev0:
+  version "1.0.0-dev0"
+  resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge/-/manta-polkawallet-bridge-1.0.0-dev0.tgz#f6a43952e3ea19c16afae574d76fd37d1e380121"
+  integrity sha512-XzPY1wrz34ecHW1tf5iJi3Q7h6rTP58yoW+lY6wHyp5ac2f1ey1IlatSMr+CdnZZN1E7jCyDOJHw8lnNZ+XfnQ==
   dependencies:
-    "@acala-network/api" "^5.1.1"
+    "@acala-network/api" "^5.0.2"
     "@acala-network/sdk" "^4.1.8-14"
     "@acala-network/sdk-core" "^4.1.8-14"
     "@polkadot/apps-config" "^0.127.1"
-    "@polkadot/keyring" "^12.2.1"
-    "@polkadot/util-crypto" "^12.2.1"
     axios "^0.27.2"
+    ethers "^5.6.4"
     lodash "^4.17.20"
 
 manta.js@3.0.2:
