@@ -1,6 +1,6 @@
 # Manta Front End
 
-Web app for interacting with Manta Network, Calamari Network, and Dolphin Testnet
+Web app for interacting with Manta Network and Calamari Network, and Dolphin Testnet
 
 ## Getting started (for opensource development)
 
@@ -28,7 +28,7 @@ Web app for interacting with Manta Network, Calamari Network, and Dolphin Testne
     ```bash
     cargo install tauri-cli
 
-    cargo tauri build --features=unsafe-disable-cors 
+    cargo tauri build --features=unsafe-disable-cors
     ```
 
 7. Open the local disable-cors version of manta-signer by following [guides](https://docs.manta.network/docs/guides/MantaSigner).

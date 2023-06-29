@@ -1,5 +1,4 @@
 import classNames from 'classnames';
-import { dolphinConfig } from 'config';
 import { useConfig } from 'contexts/configContext';
 import { NavLink } from 'react-router-dom';
 
@@ -12,8 +11,6 @@ const NAVLINKPATH = {
 const NavLinks = () => {
   const { NETWORK_NAME } = useConfig();
   const networkUrlParam = `/${NETWORK_NAME.toLowerCase()}`;
-
-  const isDolphinPage = NETWORK_NAME === dolphinConfig.NETWORK_NAME;
   const isActiveTransactPage = window.location.pathname.includes(
     NAVLINKPATH.Transact
   );
@@ -25,9 +22,10 @@ const NavLinks = () => {
   );
   return (
     <div
-      className={`ml-5 flex flex-row justify-between ${
-        isDolphinPage ? 'w-96' : 'w-128'
-      }  shadow-2xl items-center text-sm font-red-hat-text`}>
+      className={classNames(
+        'ml-5 flex flex-row justify-between w-128 shadow-2xl',
+        'items-center text-sm font-red-hat-text'
+      )}>
       <NavLink
         to={`${networkUrlParam}${NAVLINKPATH.Transact}`}
         className={classNames(
@@ -48,28 +46,23 @@ const NavLinks = () => {
         )}>
         Bridge
       </NavLink>
-      {!isDolphinPage && (
-        <a
-          href="https://npo.manta.network"
-          className="py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100"
-          target="_blank"
-          rel="noreferrer">
+      <a
+        href="https://npo.manta.network"
+        className="py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100"
+        target="_blank"
+        rel="noreferrer">
           NPO
-        </a>
-      )}
-
-      {!isDolphinPage && (
-        <NavLink
-          to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
-          className={classNames(
-            'py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100',
-            {
-              ' text-white text-opacity-100': isActiveStakePage
-            }
-          )}>
+      </a>
+      <NavLink
+        to={`${networkUrlParam}${NAVLINKPATH.Stake}`}
+        className={classNames(
+          'py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100',
+          {
+            ' text-white text-opacity-100': isActiveStakePage
+          }
+        )}>
           Staking
-        </NavLink>
-      )}
+      </NavLink>
       <a
         href="https://forum.manta.network/"
         className="py-3 text-white text-opacity-60 text-center hover:text-white hover:text-opacity-100"

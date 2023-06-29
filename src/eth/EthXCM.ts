@@ -60,10 +60,10 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
   const amount = balance.valueAtomicUnits.toString();
   const accountId = addressToAccountId(address);
   let parachainId;
-  if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-    parachainId = Chain.DolphinSkinnedCalamari(config).parachainId;
-  } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+  if (config.NETWORK_NAME === NETWORK.CALAMARI) {
     parachainId = Chain.Calamari(config).parachainId;
+  } else {
+    throw new Error('Unsupported network');
   }
   const destination = getXtokensPrecompileLocation(parachainId, accountId);
   const weight = CALAMARI_DESTINATION_WEIGHT;

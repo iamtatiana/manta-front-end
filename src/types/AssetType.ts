@@ -11,15 +11,6 @@ const CalamariAssetIds = {
   KSM: 12
 };
 
-const DolphinAssetIds = {
-  DOL: 1,
-  KAR: 8,
-  AUSD: 9,
-  LKSM: 10,
-  MOVR: 11,
-  KSM: 12
-};
-
 const MantaAssetIds = {
   MANTA: 1,
   DOT: 8,
@@ -31,8 +22,6 @@ const MantaAssetIds = {
 const getAssetIds = (config) => {
   if (config.NETWORK_NAME === NETWORK.CALAMARI) {
     return CalamariAssetIds;
-  } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-    return DolphinAssetIds;
   } else {
     return MantaAssetIds;
   }
@@ -86,8 +75,6 @@ export default class AssetType {
   static Native(config) {
     if (config.NETWORK_NAME === 'Calamari') {
       return AssetType.Calamari(config, false);
-    } else if (config.NETWORK_NAME === 'Dolphin') {
-      return AssetType.DolphinSkinnedCalamari(config, false);
     } else {
       return AssetType.Manta(config, false);
     }
@@ -105,22 +92,6 @@ export default class AssetType {
       'calamari-network', // todo: use actual manta coingecko id when available
       config.IS_TESTNET,
       true
-    );
-  }
-
-  static DolphinSkinnedCalamari(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).DOL,
-      'Dolphin',
-      'DOL',
-      'dolphin',
-      12,
-      new BN('100000000000'),
-      isPrivate,
-      'dolphin',
-      config.IS_TESTNET,
-      true,
-      'KMA'
     );
   }
 
@@ -238,14 +209,7 @@ export default class AssetType {
   }
 
   static AllCurrencies(config, isPrivate) {
-    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-      return [
-        AssetType.DolphinSkinnedCalamari(config, isPrivate),
-        AssetType.Karura(config, isPrivate),
-        AssetType.Kusama(config, isPrivate),
-        AssetType.Moonriver(config, isPrivate)
-      ];
-    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+    if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         AssetType.Calamari(config, isPrivate),
         AssetType.Karura(config, isPrivate),

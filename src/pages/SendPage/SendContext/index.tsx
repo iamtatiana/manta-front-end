@@ -376,10 +376,7 @@ export const SendContextProvider = (props) => {
       return null;
     }
     let feeEstimate;
-    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
-      if (usingMantaWallet && txFee?.current) feeEstimate = txFee.current;
-    } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+    if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
       if (usingMantaWallet && txFee?.current) feeEstimate = txFee.current;
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
@@ -404,20 +401,10 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       (isToPrivate() || isPublicTransfer())
     ) {
-      let suggestedMinFeeBalance;
-      if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          150
-        );
-      } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          5
-        );
-      } else {
-        throw new Error('Unknown network');
-      }
+      const suggestedMinFeeBalance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        5
+      );
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );

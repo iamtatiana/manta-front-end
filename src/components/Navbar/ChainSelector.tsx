@@ -25,10 +25,6 @@ const ChainDropdownItem = ({ prevSubPath, node, activeNode }) => {
   };
 
   const handleNavClick = (pre, cur) => {
-    const navToDolphin = cur === `/${NETWORK.DOLPHIN.toLowerCase()}`;
-    if (navToDolphin && location.pathname.includes('stake')) {
-      return navigate(cur);
-    }
     navigate(`${location.pathname.replace(pre, cur)}`);
   };
 

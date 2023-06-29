@@ -59,36 +59,6 @@ export default class Chain {
     this.api = null;
   }
 
-  static Dolphin(config) {
-    return new Chain(
-      'dolphin',
-      'Dolphin',
-      9997,
-      'dolphin',
-      config.DOLPHIN_SOCKET,
-      config.DOLPHIN_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
-      AssetType.DolphinSkinnedCalamari(config),
-      CalamariAdapter,
-      types
-    );
-  }
-
-  static DolphinSkinnedCalamari(config) {
-    return new Chain(
-      'calamari',
-      'Dolphin',
-      2084,
-      'dolphin',
-      config.DOLPHIN_SOCKET,
-      config.DOLPHIN_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
-      AssetType.DolphinSkinnedCalamari(config),
-      CalamariAdapter,
-      types
-    );
-  }
-
   static Calamari(config) {
     return new Chain(
       'calamari',
@@ -227,13 +197,6 @@ export default class Chain {
     if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         Chain.Calamari(config),
-        Chain.Kusama(config),
-        Chain.Karura(config),
-        Chain.Moonriver(config)
-      ];
-    } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-      return [
-        Chain.DolphinSkinnedCalamari(config),
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config)

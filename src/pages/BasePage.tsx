@@ -127,27 +127,3 @@ export const CalamariBasePage = ({ children }) => {
 CalamariBasePage.propTypes = {
   children: PropTypes.any
 };
-
-export const DolphinBasePage = ({ children }) => {
-  return (
-    <ConfigContextProvider network={NETWORK.DOLPHIN}>
-      <BasePage>
-        <UsdPricesContextProvider>
-          <MetamaskContextProvider>
-            <PrivateWalletImplementation>
-              <PrivateWalletContextProvider>
-                <ZkAccountBalancesContextProvider>
-                  {children}
-                </ZkAccountBalancesContextProvider>
-              </PrivateWalletContextProvider>
-            </PrivateWalletImplementation>
-          </MetamaskContextProvider>
-        </UsdPricesContextProvider>
-      </BasePage>
-    </ConfigContextProvider>
-  );
-};
-
-DolphinBasePage.propTypes = {
-  children: PropTypes.any
-};

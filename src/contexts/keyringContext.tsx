@@ -261,7 +261,7 @@ export const KeyringContextProvider = ({
     if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
       const isCalamari = window?.location?.pathname?.includes('calamari');
       const isManta = window?.location?.pathname?.includes('manta');
-      let ss58Format = SS58.DOLPHIN;
+      let ss58Format;
       if (isCalamari) {
         ss58Format = SS58.CALAMARI;
       } else if (isManta) {

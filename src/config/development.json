@@ -14,13 +14,6 @@
             "logo": "calamariLogo",
             "url": "wss://calamari.systems",
             "explorer": "calamari.subscan.io"
-        },
-        {
-            "name": "Dolphin",
-            "path": "/dolphin",
-            "url": "wss://ws.calamari.seabird.systems",
-            "testnet": true,
-            "explorer": "dolphin.subscan.io"
         }
     ]
 }

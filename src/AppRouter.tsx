@@ -1,7 +1,7 @@
 // @ts-nocheck
 import GlobalContexts from 'contexts/globalContexts';
 import { BridgePage, SendPage, StakePage } from 'pages';
-import { CalamariBasePage, DolphinBasePage, MantaBasePage } from 'pages/BasePage';
+import { CalamariBasePage, MantaBasePage } from 'pages/BasePage';
 import {
   Navigate,
   Route,
@@ -9,19 +9,6 @@ import {
   Routes
 } from 'react-router-dom';
 
-const DolphinRoutes = () => {
-  return (
-    <DolphinBasePage>
-      <Routes>
-        <Route path="dolphin">
-          <Route index element={<Navigate to="transact" />} />
-          <Route path="bridge" element={<BridgePage />} exact />
-          <Route path="transact" element={<SendPage />} exact />
-        </Route>
-      </Routes>
-    </DolphinBasePage>
-  );
-};
 
 const CalamariRoutes = () => {
   return (
@@ -72,7 +59,6 @@ const AppRouter = () => {
         <RedirectRoutes />
         <MantaRoutes />
         <CalamariRoutes />
-        <DolphinRoutes />
       </GlobalContexts>
     </Router>
   );

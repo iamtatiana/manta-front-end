@@ -59,7 +59,6 @@ ChangeThemeMenuItem.propTypes = {
 
 const Menu = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { theme, setTheme } = useContext(ThemeContext);
   const config = useConfig();
 
   const links = {
@@ -68,11 +67,6 @@ const Menu = () => {
     MEDIUM_URL: 'https://mantanetwork.medium.com/',
     MAINNET_GUIDE_URL: 'https://docs.manta.network/docs/Introduction',
     MAINNET_BUG_REPORT: 'https://discord.gg/PRDBTChSsF',
-    DOLPHIN_GUIDE_URL: 'https://docs.manta.network/docs/Introduction',
-    DOLPHIN_BUG_REPORT:
-      'https://docs.google.com/forms/d/e/1FAIpQLScAIuDuztZoKHOlpJNC-9FlVdYJpMBLcztQCvT3IQ0FGe7GaA/viewform',
-    DOLPHIN_FAUCET_URL:
-      'https://docs.manta.network/docs/guides/MantaPay#get-testnet-tokens'
   };
 
   const DotMenuContent = () => (
@@ -95,33 +89,9 @@ const Menu = () => {
       <MenuItem link={links.DISCORD_URL} name={'Discord'} icon="Discord" />
       <MenuItem link={links.TELEGRAM_URL} name={'Telegram'} icon="Telegram" />
       <MenuItem link={links.MEDIUM_URL} name={'Medium'} icon="Medium" />
-      {config.NETWORK_NAME === 'Dolphin' ? (
-        <MenuItem link={links.DOLPHIN_GUIDE_URL} name={'Docs'} icon="Docs" />
-      ) : null}
-      {/* {config.NETWORK_NAME === 'Dolphin' ? (
-        <MenuItem
-          link={links.DOLPHIN_FAUCET_URL}
-          name={'Faucet'}
-          icon={faFaucetDrip}
-        />
-      ) : null} */}
-      {config.NETWORK_NAME === 'Dolphin' ? (
-        <MenuItem
-          link={links.DOLPHIN_BUG_REPORT}
-          name={'Bug Report'}
-          icon="BugReport"
-        />
-      ) : null}
-      {config.NETWORK_NAME !== NETWORK.DOLPHIN ? (
-        <MenuItem link={links.MAINNET_GUIDE_URL} name={'Docs'} icon="Docs" />
-      ) : null}
-      {config.NETWORK_NAME !==  NETWORK.DOLPHIN ? (
-        <MenuItem
-          link={links.MAINNET_BUG_REPORT}
-          name={'Bug Report'}
-          icon="BugReport"
-        />
-      ) : null}
+      <MenuItem link={links.MAINNET_GUIDE_URL} name={'Docs'} icon="Docs" />
+      <MenuItem link={links.MAINNET_BUG_REPORT} name={'Bug Report'} icon="BugReport" />
+
     </div>
   );
 

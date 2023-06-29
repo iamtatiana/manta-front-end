@@ -1,4 +1,3 @@
-import { ReactComponent as dolphin } from 'resources/images/dolphin.svg';
 import { ReactComponent as calamari } from 'resources/images/calamari.svg';
 import { ReactComponent as calamariLogo } from 'resources/images/calamariLogo.svg';
 import { ReactComponent as manta } from 'resources/images/manta.svg';
@@ -96,7 +95,6 @@ import { ReactComponent as BugReport } from 'resources/icons/links/BugReport.svg
 import { ReactComponent as activityRightArrow } from 'resources/icons/activity-right-arrow.svg';
 
 const icons = {
-  dolphin,
   calamari,
   calamariLogo,
   manta,
