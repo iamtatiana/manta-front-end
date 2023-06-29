@@ -11262,10 +11262,10 @@ manta-extension-connect@^1.2.3:
   resolved "https://registry.yarnpkg.com/manta-extension-connect/-/manta-extension-connect-1.2.3.tgz#c6662ddc3a2ac34d104cd609e64d0bbe8b0cdc42"
   integrity sha512-YbxPSkGxImq5SR+morZHo12sVlZWRJeOzibyBXbstVrQITe0Um3Hesi+dNT24yd/+pfh14U/QPJssirAZUydJA==
 
-manta-polkawallet-bridge@1.0.0-dev0:
-  version "1.0.0-dev0"
-  resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge/-/manta-polkawallet-bridge-1.0.0-dev0.tgz#f6a43952e3ea19c16afae574d76fd37d1e380121"
-  integrity sha512-XzPY1wrz34ecHW1tf5iJi3Q7h6rTP58yoW+lY6wHyp5ac2f1ey1IlatSMr+CdnZZN1E7jCyDOJHw8lnNZ+XfnQ==
+manta-polkawallet-bridge@1.0.0-dev2:
+  version "1.0.0-dev2"
+  resolved "https://registry.yarnpkg.com/manta-polkawallet-bridge/-/manta-polkawallet-bridge-1.0.0-dev2.tgz#55e8fbc40ed797fb0fb24d3b2b5c1a4ec18c1b33"
+  integrity sha512-llgUDSr3gNrQFP1Sc8RLJJ0XY4+hJK2i4oBsBl3346Menhv54cmjblbdlqOY1GRiYu7HLU2xUqkKaFYtwiMKIQ==
   dependencies:
     "@acala-network/api" "^5.0.2"
     "@acala-network/sdk" "^4.1.8-14"

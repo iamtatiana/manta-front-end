@@ -169,7 +169,7 @@ export default class Chain {
       'kar',
       config.ACALA_SOCKET,
       config.ACALA_SUBSCAN_URL,
-      [AssetType.Acala(config), AssetType.Polkadot(config)],
+      [AssetType.Acala(config)],
       AssetType.Acala(config),
       AcalaAdapter,
       null,
