@@ -76,8 +76,8 @@
         "wasm-loader": "^1.3.0"
     },
     "scripts": {
-        "start": "craco --max_old_space_size=4096 start",
-        "build": "craco --max_old_space_size=4096 build",
+        "start": "craco --max_old_space_size=8192 start",
+        "build": "craco --max_old_space_size=8192 build",
         "test": "craco test",
         "lint": "npx eslint src/**/*.tsx",
         "eject": "react-scripts eject",
