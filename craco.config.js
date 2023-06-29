@@ -46,9 +46,13 @@ module.exports = {
 
       addBeforeLoader(webpackConfig, loaderByName('file-loader'), wasmLoader);
 
+      webpackConfig.plugins
+      .filter((plugin) => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin')
+      .forEach((plugin) => {
+          plugin.options.memoryLimit = plugin.memoryLimit = 4096;
+      });
+
       return webpackConfig;
     },
   },
 }
-
-
