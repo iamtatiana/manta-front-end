@@ -51,7 +51,6 @@ export const BridgeDataContextProvider = (props) => {
   const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
-
   /**
    *
    * Initialization logic
@@ -275,6 +274,7 @@ export const BridgeDataContextProvider = (props) => {
         || !originAddress
         || !isApiInitialized
         || !originChain
+        || !destinationAddress
       ) {
         return;
       }

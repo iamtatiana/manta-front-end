@@ -189,7 +189,7 @@ export const MantaWalletContextProvider = ({
   }, [showChangeNetworkNotification, pathname, selectedWallet]);
 
   useEffect(() => {
-    let unsub;
+    let unsub: any;
     if (privateWallet && usingMantaWallet) {
       unsub = privateWallet.subscribeWalletState((state) => {
         const { isWalletReady, isWalletBusy } = state;
@@ -197,7 +197,7 @@ export const MantaWalletContextProvider = ({
         setIsBusy(isWalletBusy);
       });
     }
-    return unsub && unsub();
+    return () => unsub && unsub();
   }, [privateWallet, usingMantaWallet]);
 
   const getSpendableBalance = useCallback(
@@ -302,7 +302,11 @@ export const MantaWalletContextProvider = ({
           return;
         }
         txFee.current = await getTransactionFee(lastTx);
-        await lastTx.signAndSend(publicAddress, { nonce: -1 }, finalTxResHandler.current);
+        await lastTx.signAndSend(
+          publicAddress,
+          { nonce: -1 },
+          finalTxResHandler.current
+        );
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);

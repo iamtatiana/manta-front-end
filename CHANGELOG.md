@@ -316,7 +316,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - [\#1075](https://github.com/Manta-Network/manta-front-end/pull/1075) Fix signAndSend nonce
 
-
 ## [6.0.4] - 2023-6-06
 
 ### Fixed
@@ -325,4 +324,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - [\#1099](https://github.com/Manta-Network/manta-front-end/pull/1099) Possibly fix issue with wallet not connecting in some inconsistent cases (can't reproduce)
 - [\#1078](https://github.com/Manta-Network/manta-front-end/pull/1078) Subscribe to Manta Wallet accounts
 
+## [6.0.5] - 2023-6-14
 
+### Fixed
+
+- [\#1111](https://github.com/Manta-Network/manta-front-end/pull/1111) Fix staking rewards decimals
+
+## [6.0.6] - 2023-6-21
+
+### Added
+
+- [\#1118](https://github.com/Manta-Network/manta-front-end/pull/1118) Add Trading Incentive Activity New Banner
+
+## [6.0.7] - 2023-6-26
+
+### Fixed
+
+- [\#1128](https://github.com/Manta-Network/manta-front-end/pull/1128) `return unsub()` => `return () => unsub()`
+
+## [6.0.8] - 2023-6-27
+
+### Fixed
+
+- [\#1131](https://github.com/Manta-Network/manta-front-end/pull/1131) Fix bridging and bridge transaction fee estimation
