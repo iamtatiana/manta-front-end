@@ -24,7 +24,7 @@
         "@polkadot/types": "^10.9.1",
         "@polkadot/ui-keyring": "^2.9.13",
         "@polkadot/ui-settings": "^2.9.13",
-        "@polkadot/util": "^12",
+        "@polkadot/util": "^12.3.2",
         "@polkadot/util-crypto": "^12",
         "@polkadot/wasm-bridge": "^6.3.1",
         "@polkadot/wasm-crypto": "^6.3.1",
