@@ -1,7 +1,7 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
-import NETWORK from 'constants/NetworkConstants';
 import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { usePrivateWallet } from 'contexts/privateWalletContext';
@@ -210,6 +210,7 @@ export const SendContextProvider = (props) => {
         );
         return total.sub(staked);
       } else {
+        console.log('fetching public balance for', address, assetType.assetId);
         const assetBalance = await api.query.assets.account(
           assetType.assetId,
           address
@@ -379,6 +380,9 @@ export const SendContextProvider = (props) => {
       feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 50);
       if (usingMantaWallet && txFee?.current) feeEstimate = txFee.current;
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+      feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
+      if (usingMantaWallet && txFee?.current) feeEstimate = txFee.current;
+    } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       feeEstimate = Balance.fromBaseUnits(AssetType.Native(config), 1);
       if (usingMantaWallet && txFee?.current) feeEstimate = txFee.current;
     } else {

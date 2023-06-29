@@ -22,14 +22,7 @@
     "@open-web3/orml-types" "^1.1.4"
     "@polkadot/api-derive" "^8.5.1"
 
-"@acala-network/api-derive@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@acala-network/api-derive/-/api-derive-5.1.1.tgz#b48a33f73fd1f12d4db2bc8750f08b08b9ab4ade"
-  integrity sha512-k3TpHpleiQ0gKc5I6hflSnm7ggMBru/0dwl/kUu6MvgXcD7uuFWkavHxOesyPQfdqAyyGvBJ1ps0tfTsFYSSaA==
-  dependencies:
-    "@acala-network/types" "5.1.1"
-
-"@acala-network/api@4.1.8-14":
+"@acala-network/api@4.1.8-14", "@acala-network/api@^4.1.8-14":
   version "4.1.8-14"
   resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-4.1.8-14.tgz#5496901f9467bb88d04f5e5c211ff2de91a25d54"
   integrity sha512-Z8FVSL3DKYBWonBlSu4WZLYRUvPgCUwbZ7NDt9OKdqb3zuB6LFc2CmhfWcdZ/TfL0OQJ/ieKy4lek1JEODmhvw==
@@ -52,15 +45,6 @@
     "@open-web3/orml-api-derive" "^1.1.4"
     "@polkadot/api" "^8.5.1"
     "@polkadot/rpc-core" "^8.5.1"
-
-"@acala-network/api@^5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-5.1.1.tgz#93ab0931c6d367b485e2fffaf59f6f8fb4b22054"
-  integrity sha512-hO9fWkj5/MeD4v5XYsWlrrwBG70o6VErhwI/xzwx1rs5Fq5b/Mx39nUyZMjT3NYY5xT1o/BaCMoo6pPbudQtMA==
-  dependencies:
-    "@acala-network/api-derive" "5.1.1"
-    "@acala-network/types" "5.1.1"
-    "@open-web3/orml-api-derive" "^2.0.1"
 
 "@acala-network/contracts@4.3.4":
   version "4.3.4"
@@ -175,11 +159,6 @@
   dependencies:
     "@open-web3/orml-type-definitions" "^1.1.4"
 
-"@acala-network/type-definitions@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-5.1.1.tgz#16c723f0561d9d54b4877bc51399c01a43490852"
-  integrity sha512-QNhPwWePz/gFluSACKIhq0Z7rTntS21uIZUNpp9tsvc0zlJ20QjHJnv+ZfkdaKauFrL5upFfTgWqrLhN0jV0JQ==
-
 "@acala-network/types@4.1.6-30":
   version "4.1.6-30"
   resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-4.1.6-30.tgz#d0b1cc37ed32f5c554ef22a61158b6b6180f57e1"
@@ -199,14 +178,6 @@
     "@babel/runtime" "^7.10.2"
     "@open-web3/api-mobx" "^1.1.4"
     "@open-web3/orml-types" "^1.1.4"
-
-"@acala-network/types@5.1.1":
-  version "5.1.1"
-  resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-5.1.1.tgz#b545f4d6cf9dbe48a71dea7f30145944801c8dfd"
-  integrity sha512-pRkZSHXvtn4ZykwLLPginUwaheBAtsPgvkNGz+xeHH07Gn6D/T2uiVYQQEg0Uha5o9635TtNB+Lvp/2SlLodlQ==
-  dependencies:
-    "@acala-network/type-definitions" "5.1.1"
-    "@open-web3/orml-types" "^2.0.1"
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
@@ -2449,25 +2420,10 @@
     memoizee "^0.4.15"
     rxjs "^7.2.0"
 
-"@open-web3/orml-api-derive@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@open-web3/orml-api-derive/-/orml-api-derive-2.0.1.tgz#1f4fb448f409f8632ec93b3ee685cdc52ff10427"
-  integrity sha512-Xr7PyKVyCuNMJznddIb///VXzllcf5tCUEsiFF1PHnxzfWCUv2s9QWhkotUO/vD8udXPvOIp2skkA1sjnQTIwQ==
-  dependencies:
-    memoizee "^0.4.15"
-    rxjs "^7.5.5"
-
 "@open-web3/orml-type-definitions@1.1.4", "@open-web3/orml-type-definitions@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-1.1.4.tgz#a036b6cf0410783aaedf7e95d27917a5d66c5bed"
   integrity sha512-diuQx0Pf7cfoBtCpZTrBQOeIur0POp6Y9qfDS3p11RBF2XKwQ7jw/YKEFYqga1AyrzTcoSEE2OYUfeW3AKU94w==
-  dependencies:
-    lodash.merge "^4.6.2"
-
-"@open-web3/orml-type-definitions@2.0.1", "@open-web3/orml-type-definitions@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-2.0.1.tgz#b3db4fb5777dc05c55fa5184c34f4ec91030f012"
-  integrity sha512-wqeSBOKk8UU9CBqYhK2yQh9YqwaS7vai71WuOGFNJnzRT+6WnzY0leaLTionuzfE3M4Y/jTrc8BTL6+PVFCr6Q==
   dependencies:
     lodash.merge "^4.6.2"
 
@@ -2483,19 +2439,19 @@
   dependencies:
     lodash.merge "^4.6.2"
 
+"@open-web3/orml-type-definitions@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@open-web3/orml-type-definitions/-/orml-type-definitions-2.0.1.tgz#b3db4fb5777dc05c55fa5184c34f4ec91030f012"
+  integrity sha512-wqeSBOKk8UU9CBqYhK2yQh9YqwaS7vai71WuOGFNJnzRT+6WnzY0leaLTionuzfE3M4Y/jTrc8BTL6+PVFCr6Q==
+  dependencies:
+    lodash.merge "^4.6.2"
+
 "@open-web3/orml-types@^1.1.4":
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/@open-web3/orml-types/-/orml-types-1.1.4.tgz#cfd419907df5fa27d2feb3dc38391874e2608c5f"
   integrity sha512-/JZocbeppn2hl9h2IAzjyqLW9c8hoWfAym45KpVUyp/Ho/Ykjw2n9Rn+s6yLVoga/oYfnP5gKwt5x4PMq24BUg==
   dependencies:
     "@open-web3/orml-type-definitions" "1.1.4"
-
-"@open-web3/orml-types@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@open-web3/orml-types/-/orml-types-2.0.1.tgz#180348341d30f2bebf9e9272e8e7eca9bd9548b3"
-  integrity sha512-YkJPPtGJHqNS416dpLlyWgzUckV/O4PqYockHAzOKSB8mSv9rhzqDrUzjqvEjduznCxy+bARyLs6C4Bh0DZlvg==
-  dependencies:
-    "@open-web3/orml-type-definitions" "2.0.1"
 
 "@parallel-finance/type-definitions@1.7.17":
   version "1.7.17"
@@ -2850,7 +2806,7 @@
     "@polkadot/util" "10.4.2"
     "@polkadot/util-crypto" "10.4.2"
 
-"@polkadot/keyring@^12.2.1", "@polkadot/keyring@^12.3.1":
+"@polkadot/keyring@^12.3.1":
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/@polkadot/keyring/-/keyring-12.3.2.tgz#112a0c28816a1f47edad6260dc94222c29465a54"
   integrity sha512-NTdtDeI0DP9l/45hXynNABeP5VB8piw5YR+CbUxK2e36xpJWVXwbcOepzslg5ghE9rs8UKJb30Z/HqTU4sBY0Q==
@@ -3473,7 +3429,7 @@
     ed2curve "^0.3.0"
     tweetnacl "^1.0.3"
 
-"@polkadot/util-crypto@12.3.2", "@polkadot/util-crypto@^12.2.1", "@polkadot/util-crypto@^12.3.1":
+"@polkadot/util-crypto@12.3.2", "@polkadot/util-crypto@^12.3.1":
   version "12.3.2"
   resolved "https://registry.yarnpkg.com/@polkadot/util-crypto/-/util-crypto-12.3.2.tgz#42d810886904e06fa6e5db254c15f6ef80f4ab72"
   integrity sha512-pTpx+YxolY0BDT4RcGmgeKbHHD/dI6Ll9xRsqmVdIjpcVVY20uDNTyXs81ZNtfKgyod1y9JQkfNv2Dz9iEpTkQ==
@@ -11300,14 +11256,12 @@ manta-extension-connect@^1.2.3:
   integrity sha512-YbxPSkGxImq5SR+morZHo12sVlZWRJeOzibyBXbstVrQITe0Um3Hesi+dNT24yd/+pfh14U/QPJssirAZUydJA==
 
 "manta-polkawallet-bridge@file:../bridge":
-  version "0.5.3-dev1"
+  version "0.5.2"
   dependencies:
-    "@acala-network/api" "^5.1.1"
+    "@acala-network/api" "^4.1.8-14"
     "@acala-network/sdk" "^4.1.8-14"
     "@acala-network/sdk-core" "^4.1.8-14"
     "@polkadot/apps-config" "^0.127.1"
-    "@polkadot/keyring" "^12.2.1"
-    "@polkadot/util-crypto" "^12.2.1"
     axios "^0.27.2"
     lodash "^4.17.20"
 

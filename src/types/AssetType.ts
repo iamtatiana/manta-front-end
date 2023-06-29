@@ -144,7 +144,7 @@ export default class AssetType {
       getAssetIds(config).ACA,
       'Acala',
       'ACA',
-      'aca',
+      'acala',
       12,
       new BN('100000000000'),
       isPrivate,
@@ -169,7 +169,7 @@ export default class AssetType {
 
   static Polkadot(config, isPrivate) {
     return new AssetType(
-      getAssetIds(config).KSM,
+      getAssetIds(config).DOT,
       'Polkadot',
       'DOT',
       'polkadot',
