@@ -11,7 +11,6 @@ import TxStatus from 'types/TxStatus';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useMetamask } from 'contexts/metamaskContext';
 import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
-import { FixedPointNumber } from '@acala-network/sdk-core';
 import { useConfig } from 'contexts/configContext';
 import Balance from 'types/Balance';
 import { useBridgeData } from './BridgeDataContext';

@@ -32,8 +32,7 @@ export const SendContextProvider = (props) => {
   const privateWallet = usePrivateWallet();
   const {
     isReady: privateWalletIsReady,
-    privateAddress,
-    txFee
+    privateAddress
   } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
   const isActive = useActive();
