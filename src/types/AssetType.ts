@@ -238,7 +238,9 @@ export default class AssetType {
       isPrivate,
       'binance-coin-wormhole',
       config.IS_TESTNET,
-      false
+      false,
+      null,
+      4
     );
   }
 
