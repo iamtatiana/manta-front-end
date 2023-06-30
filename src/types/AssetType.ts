@@ -65,7 +65,7 @@ export default class AssetType {
     isTestnet,
     isNativeToken = false,
     logicalTicker = null,
-    displayDecimals = 3
+    displayDecimals = 2
   ) {
     this.assetId = assetId;
     this.baseName = baseName;
