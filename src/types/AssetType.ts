@@ -13,6 +13,7 @@ const CalamariAssetIds = {
   DAI: 15,
   USDC: 16,
   ARB: 17,
+  MATIC: 20,
   BNB: 21,
   BUSD: 23,
   WBTC: 26,
@@ -235,10 +236,9 @@ export default class AssetType {
       18,
       new BN('40000000000000'),
       isPrivate,
-      'weth',
+      'binance-coin-wormhole',
       config.IS_TESTNET,
-      false,
-      'USDCet'
+      false
     );
   }
 
@@ -251,7 +251,7 @@ export default class AssetType {
       18,
       new BN('10000000000000000'),
       isPrivate,
-      'weth',
+      'binance-usd',
       config.IS_TESTNET,
       false,
       null,
@@ -289,6 +289,21 @@ export default class AssetType {
     );
   }
 
+  static Polygon(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).MATIC,
+      'Polygon',
+      'MATIC',
+      'polygon',
+      18,
+      new BN('10000000000000000'),
+      isPrivate,
+      'polygon',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
 
   static AllCurrencies(config, isPrivate) {
     if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
@@ -313,6 +328,7 @@ export default class AssetType {
         AssetType.Arbitrum(config, isPrivate),
         AssetType.BinanceCoin(config, isPrivate),
         AssetType.BinanceUsd(config, isPrivate),
+        AssetType.Polygon(config, isPrivate),
       ];
     }
   }

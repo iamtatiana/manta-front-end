@@ -22,6 +22,8 @@ import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc-icon.svg';
 import { ReactComponent as arbitrum } from 'resources/icons/coins/arbitrum-icon.svg';
 import { ReactComponent as bnb } from 'resources/icons/coins/bnb-icon.svg';
 import { ReactComponent as busd } from 'resources/icons/coins/busd-icon.svg';
+import { ReactComponent as polygon } from 'resources/icons/coins/matic-icon.svg';
+
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
@@ -127,6 +129,7 @@ const icons = {
   arbitrum,
   bnb,
   busd,
+  polygon,
   statemine,
   audit,
   close,
