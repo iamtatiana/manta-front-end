@@ -23,6 +23,11 @@ import { ReactComponent as arbitrum } from 'resources/icons/coins/arbitrum-icon.
 import { ReactComponent as bnb } from 'resources/icons/coins/bnb-icon.svg';
 import { ReactComponent as busd } from 'resources/icons/coins/busd-icon.svg';
 import { ReactComponent as polygon } from 'resources/icons/coins/matic-icon.svg';
+import { ReactComponent as lido } from 'resources/icons/coins/lido-icon.svg';
+import { ReactComponent as shibaInu } from 'resources/icons/coins/shiba-inu-icon.svg';
+import { ReactComponent as uniswap } from 'resources/icons/coins/uniswap-icon.svg';
+import { ReactComponent as chainlink } from 'resources/icons/coins/chainlink-icon.svg';
+import { ReactComponent as apecoin } from 'resources/icons/coins/apecoin-icon.svg';
 
 
 // sidebar icons
@@ -130,6 +135,11 @@ const icons = {
   bnb,
   busd,
   polygon,
+  lido,
+  shibaInu,
+  chainlink,
+  uniswap,
+  apecoin,
   statemine,
   audit,
   close,

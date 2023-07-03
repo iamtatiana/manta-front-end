@@ -13,9 +13,14 @@ const CalamariAssetIds = {
   DAI: 15,
   USDC: 16,
   ARB: 17,
+  LDO: 18,
+  SHIB: 19,
   MATIC: 20,
   BNB: 21,
+  UNI: 22,
   BUSD: 23,
+  LINK: 24,
+  APE: 25,
   WBTC: 26,
   WETH: 27
 };
@@ -306,12 +311,86 @@ export default class AssetType {
     );
   }
 
+  static Lido(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).LDO,
+      'Lido',
+      'LDO',
+      'lido',
+      18,
+      new BN('5000000000000000'),
+      isPrivate,
+      'lido',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static ShibaInu(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).SHIB,
+      'Shiba Inu',
+      'SHIB',
+      'shibaInu',
+      18,
+      new BN('1000000000000000000000'),
+      isPrivate,
+      'shibaInu',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static Uniswap(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).UNI,
+      'Uniswap',
+      'UNI',
+      'uniswap',
+      18,
+      new BN('2000000000000000'),
+      isPrivate,
+      'uniswap',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static Chainlink(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).LINK,
+      'Chainlink',
+      'LINK',
+      'chainlink',
+      18,
+      new BN('2000000000000000'),
+      isPrivate,
+      'chainlink',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static Apecoin(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).APE,
+      'Apecoin',
+      'APE',
+      'apecoin',
+      18,
+      new BN('3000000000000000'),
+      isPrivate,
+      'apecoin',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
 
   static AllCurrencies(config, isPrivate) {
     if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
       return [
         AssetType.DolphinSkinnedCalamari(config, isPrivate),
-        // AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate),
         AssetType.Tether(config, isPrivate),
@@ -331,6 +410,11 @@ export default class AssetType {
         AssetType.BinanceCoin(config, isPrivate),
         AssetType.BinanceUsd(config, isPrivate),
         AssetType.Polygon(config, isPrivate),
+        AssetType.Lido(config, isPrivate),
+        AssetType.ShibaInu(config, isPrivate),
+        AssetType.Uniswap(config, isPrivate),
+        AssetType.Chainlink(config, isPrivate),
+        AssetType.Apecoin(config, isPrivate)
       ];
     }
   }

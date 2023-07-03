@@ -96,6 +96,11 @@ export default class Chain {
         AssetType.BinanceCoin(config),
         AssetType.BinanceUsd(config),
         AssetType.Polygon(config),
+        AssetType.Lido(config),
+        AssetType.ShibaInu(config),
+        AssetType.Uniswap(config),
+        AssetType.Chainlink(config),
+        AssetType.Apecoin(config)
       ],
       AssetType.Calamari(config),
       CalamariAdapter,
@@ -150,6 +155,11 @@ export default class Chain {
         AssetType.BinanceCoin(config),
         AssetType.BinanceUsd(config),
         AssetType.Polygon(config),
+        AssetType.Lido(config),
+        AssetType.ShibaInu(config),
+        AssetType.Uniswap(config),
+        AssetType.Chainlink(config),
+        AssetType.Apecoin(config)
       ],
       AssetType.Karura(config),
       KaruraAdapter,
