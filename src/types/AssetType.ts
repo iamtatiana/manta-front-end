@@ -181,6 +181,8 @@ export default class AssetType {
       isPrivate,
       'tether',
       config.IS_TESTNET,
+      false,
+      'USDTet'
     );
   }
 
@@ -229,6 +231,8 @@ export default class AssetType {
       isPrivate,
       'arb',
       config.IS_TESTNET,
+      false,
+      'ARBet'
     );
   }
 
@@ -244,7 +248,7 @@ export default class AssetType {
       'binance-coin-wormhole',
       config.IS_TESTNET,
       false,
-      null,
+      'BNBet',
       4
     );
   }
@@ -367,7 +371,7 @@ export default class AssetType {
       isPrivate,
       'chainlink',
       config.IS_TESTNET,
-      false,
+      false
     );
   }
 
