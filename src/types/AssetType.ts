@@ -261,8 +261,7 @@ export default class AssetType {
       'binance-usd',
       config.IS_TESTNET,
       false,
-      null,
-      4
+      'BUSDet',
     );
   }
 
@@ -308,6 +307,7 @@ export default class AssetType {
       'polygon',
       config.IS_TESTNET,
       false,
+      'MATICet'
     );
   }
 
