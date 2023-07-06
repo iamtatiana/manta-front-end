@@ -48,7 +48,7 @@ function AssociatedBridges() {
   return (
     <>
       <div className="text-white w-120 -ml-8 text-base leading-5">
-        Associated Bridge
+        Associated Bridges
       </div>
       <div className="text-white bg-secondary px-4 border border-white-light rounded-lg -mt-2">
         <div className="w-120">
