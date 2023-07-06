@@ -8,7 +8,10 @@ const CalamariAssetIds = {
   AUSD: 9,
   LKSM: 10,
   MOVR: 11,
-  KSM: 12
+  KSM: 12,
+  USDT: 14,
+  DAI: 15,
+  USDC: 16
 };
 
 const MantaAssetIds = {
@@ -36,7 +39,7 @@ export default class AssetType {
   logicalTicker: string;
   icon: string;
   numberOfDecimals: number;
-  publicExistentialDeposit: BN;
+  existentialDeposit: BN;
   existentialDeposit: BN;
   isPrivate: boolean;
   isTestnet: boolean;
@@ -49,7 +52,7 @@ export default class AssetType {
     baseTicker,
     icon,
     numberOfDecimals,
-    publicExistentialDeposit,
+    existentialDeposit,
     isPrivate,
     coingeckoId,
     isTestnet,
@@ -64,8 +67,7 @@ export default class AssetType {
     this.ticker = AssetType._getFullTicker(baseTicker, isPrivate);
     this.icon = icon;
     this.numberOfDecimals = numberOfDecimals;
-    this.publicExistentialDeposit = publicExistentialDeposit;
-    this.existentialDeposit = isPrivate ? new BN(0) : publicExistentialDeposit;
+    this.existentialDeposit = existentialDeposit;
     this.isPrivate = isPrivate;
     this.isTestnet = isTestnet;
     this.isNativeToken = isNativeToken;
@@ -166,34 +168,6 @@ export default class AssetType {
     );
   }
 
-  static Rococo(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).ROC,
-      'Rococo',
-      'ROC',
-      'roc',
-      12,
-      new BN('1'),
-      isPrivate,
-      'rococo',
-      config.IS_TESTNET,
-    );
-  }
-
-  static KintsugiBTC(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).KBTC,
-      'Kintsugi BTC',
-      'kBTC',
-      'kbtc',
-      8,
-      new BN('1'),
-      isPrivate,
-      'bitcoin',
-      config.IS_TESTNET,
-    );
-  }
-
   static Moonriver(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).MOVR,
@@ -208,13 +182,91 @@ export default class AssetType {
     );
   }
 
+  static Tether(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).USDT,
+      'Tether USD',
+      'USDT',
+      'tether',
+      6,
+      new BN('1000'),
+      isPrivate,
+      'tether',
+      config.IS_TESTNET,
+    );
+  }
+
+  // static WrappedBitcoin(config, isPrivate) {
+  //   return new AssetType(
+  //     getAssetIds(config).WBTC,
+  //     'Wrapped Bitcoin',
+  //     'WBTC',
+  //     'wbtc', // need to find image (just bitcoin image maybe okay)
+  //     8, // pretty sure, check
+  //     new BN('1'), // not sure
+  //     isPrivate,
+  //     'wrapped-bitcoin',
+  //     config.IS_TESTNET,
+  //   );
+  // }
+
+  // static WrappedEthereum(config, isPrivate) {
+  //   return new AssetType(
+  //     getAssetIds(config).WETH,
+  //     'Wrapped Ethereum',
+  //     'WETH',
+  //     'weth', // need to find image (just ETH image maybe okay)
+  //     18, // pretty sure, check
+  //     new BN('1'), // not sure
+  //     isPrivate,
+  //     'weth',
+  //     config.IS_TESTNET,
+  //   );
+  // }
+
+  static Dai(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).DAI,
+      'Dai',
+      'DAI',
+      'dai',
+      18,
+      new BN('10000000000000000'),
+      isPrivate,
+      'dai',
+      config.IS_TESTNET,
+    );
+  }
+
+  static UsdCoin(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).USDC,
+      'USD Coin',
+      'USDC',
+      'usdc',
+      6,
+      new BN('10000'),
+      isPrivate,
+      'usd-coin',
+      config.IS_TESTNET,
+      false,
+      'USDCet'
+    );
+  }
+
+
   static AllCurrencies(config, isPrivate) {
     if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
         AssetType.Calamari(config, isPrivate),
         AssetType.Karura(config, isPrivate),
         AssetType.Kusama(config, isPrivate),
-        AssetType.Moonriver(config, isPrivate)
+        AssetType.Moonriver(config, isPrivate),
+        AssetType.Tether(config, isPrivate),
+        // AssetType.WrappedBitcoin(config, isPrivate),
+        // AssetType.WrappedEthereum(config, isPrivate),
+        // AssetType.Dai(config, isPrivate),
+        // AssetType.UsdCoin(config, isPrivate)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
@@ -244,7 +296,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.publicExistentialDeposit,
+      this.existentialDeposit,
       true,
       this.coingeckoId,
       this.isTestnet,
@@ -260,7 +312,7 @@ export default class AssetType {
       this.baseTicker,
       this.icon,
       this.numberOfDecimals,
-      this.publicExistentialDeposit,
+      this.existentialDeposit,
       false,
       this.coingeckoId,
       this.isTestnet,

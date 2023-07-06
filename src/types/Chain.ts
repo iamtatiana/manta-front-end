@@ -67,7 +67,7 @@ export default class Chain {
       'calamariLogo',
       config.CALAMARI_SOCKET,
       config.CALAMARI_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config)],
+      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config), AssetType.Dai(config), AssetType.UsdCoin(config)],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -155,7 +155,7 @@ export default class Chain {
       'kar',
       config.KARURA_SOCKET,
       config.KARURA_SUBSCAN_URL,
-      [AssetType.Karura(config)],
+      [AssetType.Karura(config), AssetType.UsdCoin(config), AssetType.Dai(config), AssetType.Tether(config)],
       AssetType.Karura(config),
       KaruraAdapter,
       null,
@@ -199,7 +199,8 @@ export default class Chain {
         Chain.Calamari(config),
         Chain.Kusama(config),
         Chain.Karura(config),
-        Chain.Moonriver(config)
+        Chain.Moonriver(config),
+        // Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config)];

@@ -28,6 +28,8 @@ module.exports = {
     },
     extend: {
       spacing: {
+        0.5: '0.125rem',
+        0.75: '0.1875rem',
         128: '32rem',
         120: '30rem',
         108: '27rem',
@@ -48,6 +50,7 @@ module.exports = {
         68: '272px',
         108: '432px',
         118: '472px',
+        120: '480px',
         126.5: '506px',
         140: '560px',
         156: '625px'
@@ -56,7 +59,9 @@ module.exports = {
         5.5: '22px'
       },
       backgroundImage: {
-        'giant-squid': 'var(--giantsquid-navbar-bg)'
+        'giant-squid': 'var(--giantsquid-navbar-bg)',
+        'trading-whitelist-banner': 'var(--whitelist-navbar-bg)',
+        'trading-stablecoin-banner': 'var(--stablecoin-navbar-bg)',
       },
       backgroundColor: {
         primary: 'var(--color-bg-primary)',
@@ -99,7 +104,10 @@ module.exports = {
         warning: '#FF8A00',
         'green-light': '#29CCB9',
         banner: '#050D32',
-        'modal-btn': '#1B65F6'
+        'modal-btn': '#1B65F6',
+        link2: '#51FFE0',
+        gray2: '#D9D9D999',
+        'light-yellow': '#FCCF8699'
       },
       fill: {
         current: 'var(--color-text-secondary)',
