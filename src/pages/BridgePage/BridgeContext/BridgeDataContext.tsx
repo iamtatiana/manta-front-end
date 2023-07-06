@@ -212,6 +212,16 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   useEffect(() => {
+    const resetBalancesOnChangeExternalAccount = () => {
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_BALANCES,
+        senderAssetBalances: []
+      });
+    };
+    resetBalancesOnChangeExternalAccount();
+  }, [externalAccount]);
+
+  useEffect(() => {
     const fetchBalance = async (assetType) => {
       const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
         assetType.logicalTicker, originAddress
