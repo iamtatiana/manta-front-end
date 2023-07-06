@@ -5,7 +5,7 @@
         {
           "name": "Manta",
           "path": "/manta",
-          "url": "wss://c1.manta.seabird.systems",
+          "url": "wss://c1.baikal.testnet.manta.systems",
           "testnet": true,
           "explorer": "manta.subscan.io"
         },

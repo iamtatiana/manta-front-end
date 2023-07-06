@@ -10,7 +10,7 @@
     "MOONBEAM_SUBSCAN_URL": "https://moonbeam.subscan.io",
     "TWITTER_URL": "https://twitter.com/MantaNetwork",
     "MANTA_URL": "https://manta.network/",
-    "MANTA_SOCKET": "wss://c1.manta.seabird.systems",
+    "MANTA_SOCKET": "wss://c1.baikal.testnet.manta.systems",
     "POLKADOT_SOCKET": "wss://v1.paleblue.systems",
     "ACALA_SOCKET": "wss://c1.acala.paleblue.systems",
     "MOONBEAM_SOCKET": "wss://c1.moonbeam.paleblue.systems",
