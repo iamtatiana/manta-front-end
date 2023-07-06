@@ -189,6 +189,7 @@ export const KeyringContextProvider = ({
             setLastAccessedWallet(selectedWallet);
           return true;
         } catch (e: any) {
+          console.error('Error connecting wallet', e);
           setWalletConnectingErrorMessages({
             ...walletConnectingErrorMessages,
             ...{ [extensionName]: e.message }
@@ -262,6 +263,7 @@ export const KeyringContextProvider = ({
     if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
       try {
         await cryptoWaitReady();
+        await new Promise(resolve => setTimeout(resolve, 100));
         const isCalamari = window?.location?.pathname?.includes('calamari');
         keyring.loadAll(
           {
