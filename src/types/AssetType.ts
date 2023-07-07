@@ -181,8 +181,7 @@ export default class AssetType {
       isPrivate,
       'tether',
       config.IS_TESTNET,
-      false,
-      'USDTet'
+      false
     );
   }
 
@@ -199,7 +198,7 @@ export default class AssetType {
       config.IS_TESTNET,
       false,
       null,
-      5
+      8
     );
   }
 
@@ -216,7 +215,7 @@ export default class AssetType {
       config.IS_TESTNET,
       false,
       null,
-      4
+      8
     );
   }
 
