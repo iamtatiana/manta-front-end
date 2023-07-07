@@ -173,10 +173,11 @@ export default class Chain {
       'acala',
       'Acala',
       2000,
-      'kar',
+      'acala',
       config.ACALA_SOCKET,
       config.ACALA_SUBSCAN_URL,
       [
+        AssetType.Acala(config),
         AssetType.Tether(config), // remove et
         AssetType.Dai(config), // can't find route
         AssetType.UsdCoin(config), // remove et
@@ -301,7 +302,6 @@ export default class Chain {
   }
 
   getXcmAdapter() {
-    console.log('this.xcmAdapterClass', this.xcmAdapterClass);
     return new this.xcmAdapterClass();
   }
 

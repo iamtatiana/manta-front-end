@@ -31,6 +31,20 @@ const MantaAssetIds = {
   USDT: 9,
   GLMR: 10,
   ACA: 11,
+  LDOT: 12,
+  LDO: 15,
+  SHIB: 16,
+  UNI: 17,
+  LINK: 18,
+  APE: 19,
+  ARB: 20,
+  BUSD: 21,
+  USDT: 22,
+  DAI: 23,
+  USDC: 24,
+  MATIC: 25,
+  WBTC: 26,
+  WETH: 27
 };
 
 const getAssetIds = (config) => {
@@ -135,7 +149,7 @@ export default class AssetType {
       12,
       new BN('100000000000'),
       isPrivate,
-      'karura',
+      'acala',
       config.IS_TESTNET,
     );
   }
@@ -160,8 +174,8 @@ export default class AssetType {
       'Polkadot',
       'DOT',
       'polkadot',
-      18,
-      new BN('500000000'),
+      10,
+      new BN('10000000000'),
       isPrivate,
       'polkadot',
       config.IS_TESTNET,
@@ -321,7 +335,7 @@ export default class AssetType {
       'usd-coin',
       config.IS_TESTNET,
       false,
-      config.NETWORK_NAME === NETWORK.CALAMARI ? 'USDCet' : null
+      'USDCet'
     );
   }
 
