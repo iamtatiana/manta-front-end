@@ -1,7 +1,7 @@
 // @ts-nocheck
 import configCommon from './common.json';
 import configCalamari from './calamari.json';
-import configManta from './manta.json';
+import configManta from './manta-production.json';
 
 // Using `require` as `import` does not support dynamic loading (yet).
 // eslint-disable-next-line @typescript-eslint/no-var-requires
