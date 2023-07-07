@@ -359,3 +359,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - [\#1142](https://github.com/Manta-Network/manta-front-end/pull/1142) Add associated bridges
+
+
+## [6.3.0] - 2023-7-7
+
+### Added
+
+- [\#1016](https://github.com/Manta-Network/manta-front-end/pull/1016) Add WBTC, WETH, ARB, BNB, BUSD, MATIC, LIDO, SHIB, UNI, LINK, and APE

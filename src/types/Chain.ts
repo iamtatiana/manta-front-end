@@ -4,6 +4,7 @@ import { KaruraAdapter, AcalaAdapter } from 'manta-polkawallet-bridge/build/adap
 import { CalamariAdapter, MantaAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
 import { KusamaAdapter, PolkadotAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
 import { MoonriverAdapter, MoonbeamAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
+import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
@@ -67,7 +68,25 @@ export default class Chain {
       'calamariLogo',
       config.CALAMARI_SOCKET,
       config.CALAMARI_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config), AssetType.Dai(config), AssetType.UsdCoin(config)],
+      [
+        AssetType.Kusama(config),
+        AssetType.Karura(config),
+        AssetType.Moonriver(config),
+        AssetType.Tether(config),
+        AssetType.Dai(config),
+        AssetType.UsdCoin(config),
+        AssetType.WrappedBitcoin(config),
+        AssetType.WrappedEthereum(config),
+        AssetType.Arbitrum(config),
+        AssetType.BinanceCoin(config),
+        AssetType.BinanceUsd(config),
+        AssetType.Polygon(config),
+        AssetType.Lido(config),
+        AssetType.ShibaInu(config),
+        AssetType.Uniswap(config),
+        AssetType.Chainlink(config),
+        AssetType.Apecoin(config)
+      ],
       AssetType.Calamari(config),
       CalamariAdapter,
       types
@@ -82,7 +101,25 @@ export default class Chain {
       'mantaLogo',
       config.MANTA_SOCKET,
       config.MANTA_SUBSCAN_URL,
-      [AssetType.Manta(config), AssetType.Acala(config), AssetType.Polkadot(config)],
+      [
+        AssetType.Manta(config),
+        AssetType.Polkadot(config),
+        AssetType.Acala(config), //
+        // AssetType.Moonriver(config, isPrivate), //
+        // todo: LDOT
+        AssetType.Tether(config), //
+        AssetType.Dai(config), //
+        AssetType.UsdCoin(config), //
+        AssetType.WrappedBitcoin(config), //
+        AssetType.WrappedEthereum(config),
+        AssetType.Arbitrum(config), //
+        AssetType.BinanceUsd(config), //
+        AssetType.Lido(config), //
+        AssetType.ShibaInu(config), //
+        AssetType.Uniswap(config), //
+        AssetType.Chainlink(config), //
+        AssetType.Apecoin(config) //
+      ],
       AssetType.Manta(config),
       MantaAdapter,
       types
@@ -139,11 +176,40 @@ export default class Chain {
       'kar',
       config.ACALA_SOCKET,
       config.ACALA_SUBSCAN_URL,
-      [AssetType.Acala(config)],
+      [
+        AssetType.Tether(config), // remove et
+        AssetType.Dai(config), // can't find route
+        AssetType.UsdCoin(config), // remove et
+        AssetType.WrappedBitcoin(config), // can't find route
+        AssetType.WrappedEthereum(config), // can't find route
+        AssetType.Apecoin(config), // can't find route
+
+
+        // AssetType.Arbitrum(config), //
+        // AssetType.BinanceUsd(config), //
+        // AssetType.Lido(config), //
+        // AssetType.ShibaInu(config), //
+        // AssetType.Uniswap(config), //
+        // AssetType.Chainlink(config), //
+      ],
       AssetType.Acala(config),
       AcalaAdapter,
       null,
       options
+    );
+  }
+
+  static Statemine(config) {
+    return new Chain(
+      'statemine',
+      'Statemine',
+      1000,
+      'statemine',
+      config.STATEMINE_SOCKET,
+      config.STATEMINE_SUBSCAN_URL,
+      [AssetType.Tether(config)],
+      AssetType.Kusama(config),
+      StatemineAdapter
     );
   }
 
@@ -155,7 +221,23 @@ export default class Chain {
       'kar',
       config.KARURA_SOCKET,
       config.KARURA_SUBSCAN_URL,
-      [AssetType.Karura(config), AssetType.UsdCoin(config), AssetType.Dai(config), AssetType.Tether(config)],
+      [
+        AssetType.Karura(config),
+        AssetType.UsdCoin(config),
+        AssetType.Dai(config),
+        AssetType.Tether(config),
+        AssetType.WrappedBitcoin(config),
+        AssetType.WrappedEthereum(config),
+        AssetType.Arbitrum(config),
+        AssetType.BinanceCoin(config),
+        AssetType.BinanceUsd(config),
+        AssetType.Polygon(config),
+        AssetType.Lido(config),
+        AssetType.ShibaInu(config),
+        AssetType.Uniswap(config),
+        AssetType.Chainlink(config),
+        AssetType.Apecoin(config)
+      ],
       AssetType.Karura(config),
       KaruraAdapter,
       null,
@@ -200,7 +282,7 @@ export default class Chain {
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config),
-        // Chain.Statemine(config)
+        Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config)];

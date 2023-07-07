@@ -30,6 +30,7 @@ export const BridgeDataContextProvider = (props) => {
   const {
     isApiInitialized,
     senderAssetType,
+    senderAssetTypeOptions,
     senderAssetTargetBalance,
     senderAssetCurrentBalance,
     originChainOptions,
@@ -209,6 +210,49 @@ export const BridgeDataContextProvider = (props) => {
     });
     return unsub;
   };
+
+  useEffect(() => {
+    const resetBalancesOnChangeExternalAccount = () => {
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_BALANCES,
+        senderAssetBalances: []
+      });
+    };
+    resetBalancesOnChangeExternalAccount();
+  }, [externalAccount]);
+
+  useEffect(() => {
+    const fetchBalance = async (assetType) => {
+      const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
+        assetType.logicalTicker, originAddress
+      );
+      const balance = await firstValueFrom(balanceObserveable);
+      return Balance.fromBaseUnits(assetType, balance.free);
+    };
+
+    const fetchAllSenderAssetBalances = async () => {
+      if (
+        !originChain
+        || !originAddress
+        || !originApi
+        || !isApiInitialized
+        || !isActive
+      ) {
+        return;
+      }
+      const senderAssetBalances = [];
+      for (const assetTypeOption of senderAssetTypeOptions) {
+        const balance = await fetchBalance(assetTypeOption);
+        senderAssetBalances.push(balance);
+      }
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_BALANCES,
+        senderAssetBalances
+      });
+    };
+
+    fetchAllSenderAssetBalances();
+  }, [isActive, originChain, originAddress, originApi, isApiInitialized, senderAssetTypeOptions]);
 
   useEffect(() => {
     let nativeTokenUnsub = null;

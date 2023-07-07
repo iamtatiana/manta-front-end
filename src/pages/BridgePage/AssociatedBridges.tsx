@@ -21,12 +21,25 @@ function AssociatedBridges() {
           rel="noreferrer">
           Karura Bridge
         </a>
-        <div className="text-gray2 leading-4 text-xss mt-2 mb-4">
+        <div className="text-gray2 leading-4 text-xss mt-2 mb-2">
           Karura Bridge enables smooth asset transfers between Kusama parachains
           and Ethereum. Calamari supports the following assets from Karura
           Bridge:{' '}
           <span className="text-light-yellow">
             USDC and DAI from Ethereum, USDT from Statemine.
+          </span>
+        </div>
+        <a
+          href="https://apps.karura.network/bridge"
+          target="_blank"
+          className="text-sm text-link2 hover:text-link2"
+          rel="noreferrer">
+          Karura Wormhole Bridge
+        </a>
+        <div className="text-gray2 leading-4 text-xss mt-2 mb-4">
+        Wormhole Portal Bridge enables cross-chain transfers for tokens wrapped by Wormhole. Calamari supports the following assets from Ethereum via Wormhole on Karura:{' '}
+          <span className="text-light-yellow">
+          WBTC, WETH, BNB, BUSD, UNI, ARB, LDO, SHIB, MATIC, LINK, and APE.
           </span>
         </div>
       </div>
@@ -35,7 +48,7 @@ function AssociatedBridges() {
   return (
     <>
       <div className="text-white w-120 -ml-8 text-base leading-5">
-        Associated Bridge
+        Associated Bridges
       </div>
       <div className="text-white bg-secondary px-4 border border-white-light rounded-lg -mt-2">
         <div className="w-120">

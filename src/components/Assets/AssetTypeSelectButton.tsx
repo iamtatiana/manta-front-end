@@ -88,7 +88,10 @@ const AssetSelectModal = (
   });
 
   useEffect(() => {
-    fetchPrivateBalances();
+    const isSendPage = window?.location?.pathname?.includes('/transact');
+    if (isSendPage) {
+      fetchPrivateBalances();
+    }
   }, [privateWallet]);
 
   return (
@@ -137,10 +140,11 @@ const AssetTypeSelectButton = ({
   senderAssetTypeOptions: AssetType[];
 }) => {
   const { txStatus } = useTxStatus();
+  const multipleOptions = senderAssetTypeOptions?.length > 1;
   const disabled = txStatus?.isProcessing() || !senderAssetTypeOptions || !assetType;
   const { ModalWrapper, showModal, hideModal } = useModal();
   const onClick = () => {
-    if (disabled) {
+    if (disabled || !multipleOptions) {
       return;
     }
     showModal();
@@ -151,8 +155,9 @@ const AssetTypeSelectButton = ({
       <div
         onClick={onClick}
         className={classNames(
-          'absolute right-6 top-2 border-0 cursor-pointer',
-          'flex flex-y items-center cursor-pointer gap-3 mt-2',
+          'absolute right-6 top-2 border-0',
+          'flex flex-y items-center gap-3 mt-2',
+          { 'cursor-pointer': !disabled && multipleOptions },
           {disabled: disabled}
         )}
       >
@@ -162,13 +167,16 @@ const AssetTypeSelectButton = ({
             name={assetType?.icon as IconName}
           />
         </div>
-        <div className="text-black dark:text-white place-self-center">
+        <div className="text-black dark:text-white unselectable-text place-self-center">
           {assetType?.ticker}
         </div>
+        {
+          multipleOptions &&
         <Icon
           className="w-3 h-3"
           name={'assetSelector'}
         />
+        }
       </div>
       <ModalWrapper>
         <AssetSelectModal

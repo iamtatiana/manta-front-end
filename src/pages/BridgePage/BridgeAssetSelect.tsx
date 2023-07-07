@@ -1,7 +1,7 @@
 // @ts-nocheck
 import React from 'react';
 import BridgeBalanceInput from 'pages/BridgePage/BridgeBalanceInput';
-import AssetTypeSelectDropdown from 'components/Assets/AssetTypeSelectDropdown';
+import AssetTypeSelectButton from 'components/Assets/AssetTypeSelectButton';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
 const BridgeAssetSelect = () => {
@@ -9,13 +9,15 @@ const BridgeAssetSelect = () => {
     senderAssetType,
     senderAssetTypeOptions,
     setSelectedAssetType,
+    senderAssetBalances
   } = useBridgeData();
 
   return (
     <div className="w-100 relative">
-      <AssetTypeSelectDropdown
+      <AssetTypeSelectButton
         assetType={senderAssetType}
-        assetTypeOptions={senderAssetTypeOptions}
+        balances={senderAssetBalances}
+        senderAssetTypeOptions={senderAssetTypeOptions}
         setSelectedAssetType={setSelectedAssetType}
       />
       <BridgeBalanceInput />

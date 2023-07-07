@@ -18,6 +18,16 @@ import { ReactComponent as statemine } from 'resources/icons/coins/statemine-ico
 import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
 import { ReactComponent as usdc } from 'resources/icons/coins/usdc-icon.svg';
 import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc-icon.svg';
+import { ReactComponent as arbitrum } from 'resources/icons/coins/arbitrum-icon.svg';
+import { ReactComponent as bnb } from 'resources/icons/coins/bnb-icon.svg';
+import { ReactComponent as busd } from 'resources/icons/coins/busd-icon.svg';
+import { ReactComponent as polygon } from 'resources/icons/coins/matic-icon.svg';
+import { ReactComponent as lido } from 'resources/icons/coins/lido-icon.svg';
+import { ReactComponent as shibaInu } from 'resources/icons/coins/shiba-inu-icon.svg';
+import { ReactComponent as uniswap } from 'resources/icons/coins/uniswap-icon.svg';
+import { ReactComponent as chainlink } from 'resources/icons/coins/chainlink-icon.svg';
+import { ReactComponent as apecoin } from 'resources/icons/coins/apecoin-icon.svg';
+
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
@@ -120,6 +130,15 @@ const icons = {
   dai,
   usdc,
   wbtc,
+  arbitrum,
+  bnb,
+  busd,
+  polygon,
+  lido,
+  shibaInu,
+  chainlink,
+  uniswap,
+  apecoin,
   statemine,
   audit,
   close,

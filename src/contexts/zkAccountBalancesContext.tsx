@@ -100,7 +100,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
   };
 
   const fetchPrivateBalances = async () => {
-    if (usingMantaWallet) {
+    if (usingMantaWallet && privateWallet) {
       fetchPrivateBalancesMantaWallet();
     } else {
       fetchPrivateBalancesMantaSigner();
@@ -111,7 +111,7 @@ export const ZkAccountBalancesContextProvider = (props) => {
     // When using manta wallet, balances are only fetched on demand to reduce load on the extension
     if (!usingMantaWallet) {
       const interval = setInterval(() => {
-        if (isActive && isReady && privateAddress) {
+        if (isActive && isReady && privateAddress && privateWallet) {
           fetchPrivateBalances();
         }
       }, 1000);

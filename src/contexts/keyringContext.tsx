@@ -189,6 +189,7 @@ export const KeyringContextProvider = ({
             setLastAccessedWallet(selectedWallet);
           return true;
         } catch (e: any) {
+          console.error('Error connecting wallet', e);
           setWalletConnectingErrorMessages({
             ...walletConnectingErrorMessages,
             ...{ [extensionName]: e.message }
@@ -270,6 +271,7 @@ export const KeyringContextProvider = ({
       }
       try {
         await cryptoWaitReady();
+        await new Promise(resolve => setTimeout(resolve, 100));
         keyring.loadAll(
           {
             ss58Format

@@ -11,7 +11,18 @@ const CalamariAssetIds = {
   KSM: 12,
   USDT: 14,
   DAI: 15,
-  USDC: 16
+  USDC: 16,
+  ARB: 17,
+  LDO: 18,
+  SHIB: 19,
+  MATIC: 20,
+  BNB: 21,
+  UNI: 22,
+  BUSD: 23,
+  LINK: 24,
+  APE: 25,
+  WBTC: 26,
+  WETH: 27
 };
 
 const MantaAssetIds = {
@@ -45,6 +56,7 @@ export default class AssetType {
   isTestnet: boolean;
   isNativeToken: boolean;
   coingeckoId: string;
+  displayDecimals: number;
 
   constructor(
     assetId,
@@ -57,7 +69,8 @@ export default class AssetType {
     coingeckoId,
     isTestnet,
     isNativeToken = false,
-    logicalTicker = null
+    logicalTicker = null,
+    displayDecimals = 2
   ) {
     this.assetId = assetId;
     this.baseName = baseName;
@@ -72,6 +85,7 @@ export default class AssetType {
     this.isTestnet = isTestnet;
     this.isNativeToken = isNativeToken;
     this.coingeckoId = coingeckoId;
+    this.displayDecimals = displayDecimals;
   }
 
   static Native(config) {
@@ -193,36 +207,93 @@ export default class AssetType {
       isPrivate,
       'tether',
       config.IS_TESTNET,
+      false,
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'USDTet' : null
     );
   }
 
-  // static WrappedBitcoin(config, isPrivate) {
-  //   return new AssetType(
-  //     getAssetIds(config).WBTC,
-  //     'Wrapped Bitcoin',
-  //     'WBTC',
-  //     'wbtc', // need to find image (just bitcoin image maybe okay)
-  //     8, // pretty sure, check
-  //     new BN('1'), // not sure
-  //     isPrivate,
-  //     'wrapped-bitcoin',
-  //     config.IS_TESTNET,
-  //   );
-  // }
+  static WrappedBitcoin(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).WBTC,
+      'Wrapped Bitcoin',
+      'WBTC',
+      'bitcoin',
+      8,
+      new BN('35'),
+      isPrivate,
+      'wrapped-bitcoin',
+      config.IS_TESTNET,
+      false,
+      null,
+      5
+    );
+  }
 
-  // static WrappedEthereum(config, isPrivate) {
-  //   return new AssetType(
-  //     getAssetIds(config).WETH,
-  //     'Wrapped Ethereum',
-  //     'WETH',
-  //     'weth', // need to find image (just ETH image maybe okay)
-  //     18, // pretty sure, check
-  //     new BN('1'), // not sure
-  //     isPrivate,
-  //     'weth',
-  //     config.IS_TESTNET,
-  //   );
-  // }
+  static WrappedEthereum(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).WETH,
+      'Wrapped Ethereum',
+      'WETH',
+      'ethereum',
+      18,
+      new BN('5555555555555'),
+      isPrivate,
+      'weth',
+      config.IS_TESTNET,
+      false,
+      null,
+      4
+    );
+  }
+
+  static Arbitrum(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).ARB,
+      'Arbitrum',
+      'ARB',
+      'arbitrum',
+      18,
+      new BN('9000000000000000'),
+      isPrivate,
+      'arb',
+      config.IS_TESTNET,
+      false,
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'ARBet': null
+    );
+  }
+
+  static BinanceCoin(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).BNB,
+      'Binance Coin',
+      'BNB',
+      'bnb',
+      18,
+      new BN('40000000000000'),
+      isPrivate,
+      'binance-coin-wormhole',
+      config.IS_TESTNET,
+      false,
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'BNBet': null,
+      4
+    );
+  }
+
+  static BinanceUsd(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).BUSD,
+      'Binance USD',
+      'BUSD',
+      'busd',
+      18,
+      new BN('10000000000000000'),
+      isPrivate,
+      'binance-usd',
+      config.IS_TESTNET,
+      false,
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'BUSDet' : null
+    );
+  }
 
   static Dai(config, isPrivate) {
     return new AssetType(
@@ -250,7 +321,98 @@ export default class AssetType {
       'usd-coin',
       config.IS_TESTNET,
       false,
-      'USDCet'
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'USDCet' : null
+    );
+  }
+
+  static Polygon(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).MATIC,
+      'Polygon',
+      'MATIC',
+      'polygon',
+      18,
+      new BN('10000000000000000'),
+      isPrivate,
+      'polygon',
+      config.IS_TESTNET,
+      false,
+      config.NETWORK_NAME === NETWORK.CALAMARI ? 'MATICet' : null
+    );
+  }
+
+  static Lido(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).LDO,
+      'Lido',
+      'LDO',
+      'lido',
+      18,
+      new BN('5000000000000000'),
+      isPrivate,
+      'lido',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static ShibaInu(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).SHIB,
+      'Shiba Inu',
+      'SHIB',
+      'shibaInu',
+      18,
+      new BN('1000000000000000000000'),
+      isPrivate,
+      'shibaInu',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static Uniswap(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).UNI,
+      'Uniswap',
+      'UNI',
+      'uniswap',
+      18,
+      new BN('2000000000000000'),
+      isPrivate,
+      'uniswap',
+      config.IS_TESTNET,
+      false,
+    );
+  }
+
+  static Chainlink(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).LINK,
+      'Chainlink',
+      'LINK',
+      'chainlink',
+      18,
+      new BN('2000000000000000'),
+      isPrivate,
+      'chainlink',
+      config.IS_TESTNET,
+      false
+    );
+  }
+
+  static Apecoin(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).APE,
+      'Apecoin',
+      'APE',
+      'apecoin',
+      18,
+      new BN('3000000000000000'),
+      isPrivate,
+      'apecoin',
+      config.IS_TESTNET,
+      false,
     );
   }
 
@@ -263,16 +425,39 @@ export default class AssetType {
         AssetType.Kusama(config, isPrivate),
         AssetType.Moonriver(config, isPrivate),
         AssetType.Tether(config, isPrivate),
-        // AssetType.WrappedBitcoin(config, isPrivate),
-        // AssetType.WrappedEthereum(config, isPrivate),
-        // AssetType.Dai(config, isPrivate),
-        // AssetType.UsdCoin(config, isPrivate)
+        AssetType.Dai(config, isPrivate),
+        AssetType.UsdCoin(config, isPrivate),
+        AssetType.WrappedBitcoin(config, isPrivate),
+        AssetType.WrappedEthereum(config, isPrivate),
+        AssetType.Arbitrum(config, isPrivate),
+        AssetType.BinanceCoin(config, isPrivate),
+        AssetType.BinanceUsd(config, isPrivate),
+        AssetType.Polygon(config, isPrivate),
+        AssetType.Lido(config, isPrivate),
+        AssetType.ShibaInu(config, isPrivate),
+        AssetType.Uniswap(config, isPrivate),
+        AssetType.Chainlink(config, isPrivate),
+        AssetType.Apecoin(config, isPrivate)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        AssetType.Manta(config, isPrivate),
-        AssetType.Polkadot(config, isPrivate),
-        AssetType.Acala(config, isPrivate),
+        AssetType.Manta(config, isPrivate), //
+        AssetType.Polkadot(config, isPrivate), //
+        AssetType.Acala(config, isPrivate), //
+        // AssetType.Moonriver(config, isPrivate), //
+        // todo: LDOT
+        AssetType.Tether(config, isPrivate), //
+        AssetType.Dai(config, isPrivate), //
+        AssetType.UsdCoin(config, isPrivate), //
+        AssetType.WrappedBitcoin(config, isPrivate), //
+        AssetType.WrappedEthereum(config, isPrivate),
+        AssetType.Arbitrum(config, isPrivate), //
+        AssetType.BinanceUsd(config, isPrivate), //
+        AssetType.Lido(config, isPrivate), //
+        AssetType.ShibaInu(config, isPrivate), //
+        AssetType.Uniswap(config, isPrivate), //
+        AssetType.Chainlink(config, isPrivate), //
+        AssetType.Apecoin(config, isPrivate) //
       ];
     }
   }
@@ -301,7 +486,8 @@ export default class AssetType {
       this.coingeckoId,
       this.isTestnet,
       this.isNativeToken,
-      this.logicalTicker
+      this.logicalTicker,
+      this.displayDecimals
     );
   }
 
@@ -317,7 +503,8 @@ export default class AssetType {
       this.coingeckoId,
       this.isTestnet,
       this.isNativeToken,
-      this.logicalTicker
+      this.logicalTicker,
+      this.displayDecimals
     );
   }
 
