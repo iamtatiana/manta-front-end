@@ -126,10 +126,10 @@ const ValidationButton = () => {
 
 const SwitchNetworkButton = () => {
   const config = useConfig();
-  const { configureMoonRiver } = useMetamask();
+  const { configureMoonBeam } = useMetamask();
 
   const onClick = () => {
-    configureMoonRiver();
+    configureMoonBeam();
   };
 
   const networkName = config.NETWORK_NAME === NETWORK.MANTA ? 'Moonbeam' : 'Moonriver';

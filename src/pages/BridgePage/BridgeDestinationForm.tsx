@@ -20,12 +20,12 @@ const BirdgeDestinationButton = ({onChangeDestinationtInput}) => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const { selectedWallet } = useKeyring();
-  const { ethAddress, configureMoonRiver } = useMetamask();
+  const { ethAddress, configureMoonBeam } = useMetamask();
   const { externalAccount } = usePublicAccount();
 
   const onClick = () => {
     if (!ethAddress && destinationChainIsEvm) {
-      configureMoonRiver();
+      configureMoonBeam();
     } else if (!externalAccount && originChainIsEvm) {
       return;
     } else {

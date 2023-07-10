@@ -15,7 +15,7 @@ const XTOKENS_PRECOMPILE_PARACHAIN_SELECTOR = '0x00';
 const XTOKENS_PRECOMPILE_ACCOUNT_ID_32_SELECTOR = '0x01';
 const XTOKENS_PRECOMPILE_NETWORK_ANY_SUFFIX  = '00';
 
-const CALAMARI_DESTINATION_WEIGHT = '4000000000';
+const DESTINATION_WEIGHT = '4000000000';
 
 const addressToAccountId = (address) => {
   return hexAddPrefix(u8aToHex(decodeAddress(address)));
@@ -51,7 +51,7 @@ const getXtokensPrecompileAccountId32 = (accountId) => {
   );
 };
 
-export const transferMovrFromMoonriverToCalamari = async (config, provider, balance, address) => {
+export const transferGlmrFromMoonbeamToManta = async (config, provider, balance, address) => {
   const abi = Xtokens.abi;
   const ethersProvider = new ethers.providers.Web3Provider(provider);
   const signer = ethersProvider.getSigner();
@@ -62,11 +62,13 @@ export const transferMovrFromMoonriverToCalamari = async (config, provider, bala
   let parachainId;
   if (config.NETWORK_NAME === NETWORK.CALAMARI) {
     parachainId = Chain.Calamari(config).parachainId;
+  } else if (config.NETWORK_NAME === NETWORK.MANTA) {
+    parachainId = Chain.Manta(config).parachainId;
   } else {
     throw new Error('Unsupported network');
   }
   const destination = getXtokensPrecompileLocation(parachainId, accountId);
-  const weight = CALAMARI_DESTINATION_WEIGHT;
+  const weight = DESTINATION_WEIGHT;
 
   try {
     const createReceipt = await contract.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight);

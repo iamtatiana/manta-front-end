@@ -27,7 +27,7 @@ export const MetamaskContextProvider = (props) => {
     !window.ethereum?.isBraveWallet &&
     !window.ethereum.isTalisman;
 
-  const configureMoonRiver = async () => {
+  const configureMoonBeam = async () => {
     if (!metamaskIsInstalled) {
       return;
     }
@@ -110,7 +110,7 @@ export const MetamaskContextProvider = (props) => {
     chainId,
     setProvider,
     ethAddress,
-    configureMoonRiver,
+    configureMoonBeam,
     setHasAuthConnectMetamask
   };
 

@@ -4,7 +4,7 @@ import { useConfig } from 'contexts/configContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
+import { transferGlmrFromMoonbeamToManta } from 'eth/EthXCM';
 import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
 import TxStatus from 'types/TxStatus';
@@ -180,8 +180,8 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    if (originChain.name === 'moonriver') {
-      const txHash = await transferMovrFromMoonriverToCalamari(
+    if (originChain.name === 'moonriver' || originChain.name === 'moonbeam') {
+      const txHash = await transferGlmrFromMoonbeamToManta(
         config, provider, senderAssetTargetBalance, destinationAddress
       );
       if (txHash) {

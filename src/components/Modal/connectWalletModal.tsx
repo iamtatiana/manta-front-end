@@ -1,6 +1,7 @@
 // @ts-nocheck
-import Icon from 'components/Icon';
 import WALLET_NAME from 'constants/WalletConstants';
+import Icon from 'components/Icon';
+import { useConfig } from 'contexts/configContext';
 import { useGlobal } from 'contexts/globalContexts';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -105,21 +106,24 @@ const ConnectWalletBlock = ({
 };
 
 const MetamaskConnectWalletBlock = ({ hideModal }) => {
-  const { configureMoonRiver, ethAddress } = useMetamask();
+  const config = useConfig();
+  const { configureMoonBeam, ethAddress } = useMetamask();
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
     !window.ethereum?.isBraveWallet &&
     !window.ethereum.isTalisman;
 
   const handleConnectWallet = async () => {
-    const isConnected = await configureMoonRiver();
+    const isConnected = await configureMoonBeam();
     isConnected && hideModal();
   };
+
+  const evmChainName = config.NETWORK_NAME === 'manta' ? 'Moonbeam' : 'Moonriver';
 
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={'MetaMask (for Moonriver)'}
+      walletName={`MetaMask (for ${evmChainName})`}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"
