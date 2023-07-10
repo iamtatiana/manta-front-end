@@ -104,8 +104,8 @@ export default class Chain {
       [
         AssetType.Manta(config),
         AssetType.Polkadot(config),
-        AssetType.Acala(config), //
-        // todo: LDOT
+        AssetType.Acala(config),
+        AssetType.LiquidDot(config),
         AssetType.Tether(config),
         AssetType.Dai(config),
         AssetType.UsdCoin(config),
@@ -185,6 +185,7 @@ export default class Chain {
         AssetType.WrappedBitcoin(config),
         AssetType.WrappedEthereum(config),
         AssetType.Apecoin(config),
+        AssetType.LiquidDot(config),
         // AssetType.Arbitrum(config), //
         // AssetType.BinanceUsd(config), //
         // AssetType.Lido(config), //

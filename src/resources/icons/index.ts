@@ -28,6 +28,8 @@ import { ReactComponent as shibaInu } from 'resources/icons/coins/shiba-inu-icon
 import { ReactComponent as uniswap } from 'resources/icons/coins/uniswap-icon.svg';
 import { ReactComponent as chainlink } from 'resources/icons/coins/chainlink-icon.svg';
 import { ReactComponent as apecoin } from 'resources/icons/coins/apecoin-icon.svg';
+import { ReactComponent as ldot } from 'resources/icons/coins/LDOT-icon.svg';
+
 
 
 // sidebar icons
@@ -128,6 +130,7 @@ const icons = {
   roc,
   movr,
   tether,
+  ldot,
   dai,
   usdc,
   wbtc,

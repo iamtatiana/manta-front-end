@@ -182,6 +182,20 @@ export default class AssetType {
     );
   }
 
+  static LiquidDot(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).LDOT,
+      'Liquid DOT',
+      'LDOT',
+      'ldot',
+      10,
+      new BN('500000000'),
+      isPrivate,
+      'liquid-staking-dot',
+      config.IS_TESTNET,
+    );
+  }
+
   static Kusama(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).KSM,
@@ -254,7 +268,7 @@ export default class AssetType {
       config.IS_TESTNET,
       false,
       null,
-      5
+      8
     );
   }
 
@@ -271,7 +285,7 @@ export default class AssetType {
       config.IS_TESTNET,
       false,
       null,
-      4
+      8
     );
   }
 
@@ -474,7 +488,7 @@ export default class AssetType {
         AssetType.Polkadot(config, isPrivate),
         AssetType.Acala(config, isPrivate),
         AssetType.Moonbeam(config, isPrivate),
-        // todo: LDOT
+        AssetType.LiquidDot(config, isPrivate),
         AssetType.Tether(config, isPrivate),
         AssetType.Dai(config, isPrivate),
         AssetType.UsdCoin(config, isPrivate),
