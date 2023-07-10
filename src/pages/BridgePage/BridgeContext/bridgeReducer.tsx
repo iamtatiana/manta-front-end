@@ -4,6 +4,12 @@ import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Chain from 'types/Chain';
+import {
+  setBridgeDestinationChainName,
+  setBridgeOriginChainName,
+  getBridgeOriginChainName,
+  getBridgeDestinationChainName
+} from 'utils/persistence/bridgeChainStorage';
 import BRIDGE_ACTIONS from './bridgeActions';
 
 const getDestinationChainOptions = (originChain, originChainOptions) => {
@@ -36,9 +42,8 @@ const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) =
 
 export const buildInitState = (config) => {
   // user's prev selecting
-  const prevBridgeOriginChainName = store.get(localStorageKeys.BridgeOriginChainName);
-  const prevBridgeDestinationChainName = store.get(localStorageKeys.BridgeDestinationChainName);
-
+  const prevBridgeOriginChainName = getBridgeOriginChainName(config.NETWORK_NAME);
+  const prevBridgeDestinationChainName = getBridgeDestinationChainName(config.NETWORK_NAME);
   const initOriginChainOptions = Chain.All(config);
   let initOriginChain;
   if (prevBridgeOriginChainName) {
@@ -231,12 +236,12 @@ const setFeeEstimates = (state, action) => {
 };
 
 const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnected }) => {
-  store.set(localStorageKeys.BridgeOriginChainName, originChain.name);
+  setBridgeOriginChainName(originChain.name, state.config.NETWORK_NAME);
   let destinationChain = state.destinationChain;
   const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
   if (!originChain.canTransferXcm(destinationChain)) {
     destinationChain = destinationChainOptions[0];
-    store.set(localStorageKeys.BridgeDestinationChainName, destinationChain.name);
+    setBridgeDestinationChainName(destinationChain.name, state.config.NETWORK_NAME);
   }
   const senderAssetTypeOptions = getSenderAssetTypeOptions(
     state.config, originChain, destinationChain
@@ -265,7 +270,7 @@ const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnecte
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
-  store.set(localStorageKeys.BridgeDestinationChainName, destinationChain.name);
+  getBridgeDestinationChainName(destinationChain.name, state.config.NETWORK_NAME);
   const senderAssetTypeOptions = getSenderAssetTypeOptions(
     state.config, state.originChain, destinationChain
   );
@@ -299,8 +304,8 @@ const switchOriginAndDestination = (state, { isApiInitialized, isApiDisconnected
   if (destinationChain.canTransferXcm(originChain)) {
     const newDestinationChain = originChain;
     const newOriginChain = destinationChain;
-    store.set(localStorageKeys.BridgeOriginChainName, newOriginChain.name);
-    store.set(localStorageKeys.BridgeDestinationChainName, newDestinationChain.name);
+    setBridgeOriginChainName(newOriginChain.name, state.config.NETWORK_NAME);
+    setBridgeDestinationChainName(newDestinationChain.name, state.config.NETWORK_NAME);
     return {
       ...state,
       isApiInitialized,
