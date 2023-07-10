@@ -105,20 +105,21 @@ export default class Chain {
         AssetType.Manta(config),
         AssetType.Polkadot(config),
         AssetType.Acala(config), //
-        // AssetType.Moonriver(config, isPrivate), //
         // todo: LDOT
-        AssetType.Tether(config), //
-        AssetType.Dai(config), //
-        AssetType.UsdCoin(config), //
-        AssetType.WrappedBitcoin(config), //
+        AssetType.Tether(config),
+        AssetType.Dai(config),
+        AssetType.UsdCoin(config),
+        AssetType.WrappedBitcoin(config),
         AssetType.WrappedEthereum(config),
-        AssetType.Arbitrum(config), //
-        AssetType.BinanceUsd(config), //
-        AssetType.Lido(config), //
-        AssetType.ShibaInu(config), //
-        AssetType.Uniswap(config), //
-        AssetType.Chainlink(config), //
-        AssetType.Apecoin(config) //
+        AssetType.Arbitrum(config),
+        AssetType.BinanceUsd(config),
+        AssetType.Lido(config),
+        AssetType.ShibaInu(config),
+        AssetType.Uniswap(config),
+        AssetType.Chainlink(config),
+        AssetType.Apecoin(config),
+        AssetType.Moonbeam(config),
+
       ],
       AssetType.Manta(config),
       MantaAdapter,
@@ -178,14 +179,12 @@ export default class Chain {
       config.ACALA_SUBSCAN_URL,
       [
         AssetType.Acala(config),
-        AssetType.Tether(config), // remove et
-        AssetType.Dai(config), // can't find route
-        AssetType.UsdCoin(config), // remove et
-        AssetType.WrappedBitcoin(config), // can't find route
-        AssetType.WrappedEthereum(config), // can't find route
-        AssetType.Apecoin(config), // can't find route
-
-
+        AssetType.Tether(config),
+        AssetType.Dai(config),
+        AssetType.UsdCoin(config),
+        AssetType.WrappedBitcoin(config),
+        AssetType.WrappedEthereum(config),
+        AssetType.Apecoin(config),
         // AssetType.Arbitrum(config), //
         // AssetType.BinanceUsd(config), //
         // AssetType.Lido(config), //
@@ -276,6 +275,37 @@ export default class Chain {
     );
   }
 
+  static Moonbeam(config) {
+    const moonbeamEthMetadata = {
+      chainId: '0x504',
+      chainName: 'Moonbeam',
+      nativeCurrency: {
+        name: 'GLMR',
+        symbol: 'GMLR',
+        decimals: 18
+      },
+      rpcUrls: [config.MOONBEAM_RPC]
+    };
+
+    return new Chain(
+      'moonbeam',
+      'Moonbeam',
+      2004,
+      'moonbeam',
+      config.MOONBEAM_SOCKET,
+      config.MOONBEAM_SUBSCAN_URL,
+      [AssetType.Moonbeam(config)],
+      AssetType.Moonbeam(config),
+      MoonbeamAdapter,
+      typesBundlePre900,
+      null,
+      null,
+      moonbeamEthMetadata,
+      1284
+    );
+  }
+
+
   static All(config) {
     if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [
@@ -286,7 +316,7 @@ export default class Chain {
         Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
-      return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config)];
+      return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config), Chain.Moonbeam(config)];
     }
   }
 

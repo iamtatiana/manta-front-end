@@ -211,7 +211,6 @@ export const SendContextProvider = (props) => {
         );
         return total.sub(staked);
       } else {
-        console.log('fetching public balance for', address, assetType.assetId);
         const assetBalance = await api.query.assets.account(
           assetType.assetId,
           address

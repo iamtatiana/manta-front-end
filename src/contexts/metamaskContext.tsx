@@ -7,8 +7,8 @@ import {
   getHasAuthToConnectMetamaskStorage,
   setHasAuthToConnectMetamaskStorage
 } from 'utils/persistence/connectAuthorizationStorage';
-import { useConfig } from './configContext';
 import { useActive } from 'hooks/useActive';
+import { useConfig } from './configContext';
 
 const MetamaskContext = createContext();
 
@@ -32,11 +32,14 @@ export const MetamaskContextProvider = (props) => {
       return;
     }
     try {
+      const chain = config.NETWORK_NAME === 'calamari'
+        ? Chain.Moonriver(config)
+        : Chain.Moonbeam(config);
       await provider?.request({ method: 'eth_requestAccounts' });
-      if (provider?.chainId !== Chain.Moonriver(config).ethMetadata.chainId) {
+      if (provider?.chainId !== chain.ethMetadata.chainId) {
         await provider.request({
           method: 'wallet_addEthereumChain',
-          params: [Chain.Moonriver(config).ethMetadata]
+          params: [chain.ethMetadata]
         });
       }
       setHasAuthConnectMetamask(true);

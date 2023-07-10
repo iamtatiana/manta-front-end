@@ -13,6 +13,7 @@ import { ReactComponent as kar } from 'resources/icons/coins/kar-icon.svg';
 import { ReactComponent as kbtc } from 'resources/icons/coins/kbtc-icon.svg';
 import { ReactComponent as roc } from 'resources/icons/coins/roc-icon.svg';
 import { ReactComponent as movr } from 'resources/icons/coins/movr-icon.svg';
+import { ReactComponent as moonbeam } from 'resources/icons/coins/moonbeam-icon.svg';
 import { ReactComponent as tether } from 'resources/icons/coins/tether-icon.svg';
 import { ReactComponent as statemine } from 'resources/icons/coins/statemine-icon.svg';
 import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
@@ -131,6 +132,7 @@ const icons = {
   usdc,
   wbtc,
   arbitrum,
+  moonbeam,
   bnb,
   busd,
   polygon,

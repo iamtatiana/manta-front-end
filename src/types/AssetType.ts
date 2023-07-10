@@ -210,6 +210,21 @@ export default class AssetType {
     );
   }
 
+
+  static Moonbeam(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).GLMR,
+      'Moonbeam',
+      'GLMR',
+      'moonbeam',
+      18,
+      new BN('100000000000000000'),
+      isPrivate,
+      'moonbeam',
+      config.IS_TESTNET,
+    );
+  }
+
   static Tether(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).USDT,
@@ -455,23 +470,23 @@ export default class AssetType {
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        AssetType.Manta(config, isPrivate), //
-        AssetType.Polkadot(config, isPrivate), //
-        AssetType.Acala(config, isPrivate), //
-        // AssetType.Moonriver(config, isPrivate), //
+        AssetType.Manta(config, isPrivate),
+        AssetType.Polkadot(config, isPrivate),
+        AssetType.Acala(config, isPrivate),
+        AssetType.Moonbeam(config, isPrivate),
         // todo: LDOT
-        AssetType.Tether(config, isPrivate), //
-        AssetType.Dai(config, isPrivate), //
-        AssetType.UsdCoin(config, isPrivate), //
-        AssetType.WrappedBitcoin(config, isPrivate), //
+        AssetType.Tether(config, isPrivate),
+        AssetType.Dai(config, isPrivate),
+        AssetType.UsdCoin(config, isPrivate),
+        AssetType.WrappedBitcoin(config, isPrivate),
         AssetType.WrappedEthereum(config, isPrivate),
-        AssetType.Arbitrum(config, isPrivate), //
-        AssetType.BinanceUsd(config, isPrivate), //
-        AssetType.Lido(config, isPrivate), //
-        AssetType.ShibaInu(config, isPrivate), //
-        AssetType.Uniswap(config, isPrivate), //
-        AssetType.Chainlink(config, isPrivate), //
-        AssetType.Apecoin(config, isPrivate) //
+        AssetType.Arbitrum(config, isPrivate),
+        AssetType.BinanceUsd(config, isPrivate),
+        AssetType.Lido(config, isPrivate),
+        AssetType.ShibaInu(config, isPrivate),
+        AssetType.Uniswap(config, isPrivate),
+        AssetType.Chainlink(config, isPrivate),
+        AssetType.Apecoin(config, isPrivate)
       ];
     }
   }
