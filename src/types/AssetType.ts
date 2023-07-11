@@ -32,17 +32,10 @@ const MantaAssetIds = {
   GLMR: 10,
   ACA: 11,
   LDOT: 12,
-  LDO: 15,
-  SHIB: 16,
-  UNI: 17,
-  LINK: 18,
   APE: 19,
-  ARB: 20,
-  BUSD: 21,
   USDT: 22,
   DAI: 23,
   USDC: 24,
-  MATIC: 25,
   WBTC: 26,
   WETH: 27
 };
@@ -119,7 +112,7 @@ export default class AssetType {
       18,
       new BN('100000000000000000'),
       isPrivate,
-      'calamari-network', // todo: use actual manta coingecko id when available
+      'manta-network', // todo: check when manta is added to coingecko
       config.IS_TESTNET,
       true
     );
@@ -232,7 +225,7 @@ export default class AssetType {
       'GLMR',
       'moonbeam',
       18,
-      new BN('100000000000000000'),
+      new BN('1'),
       isPrivate,
       'moonbeam',
       config.IS_TESTNET,
@@ -298,7 +291,7 @@ export default class AssetType {
       18,
       new BN('9000000000000000'),
       isPrivate,
-      'arb',
+      'arbitrum',
       config.IS_TESTNET,
       false,
       config.NETWORK_NAME === NETWORK.CALAMARI ? 'ARBet': null
@@ -393,7 +386,7 @@ export default class AssetType {
       18,
       new BN('5000000000000000'),
       isPrivate,
-      'lido',
+      'lido-dao',
       config.IS_TESTNET,
       false,
     );
@@ -408,7 +401,7 @@ export default class AssetType {
       18,
       new BN('1000000000000000000000'),
       isPrivate,
-      'shibaInu',
+      'shiba-inu',
       config.IS_TESTNET,
       false,
     );

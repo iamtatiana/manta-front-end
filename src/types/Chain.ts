@@ -111,15 +111,8 @@ export default class Chain {
         AssetType.UsdCoin(config),
         AssetType.WrappedBitcoin(config),
         AssetType.WrappedEthereum(config),
-        AssetType.Arbitrum(config),
-        AssetType.BinanceUsd(config),
-        AssetType.Lido(config),
-        AssetType.ShibaInu(config),
-        AssetType.Uniswap(config),
-        AssetType.Chainlink(config),
         AssetType.Apecoin(config),
         AssetType.Moonbeam(config),
-
       ],
       AssetType.Manta(config),
       MantaAdapter,
@@ -186,12 +179,6 @@ export default class Chain {
         AssetType.WrappedEthereum(config),
         AssetType.Apecoin(config),
         AssetType.LiquidDot(config),
-        // AssetType.Arbitrum(config), //
-        // AssetType.BinanceUsd(config), //
-        // AssetType.Lido(config), //
-        // AssetType.ShibaInu(config), //
-        // AssetType.Uniswap(config), //
-        // AssetType.Chainlink(config), //
       ],
       AssetType.Acala(config),
       AcalaAdapter,
