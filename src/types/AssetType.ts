@@ -494,12 +494,6 @@ export default class AssetType {
         AssetType.UsdCoin(config, isPrivate),
         AssetType.WrappedBitcoin(config, isPrivate),
         AssetType.WrappedEthereum(config, isPrivate),
-        AssetType.Arbitrum(config, isPrivate),
-        AssetType.BinanceUsd(config, isPrivate),
-        AssetType.Lido(config, isPrivate),
-        AssetType.ShibaInu(config, isPrivate),
-        AssetType.Uniswap(config, isPrivate),
-        AssetType.Chainlink(config, isPrivate),
         AssetType.Apecoin(config, isPrivate)
       ];
     }
