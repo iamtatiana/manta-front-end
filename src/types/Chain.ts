@@ -193,7 +193,7 @@ export default class Chain {
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config),
-        Chain.Statemine(config)
+        // Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
       return [

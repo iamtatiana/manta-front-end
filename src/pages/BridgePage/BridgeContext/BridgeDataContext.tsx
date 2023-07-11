@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect, useState } from 'react';
+import React, { useReducer, useContext, useEffect } from 'react';
 import { Wallet } from '@acala-network/sdk/wallet';
 import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
@@ -341,6 +341,7 @@ export const BridgeDataContextProvider = (props) => {
         || !originAddress
         || !isApiInitialized
         || !originChain
+        || !destinationAddress
       ) {
         return;
       }

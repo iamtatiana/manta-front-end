@@ -26,6 +26,7 @@ const DolphinAssetIds = {
   LKSM: 10,
   MOVR: 11,
   KSM: 12,
+  USDT: 14
 };
 
 const getAssetIds = (config) => {

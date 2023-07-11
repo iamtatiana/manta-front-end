@@ -25,6 +25,7 @@ import {
   getLastAccessedWallet,
   setLastAccessedWallet
 } from 'utils/persistence/walletStorage';
+import { cryptoWaitReady } from '@polkadot/util-crypto';
 import isObjectEmpty from 'utils/validation/isEmpty';
 import { useActive } from 'hooks/useActive';
 
@@ -35,17 +36,21 @@ type KeyringContextValue = {
   selectedWallet: Wallet;
   keyringIsBusy: MutableRefObject<boolean>;
   authedWalletList: string[];
+  walletConnectingErrorMessages: { [key: string]: string };
   connectWallet: (
     extensionName: string,
     saveToStorage?: boolean,
     isFromConnectModal?: boolean
   ) => Promise<boolean | undefined>;
   connectWalletExtensions: (extensionNames: string[]) => void;
-  refreshWalletAccounts: (wallet: Wallet) => Promise<string | void>;
+  refreshWalletAccounts: (
+    wallet: Wallet
+  ) => Promise<string | undefined> | undefined;
   getLatestAccountAndPairs: () => {
     account: KeyringPair;
     pairs: KeyringPair[];
   };
+  resetWalletConnectingErrorMessages: () => void;
 };
 const KeyringContext = createContext<KeyringContextValue | null>(null);
 
@@ -73,7 +78,6 @@ export const KeyringContextProvider = ({
   const lastAccessExtensionName = getLastAccessedWallet()?.extensionName;
   const [authedWalletList, setAuthedWalletList] = useState<string[]>([]);
   const keyringIsBusy = useRef(false);
-  const isActive = useActive();
 
   const [walletConnectingErrorMessages, setWalletConnectingErrorMessages] =
     useState(getInitialWalletConnectingErrorMessages());
@@ -81,6 +85,8 @@ export const KeyringContextProvider = ({
   const resetWalletConnectingErrorMessages = useCallback(() => {
     setWalletConnectingErrorMessages(getInitialWalletConnectingErrorMessages());
   }, []);
+
+  const isActive = useActive();
 
   const addWalletName = (walletName: string, walletNameList: string[]) => {
     const copyWalletNameList = [...walletNameList];
@@ -254,14 +260,19 @@ export const KeyringContextProvider = ({
 
   const initKeyring = useCallback(async () => {
     if (!isKeyringInit && web3ExtensionInjected.length !== 0) {
-      const isCalamari = window?.location?.pathname?.includes('calamari');
-      keyring.loadAll(
-        {
-          ss58Format: isCalamari ? SS58.CALAMARI : SS58.DOLPHIN
-        },
-        []
-      );
-      setIsKeyringInit(true);
+      try {
+        await cryptoWaitReady();
+        const isCalamari = window?.location?.pathname?.includes('calamari');
+        keyring.loadAll(
+          {
+            ss58Format: isCalamari ? SS58.CALAMARI : SS58.DOLPHIN
+          },
+          []
+        );
+        setIsKeyringInit(true);
+      } catch (e: any) {
+        console.error('initKeyring', e.message);
+      }
     }
   }, [isKeyringInit, web3ExtensionInjected.length]);
 
