@@ -301,7 +301,6 @@ export default class Chain {
         Chain.Kusama(config),
         Chain.Karura(config),
         Chain.Moonriver(config),
-        Chain.Statemine(config)
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [Chain.Manta(config), Chain.Acala(config), Chain.Polkadot(config), Chain.Moonbeam(config)];
