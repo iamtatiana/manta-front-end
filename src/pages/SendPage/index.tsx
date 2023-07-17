@@ -7,14 +7,14 @@ import { Notification } from 'element-react';
 import { useEffect } from 'react';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
 import { WarningNotification } from 'components/NotificationContent';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { SendContextProvider } from './SendContext';
 import SendForm from './SendForm';
 import { PrivateTxHistoryContextProvider } from './privateTxHistoryContext';
 
 const SendPage = () => {
   const config = useConfig();
-  const { mantaWalletVersion } = usePrivateWallet();
+  const { mantaWalletVersion } = useMantaWallet();
   const outdated = versionIsOutOfDate(
     config.MIN_REQUIRED_WALLET_VERSION,
     mantaWalletVersion

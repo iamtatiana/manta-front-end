@@ -1,7 +1,6 @@
 // @ts-nocheck
-import Icon from 'components/Icon';
 import WALLET_NAME from 'constants/WalletConstants';
-import { useGlobal } from 'contexts/globalContexts';
+import Icon from 'components/Icon';
 import { useKeyring } from 'contexts/keyringContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
@@ -21,10 +20,8 @@ const ConnectWalletBlock = ({
   connectHandler
 }) => {
   const { walletConnectingErrorMessages } = useKeyring();
-  const { usingMantaWallet } = useGlobal();
   const { pathname } = useLocation();
-  const isCalamariMantaPayPage = pathname.includes('/calamari/transact');
-  const usingNewUI = usingMantaWallet && isCalamariMantaPayPage;
+  const isMantaPayPage = pathname.includes('/transact');
   const errorMessage = walletConnectingErrorMessages[extensionName];
 
   const getDisplayedErrorMessage = () => {
@@ -45,9 +42,9 @@ const ConnectWalletBlock = ({
       <div>
         <div className="text-sm flex items-center gap-3 leading-5">
           {walletName}
-          {isMantaWallet && usingNewUI && <RecommendedImage />}
+          {isMantaWallet && isMantaPayPage && <RecommendedImage />}
         </div>
-        {usingNewUI && (
+        {isMantaPayPage && (
           <div className="text-xs leading-4 mt-1 opacity-60">
             {isMantaWallet
               ? 'Public Address and zkAddress Combined'
@@ -135,23 +132,15 @@ export const SubstrateConnectWalletBlock = ({
 }) => {
   const { connectWallet, connectWalletExtensions, authedWalletList } =
     useKeyring();
-  const { usingMantaWallet } = useGlobal();
   const { externalAccount } = usePublicAccount();
 
-  let substrateWallets = getSubstrateWallets();
+  const substrateWallets = getSubstrateWallets();
 
-  if (!usingMantaWallet) {
-    substrateWallets = substrateWallets.filter(
-      (wallet) => wallet.extensionName !== WALLET_NAME.MANTA
-    );
-  } else {
-    // display Manta Wallet as the first wallet
-    const mantaWalletIndex = substrateWallets.findIndex(
-      (wallet) => wallet.extensionName === WALLET_NAME.MANTA
-    );
-    substrateWallets.unshift(substrateWallets.splice(mantaWalletIndex, 1)[0]);
-  }
-
+  // display Manta Wallet as the first wallet
+  const mantaWalletIndex = substrateWallets.findIndex(
+    (wallet) => wallet.extensionName === WALLET_NAME.MANTA
+  );
+  substrateWallets.unshift(substrateWallets.splice(mantaWalletIndex, 1)[0]);
   const handleConnectWallet = (walletName) => async () => {
     const isConnected = await connectWallet(walletName, true, true);
     if (isConnected) {
@@ -186,15 +175,13 @@ export const SubstrateConnectWalletBlock = ({
 const ConnectWalletModal = ({ setIsMetamaskSelected, hideModal }) => {
   const isBridgePage = window?.location?.pathname?.includes('bridge');
 
-  const { usingMantaWallet } = useGlobal();
   const { pathname } = useLocation();
-  const isCalamariMantaPayPage = pathname.includes('/calamari/transact');
-  const usingNewUI = usingMantaWallet && isCalamariMantaPayPage;
+  const isMantaPayPage = pathname.includes('/calamari/transact');
 
   return (
     <div className="w-126.5">
       <h1 className="text-xl text-white">Connect Wallet</h1>
-      {usingNewUI && (
+      {isMantaPayPage && (
         <div className="mt-4 text-sm text-white opacity-60">
           For full MantaPay functionality,
           <br />

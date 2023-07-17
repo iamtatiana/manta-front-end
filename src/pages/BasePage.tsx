@@ -3,14 +3,12 @@ import NETWORK from 'constants/NetworkConstants';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
 import { PublicAccountContextProvider } from 'contexts/publicAccountContext';
-import { MantaSignerWalletContextProvider } from 'contexts/mantaSignerWalletContext';
-import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
-import { PrivateWalletContextProvider } from 'contexts/privateWalletContext';
+import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
 import MantaWalletIntroModal from 'components/Modal/MantaWalletIntroModal';
 
 import PropTypes from 'prop-types';
@@ -22,7 +20,6 @@ import {
   showSuccess,
   showWarning
 } from 'utils/ui/Notifications';
-import { useGlobal } from 'contexts/globalContexts';
 
 const TxStatusHandler = () => {
   const { txStatus, setTxStatus } = useTxStatus();
@@ -66,22 +63,6 @@ BasePage.propTypes = {
   children: PropTypes.any
 };
 
-const PrivateWalletImplementation = ({ children }) => {
-  const { usingMantaWallet } = useGlobal();
-  if (usingMantaWallet) {
-    return <MantaWalletContextProvider>{children}</MantaWalletContextProvider>;
-  }
-  return (
-    <MantaSignerWalletContextProvider>
-      {children}
-    </MantaSignerWalletContextProvider>
-  );
-};
-
-PrivateWalletImplementation.propTypes = {
-  children: PropTypes.any
-};
-
 export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
@@ -89,13 +70,11 @@ export const CalamariBasePage = ({ children }) => {
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <PrivateWalletImplementation>
-              <PrivateWalletContextProvider>
-                <ZkAccountBalancesContextProvider>
-                  {children}
-                </ZkAccountBalancesContextProvider>
-              </PrivateWalletContextProvider>
-            </PrivateWalletImplementation>
+            <MantaWalletContextProvider>
+              <ZkAccountBalancesContextProvider>
+                {children}
+              </ZkAccountBalancesContextProvider>
+            </MantaWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>
@@ -113,13 +92,11 @@ export const DolphinBasePage = ({ children }) => {
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
-            <PrivateWalletImplementation>
-              <PrivateWalletContextProvider>
-                <ZkAccountBalancesContextProvider>
-                  {children}
-                </ZkAccountBalancesContextProvider>
-              </PrivateWalletContextProvider>
-            </PrivateWalletImplementation>
+            <MantaWalletContextProvider>
+              <ZkAccountBalancesContextProvider>
+                {children}
+              </ZkAccountBalancesContextProvider>
+            </MantaWalletContextProvider>
           </MetamaskContextProvider>
         </UsdPricesContextProvider>
       </BasePage>

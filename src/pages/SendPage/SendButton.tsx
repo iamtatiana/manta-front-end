@@ -2,11 +2,8 @@
 import classNames from 'classnames';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
-import { ZkAccountConnect } from 'components/Navbar/ZkAccountButton';
 import { useConfig } from 'contexts/configContext';
-import { useGlobal } from 'contexts/globalContexts';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -59,7 +56,7 @@ const InnerSendButton = ({ senderLoading, receiverLoading }) => {
   );
 };
 
-const ValidationSendButton = ({ showModal }) => {
+const ValidationSendButton = () => {
   const config = useConfig();
   const { apiState } = useSubstrate();
   const {
@@ -68,21 +65,14 @@ const ValidationSendButton = ({ showModal }) => {
     receiverAddress,
     userCanPayFee,
     userHasSufficientFunds,
-    isValidToSend,
     receiverAmountIsOverExistentialBalance,
     senderAssetType,
     senderAssetTargetBalance,
     senderNativeTokenPublicBalance
   } = useSend();
-  const { usingMantaWallet } = useGlobal();
   const { mantaWalletVersion, showChangeNetworkNotification } =
     useMantaWallet();
-  const {
-    signerIsConnected,
-    signerVersion,
-    privateWallet,
-    hasFinishedInitialBlockDownload
-  } = usePrivateWallet();
+  const { privateWallet, hasFinishedInitialBlockDownload } = useMantaWallet();
   const { externalAccount } = usePublicAccount();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
@@ -92,39 +82,18 @@ const ValidationSendButton = ({ showModal }) => {
   let validationMsg = null;
   let shouldShowMantaWalletMissingValidation = false;
   let shouldShowWalletMissingValidation = false;
-  let shouldShowSignerMissingValidation = false;
-  let shouldShowWalletSignerMissingValidation = false;
 
   if (
-    !signerIsConnected &&
-    !isPublicTransfer() &&
-    !externalAccount &&
-    !usingMantaWallet
-  ) {
-    shouldShowWalletSignerMissingValidation = true;
-  } else if (!signerIsConnected && !isPublicTransfer() && !usingMantaWallet) {
-    shouldShowSignerMissingValidation = true;
-  } else if (
-    !usingMantaWallet &&
-    versionIsOutOfDate(config.MIN_REQUIRED_SIGNER_VERSION, signerVersion)
-  ) {
-    validationMsg = 'Signer out of date';
-  } else if (
-    usingMantaWallet &&
     versionIsOutOfDate(config.MIN_REQUIRED_WALLET_VERSION, mantaWalletVersion)
   ) {
     validationMsg = 'Update Manta Wallet';
-  } else if (usingMantaWallet && showChangeNetworkNotification) {
+  } else if (showChangeNetworkNotification) {
     validationMsg = 'Switch Networks in Manta Wallet';
   } else if (!externalAccount) {
     shouldShowWalletMissingValidation = true;
-  } else if (usingMantaWallet && !privateWallet && !isPublicTransfer()) {
+  } else if (!privateWallet && !isPublicTransfer()) {
     shouldShowMantaWalletMissingValidation = true;
-  } else if (
-    usingMantaWallet &&
-    hasFinishedInitialBlockDownload === false &&
-    !isPublicTransfer()
-  ) {
+  } else if (hasFinishedInitialBlockDownload === false && !isPublicTransfer()) {
     validationMsg = 'Manta Wallet sync required';
   } else if (apiIsDisconnected) {
     validationMsg = 'Connecting to network';
@@ -172,13 +141,6 @@ const ValidationSendButton = ({ showModal }) => {
 
   return (
     <>
-      {shouldShowSignerMissingValidation && (
-        <ZkAccountConnect
-          className={
-            'bg-connect-signer-button py-2 unselectable-text text-center text-white rounded-lg w-full'
-          }
-        />
-      )}
       {shouldShowMantaWalletMissingValidation && (
         <ConnectWalletButton
           className={
@@ -194,23 +156,9 @@ const ValidationSendButton = ({ showModal }) => {
           }
         />
       )}
-      {shouldShowWalletSignerMissingValidation && (
-        <>
-          <button
-            onClick={() => showModal()}
-            className={classNames(
-              'gradient-button py-2 unselectable-text text-center text-white rounded-lg w-full',
-              {'filter brightness-50 cursor-not-allowed': !isValidToSend()}
-            )}>
-            Connect Wallet and Signer
-          </button>
-        </>
-      )}
       {validationMsg && <ValidationText validationMsg={validationMsg} />}
-      {!shouldShowSignerMissingValidation &&
-        !shouldShowWalletMissingValidation &&
+      {!shouldShowWalletMissingValidation &&
         !shouldShowMantaWalletMissingValidation &&
-        !shouldShowWalletSignerMissingValidation &&
         !validationMsg && (
           <InnerSendButton
             senderLoading={senderLoading}
@@ -221,13 +169,13 @@ const ValidationSendButton = ({ showModal }) => {
   );
 };
 
-const SendButton = ({ showModal }) => {
+const SendButton = () => {
   const { txStatus } = useTxStatus();
 
   if (txStatus?.isProcessing()) {
     return <MantaLoading className="ml-6 py-4 place-self-center" />;
   } else {
-    return <ValidationSendButton showModal={showModal} />;
+    return <ValidationSendButton />;
   }
 };
 

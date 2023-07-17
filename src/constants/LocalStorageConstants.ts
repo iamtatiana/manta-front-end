@@ -7,5 +7,4 @@ export const localStorageKeys = {
   BridgeOriginChainName: 'bridge-origin-chain',
   BridgeDestinationChainName: 'bridge-destination-chain',
   SkipMantaWalletIntro: 'skip-manta-wallet-intro',
-  UsingMantaWallet: 'using-manta-wallet'
 };

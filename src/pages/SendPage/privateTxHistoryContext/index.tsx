@@ -1,7 +1,7 @@
 import { AxiosError, AxiosResponse, default as axios } from 'axios';
 import { useConfig } from 'contexts/configContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { usePrivateWallet } from 'contexts/privateWalletContext';
+import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { ReactNode, createContext, useContext, useEffect } from 'react';
 import TxHistoryEvent, {
   HISTORY_EVENT_STATUS,
@@ -18,8 +18,8 @@ import {
   setPrivateTransactionHistory,
   updateTxHistoryEventStatus
 } from 'utils/persistence/privateTransactionHistory';
-import { useSend } from '../SendContext';
 import { useActive } from 'hooks/useActive';
+import { useSend } from '../SendContext';
 
 type PrivateTxHistoryContextProps = {
   children: ReactNode;
@@ -33,7 +33,7 @@ export const PrivateTxHistoryContextProvider = (
 ) => {
   const config = useConfig();
   const { txStatus, txStatusRef } = useTxStatus();
-  const { privateAddress } = usePrivateWallet();
+  const { privateAddress } = useMantaWallet();
   const {
     isToPublic,
     isToPrivate,

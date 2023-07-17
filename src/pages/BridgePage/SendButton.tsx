@@ -10,7 +10,6 @@ import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Chain from 'types/Chain';
 import { useConfig } from 'contexts/configContext';
-import { useGlobal } from 'contexts/globalContexts';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
@@ -20,7 +19,6 @@ const ValidationButton = () => {
   const config = useConfig();
   const { apiState } = useSubstrate();
   const { externalAccount } = usePublicAccount();
-  const { usingMantaWallet } = useGlobal();
   const { showChangeNetworkNotification } = useMantaWallet();
   const { selectedWallet } = useKeyring();
   const {
@@ -61,7 +59,6 @@ const ValidationButton = () => {
   ) {
     isSwitchNetwork = true;
   } else if (
-    usingMantaWallet &&
     selectedWallet?.extensionName === WALLET_NAME.MANTA &&
     showChangeNetworkNotification
   ) {
@@ -151,7 +148,7 @@ const SendButton = () => {
       className={classNames(
         'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
         'text-center text-white rounded-lg w-full',
-        {'filter brightness-50 cursor-not-allowed': !isValidToSend()}
+        { 'filter brightness-50 cursor-not-allowed': !isValidToSend() }
       )}>
       Submit
     </button>

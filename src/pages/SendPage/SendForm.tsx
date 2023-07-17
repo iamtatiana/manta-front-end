@@ -12,7 +12,6 @@ import userIsMobile from 'utils/ui/userIsMobile';
 import { useSend } from './SendContext';
 import SendFromForm from './SendFromForm';
 import SendToForm from './SendToForm';
-import SwitchMantaWalletAndSigner from './SwitchMantaWalletAndSigner';
 
 const SendForm = () => {
   const config = useConfig();
@@ -75,7 +74,6 @@ const SendForm = () => {
           </div>
           <SendToForm />
         </div>
-        <SwitchMantaWalletAndSigner />
       </div>
     </div>
   );

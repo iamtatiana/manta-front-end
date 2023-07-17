@@ -5,19 +5,14 @@ import Logo from 'resources/images/manta-wallet-intro-modal-logo.png';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import store from 'store';
-import { useGlobal } from 'contexts/globalContexts';
 import { useLocation } from 'react-router-dom';
 
 function MantaWalletIntroModal() {
   const [open, setOpen] = useState(false);
   const [skipIntro, setSkipIntro] = useState(false);
-  const { usingMantaWallet, setUsingMantaWallet } = useGlobal();
   const { pathname } = useLocation();
 
   const onClickExplore = () => {
-    if (!usingMantaWallet) {
-      setUsingMantaWallet(true);
-    }
     setOpen(false);
   };
 

@@ -1,6 +1,9 @@
 import NETWORK from 'constants/NetworkConstants';
 import WALLET_NAME from 'constants/WalletConstants';
-import { dummyPrivateAddress, dummyPublicAddress } from 'constants/DummyTransactions';
+import {
+  dummyPrivateAddress,
+  dummyPublicAddress
+} from 'constants/DummyTransactions';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
@@ -8,7 +11,6 @@ import { WarningNotification } from 'components/NotificationContent';
 import { useKeyring } from 'contexts/keyringContext';
 import { Notification } from 'element-react';
 import {
-  MutableRefObject,
   ReactNode,
   createContext,
   useCallback,
@@ -39,7 +41,7 @@ type txResHandlerType<T, E = undefined> = (
   extra: E
 ) => void | Promise<void>;
 
-type MantaWalletContext = {
+type MantaWalletContextType = {
   isReady: boolean;
   signerIsConnected: boolean | null;
   hasFinishedInitialBlockDownload: boolean | null;
@@ -53,12 +55,15 @@ type MantaWalletContext = {
     txResHandler: txResHandlerType<any>
   ) => Promise<void>;
   privateWallet: PrivateWallet | null;
+  mantaWalletVersion: Version | null;
   sync: () => Promise<void>;
-  isInitialSync: MutableRefObject<boolean>;
-  estimateTransactionBatchCount: (_: Balance, ___: PrivateTransactionType) => Promise<number | null>;
+  estimateTransactionBatchCount: (
+    _: Balance,
+    ___: PrivateTransactionType
+  ) => Promise<number | null>;
 };
 
-const MantaWalletContext = createContext<MantaWalletContext | null>(null);
+const MantaWalletContext = createContext<MantaWalletContextType | null>(null);
 
 export const MantaWalletContextProvider = ({
   children
@@ -68,7 +73,6 @@ export const MantaWalletContextProvider = ({
   // external contexts
   const config = useConfig();
   const { NETWORK_NAME: network } = config;
-  const { usingMantaWallet } = useGlobal();
   const { api } = useSubstrate();
   const { externalAccount } = usePublicAccount();
   const publicAddress = externalAccount?.address;
@@ -199,7 +203,7 @@ export const MantaWalletContextProvider = ({
 
   useEffect(() => {
     let unsub: any;
-    if (privateWallet && usingMantaWallet) {
+    if (privateWallet) {
       unsub = privateWallet.subscribeWalletState((state) => {
         const { isWalletReady, isWalletBusy } = state;
         setIsReady(isWalletReady);
@@ -207,7 +211,7 @@ export const MantaWalletContextProvider = ({
       });
     }
     return () => unsub && unsub();
-  }, [privateWallet, usingMantaWallet]);
+  }, [privateWallet]);
 
   const getSpendableBalance = useCallback(
     async (assetType: AssetType) => {
@@ -259,7 +263,7 @@ export const MantaWalletContextProvider = ({
       const { status, txHash } = res;
       const txHistoryIsEnabled =
         typeof privateWallet?.matchPrivateTransaction === 'function';
-      if (status.isBroadcast && usingMantaWallet && txHistoryIsEnabled) {
+      if (status.isBroadcast && txHistoryIsEnabled) {
         // update transaction history in Manta Wallet
         const matchData = {
           network,
@@ -302,7 +306,11 @@ export const MantaWalletContextProvider = ({
           setTxStatus(TxStatus.failed(''));
           return;
         }
-        await lastTx.signAndSend(publicAddress, { nonce: -1 }, finalTxResHandler.current);
+        await lastTx.signAndSend(
+          publicAddress,
+          { nonce: -1 },
+          finalTxResHandler.current
+        );
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
       } catch (e) {
         console.error('Error publishing private transaction batch', e);
@@ -441,31 +449,32 @@ export const MantaWalletContextProvider = ({
       }
       let address;
       switch (transactionType) {
-      case 'privateToPublic':
-        address = dummyPublicAddress;
-        break;
-      case 'privateToPrivate':
-        address = dummyPrivateAddress;
-        break;
-      default:
-        return 1;
+        case 'privateToPublic':
+          address = dummyPublicAddress;
+          break;
+        case 'privateToPrivate':
+          address = dummyPrivateAddress;
+          break;
+        default:
+          return 1;
       }
       try {
-        const transferPostsCount = await privateWallet?.estimateTransferPostsCount(
-          {
+        const transferPostsCount =
+          await privateWallet?.estimateTransferPostsCount({
             network,
             transactionType,
             assetId: targetBalance.assetType.assetId.toString(),
             amount: targetBalance.valueAtomicUnits.toString(),
-            zkAddressOrPolkadotAddress: address,
-          }
-        );
+            zkAddressOrPolkadotAddress: address
+          });
         return Math.ceil(transferPostsCount / 2);
       } catch (e) {
         console.error('Error getting transaction batches count', e);
         return null;
       }
-    }, [privateWallet, externalAccount, network, privateAddress]);
+    },
+    [privateWallet, externalAccount, network, privateAddress]
+  );
 
   const value = useMemo(
     () => ({
@@ -479,7 +488,6 @@ export const MantaWalletContextProvider = ({
       publicTransfer,
       privateWallet,
       sync,
-      isInitialSync: { current: false },
       signerIsConnected,
       mantaWalletVersion,
       showChangeNetworkNotification,
