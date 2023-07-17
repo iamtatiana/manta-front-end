@@ -243,8 +243,7 @@ export default class AssetType {
       isPrivate,
       'tether',
       config.IS_TESTNET,
-      false,
-      config.NETWORK_NAME === NETWORK.CALAMARI ? 'USDTet' : null
+      false
     );
   }
 

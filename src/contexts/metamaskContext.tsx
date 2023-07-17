@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -32,7 +33,7 @@ export const MetamaskContextProvider = (props) => {
       return;
     }
     try {
-      const chain = config.NETWORK_NAME === 'calamari'
+      const chain = config.NETWORK_NAME === NETWORK.CALAMARI
         ? Chain.Moonriver(config)
         : Chain.Moonbeam(config);
       await provider?.request({ method: 'eth_requestAccounts' });

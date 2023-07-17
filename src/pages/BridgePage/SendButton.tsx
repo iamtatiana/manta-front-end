@@ -62,7 +62,7 @@ const ValidationButton = () => {
   } else if (
     evmIsEnabled &&
     originChainIsEvm &&
-    Number(chainId) !== evmChainId
+    Number(chainId) !== Number(evmChainId)
   ) {
     isSwitchNetwork = true;
   } else if (
