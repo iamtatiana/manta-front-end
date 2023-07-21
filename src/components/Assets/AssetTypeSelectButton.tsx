@@ -99,7 +99,8 @@ const AssetSelectModal = ({
   });
 
   useEffect(() => {
-    fetchPrivateBalances();
+    const isSendPage = window?.location?.pathname?.includes('/transact');
+    isSendPage && privateWallet && fetchPrivateBalances();
   }, [privateWallet]);
 
   return (

@@ -2,7 +2,7 @@
 import type { Unsubcall } from '@polkadot/extension-inject/types';
 import type { HexString } from '@polkadot/util/types';
 
-export type Network = 'Dolphin' | 'Calamari' | 'Manta';
+export type Network = 'Calamari' | 'Manta';
 export interface PrivateWalletStateInfo {
   isWalletInitialized: boolean;
   isWalletAuthorized: boolean;

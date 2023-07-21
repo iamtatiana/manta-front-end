@@ -422,20 +422,10 @@ export const SendContextProvider = (props) => {
       senderAssetTargetBalance?.assetType.isNativeToken &&
       (isToPrivate() || isPublicTransfer())
     ) {
-      let suggestedMinFeeBalance;
-      if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          150
-        );
-      } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
-        suggestedMinFeeBalance = Balance.fromBaseUnits(
-          AssetType.Native(config),
-          5
-        );
-      } else {
-        throw new Error('Unknown network');
-      }
+      const suggestedMinFeeBalance = Balance.fromBaseUnits(
+        AssetType.Native(config),
+        5
+      );
       const balanceAfterTx = senderAssetCurrentBalance.sub(
         senderAssetTargetBalance
       );

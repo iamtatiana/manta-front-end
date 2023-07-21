@@ -13,11 +13,11 @@ const BridgeFeeDisplay = () => {
   return (
     <div className="flex flex-col gap-4 mt-5 mb-7">
       <div className="px-2 text-white text-sm flex flex-row justify-between">
-        <div>{`Origin fee: `}</div>
+        <div>{'Origin fee: '}</div>
         <div className="font-red-hat-mono">{originFeeText}</div>
       </div>
       <div className="px-2 text-white text-sm flex flex-row justify-between">
-        <div>{`Destination fee: `}</div>
+        <div>{'Destination fee: '}</div>
         <div className="font-red-hat-mono">{destinationFeeText}</div>
       </div>
     </div>

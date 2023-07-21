@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
 import TxStatus from 'types/TxStatus';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
-import { transferMovrFromMoonriverToCalamari } from 'eth/EthXCM';
+import { transferGlmrFromMoonbeamToManta } from 'eth/EthXCM';
 import { useConfig } from 'contexts/configContext';
 import Balance from 'types/Balance';
 import { useBridgeData } from './BridgeDataContext';
@@ -18,7 +18,8 @@ export const BridgeTxContextProvider = (props) => {
   const config = useConfig();
   const { provider } = useMetamask();
   const { setTxStatus, txStatusRef } = useTxStatus();
-  const { externalAccount, externalAccountSigner, setApiSigner } = usePublicAccount();
+  const { externalAccount, externalAccountSigner, setApiSigner } =
+    usePublicAccount();
   const {
     isApiInitialized,
     isApiDisconnected,
@@ -43,9 +44,17 @@ export const BridgeTxContextProvider = (props) => {
    */
 
   const userCanPayOriginFee = () => {
-    if (!senderNativeAssetCurrentBalance || !senderAssetTargetBalance || !originChain || !originFee) {
+    if (
+      !senderNativeAssetCurrentBalance ||
+      !senderAssetTargetBalance ||
+      !originChain ||
+      !originFee
+    ) {
       return null;
-    } else if (senderNativeAssetCurrentBalance.assetType.assetId !== originFee.assetType.assetId) {
+    } else if (
+      senderNativeAssetCurrentBalance.assetType.assetId !==
+      originFee.assetType.assetId
+    ) {
       return null;
     }
 
@@ -54,8 +63,13 @@ export const BridgeTxContextProvider = (props) => {
     if (senderAssetTargetBalance?.assetType.assetId === nativeAsset.assetId) {
       txNativeTokenCost = txNativeTokenCost.add(senderAssetTargetBalance);
     }
-    const reservedNativeBalance =  new Balance(nativeAsset, nativeAsset.existentialDeposit);
-    const minBalanceToPayOriginFee = txNativeTokenCost.add(reservedNativeBalance);
+    const reservedNativeBalance = new Balance(
+      nativeAsset,
+      nativeAsset.existentialDeposit
+    );
+    const minBalanceToPayOriginFee = txNativeTokenCost.add(
+      reservedNativeBalance
+    );
     return senderNativeAssetCurrentBalance.gte(minBalanceToPayOriginFee);
   };
 
@@ -64,8 +78,7 @@ export const BridgeTxContextProvider = (props) => {
     if (!maxInput || !senderAssetTargetBalance) {
       return null;
     } else if (
-      senderAssetTargetBalance.assetType.assetId !==
-      maxInput.assetType.assetId
+      senderAssetTargetBalance.assetType.assetId !== maxInput.assetType.assetId
     ) {
       return null;
     }
@@ -76,8 +89,7 @@ export const BridgeTxContextProvider = (props) => {
     if (!minInput || !senderAssetTargetBalance) {
       return null;
     } else if (
-      senderAssetTargetBalance.assetType.assetId !==
-      minInput.assetType.assetId
+      senderAssetTargetBalance.assetType.assetId !== minInput.assetType.assetId
     ) {
       return null;
     }
@@ -119,7 +131,9 @@ export const BridgeTxContextProvider = (props) => {
         if (originApi.events.system.ExtrinsicFailed.is(event.event)) {
           const error = event.event.data[0];
           if (error.isModule) {
-            const decoded = originApi.registry.findMetaError(error.asModule.toU8a());
+            const decoded = originApi.registry.findMetaError(
+              error.asModule.toU8a()
+            );
             const { docs, method, section } = decoded;
             console.error(`${section}.${method}: ${docs.join(' ')}`);
           } else {
@@ -131,14 +145,18 @@ export const BridgeTxContextProvider = (props) => {
           // Don't show success if tx interrupted by disconnection
           if (txStatusRef.current?.isProcessing()) {
             try {
-              const signedBlock = await originApi.rpc.chain.getBlock(status.asInBlock);
+              const signedBlock = await originApi.rpc.chain.getBlock(
+                status.asInBlock
+              );
               const extrinsics = signedBlock.block.extrinsics;
               const extrinsic = extrinsics.find((extrinsic) =>
                 extrinsicWasSentByUser(extrinsic, externalAccount, originApi)
               );
               const extrinsicHash = extrinsic.hash.toHex();
-              setTxStatus(TxStatus.finalized(extrinsicHash, originChain.subscanUrl));
-            } catch(error) {
+              setTxStatus(
+                TxStatus.finalized(extrinsicHash, originChain.subscanUrl)
+              );
+            } catch (error) {
               console.error(error);
             }
           }
@@ -162,12 +180,12 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with a substrate origin chain
   const sendSubstrate = async () => {
-    const value =  senderAssetTargetBalance.valueAtomicUnits.toString();
+    const value = senderAssetTargetBalance.valueAtomicUnits.toString();
     const tx = originXcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
       to: destinationChain.name,
       token: senderAssetTargetBalance.assetType.logicalTicker,
-      address: destinationAddress,
+      address: destinationAddress
     });
     try {
       setApiSigner(originApi);
@@ -180,9 +198,12 @@ export const BridgeTxContextProvider = (props) => {
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    if (originChain.name === 'moonriver') {
-      const txHash = await transferMovrFromMoonriverToCalamari(
-        config, provider, senderAssetTargetBalance, destinationAddress
+    if (originChain.name === 'moonriver' || originChain.name === 'moonbeam') {
+      const txHash = await transferGlmrFromMoonbeamToManta(
+        config,
+        provider,
+        senderAssetTargetBalance,
+        destinationAddress
       );
       if (txHash) {
         setTxStatus(TxStatus.finalized(txHash));
@@ -201,7 +222,9 @@ export const BridgeTxContextProvider = (props) => {
   };
 
   return (
-    <BridgeTxContext.Provider value={value}>{props.children}</BridgeTxContext.Provider>
+    <BridgeTxContext.Provider value={value}>
+      {props.children}
+    </BridgeTxContext.Provider>
   );
 };
 

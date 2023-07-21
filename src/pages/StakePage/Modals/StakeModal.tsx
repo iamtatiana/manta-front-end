@@ -25,7 +25,7 @@ export const StakeModal = ({ hideModal }) => {
     selectedCollatorDelegation,
     setStakeTargetBalance,
     stakeTargetBalance,
-    userAvailableBalance,
+    userAvailableBalance
   } = useStakeData();
   const {
     getMaxStakeableBalance,
@@ -59,9 +59,10 @@ export const StakeModal = ({ hideModal }) => {
     userAvailableBalance
   )}`;
   const minStakeAmountString = selectedCollator.minStake.toDisplayString(0);
+  const nativeTokenTicker = AssetType.Native(config).baseTicker;
   const delegationAmountNum = selectedCollatorDelegation
     ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
-    : '0 KMA';
+    : `0 ${nativeTokenTicker}`;
 
   const minimumStakeNum = `${minStakeAmountString}`;
 
@@ -195,7 +196,10 @@ export const StakeModal = ({ hideModal }) => {
       <ErrorText errorMessage={errorMessage} />
       <div className="mt-6 w-full">
         <Button
-          className={ classNames('font-red-hat-text text-base w-full btn-primary', { 'filter brightness-50': !inputValue }) }
+          className={classNames(
+            'font-red-hat-text text-base w-full btn-primary',
+            { 'filter brightness-50': !inputValue }
+          )}
           onClick={onClickStake}
           disabled={!inputValue}>
           Stake

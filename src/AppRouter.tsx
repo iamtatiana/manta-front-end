@@ -1,7 +1,7 @@
 // @ts-nocheck
 import GlobalContexts from 'contexts/globalContexts';
 import { BridgePage, SendPage, StakePage } from 'pages';
-import { CalamariBasePage, DolphinBasePage } from 'pages/BasePage';
+import { CalamariBasePage, MantaBasePage } from 'pages/BasePage';
 import {
   Navigate,
   Route,
@@ -9,17 +9,18 @@ import {
   Routes
 } from 'react-router-dom';
 
-const DolphinRoutes = () => {
+const MantaRoutes = () => {
   return (
-    <DolphinBasePage>
+    <MantaBasePage>
       <Routes>
-        <Route path="dolphin">
+        <Route path="manta">
           <Route index element={<Navigate to="transact" />} />
           <Route path="bridge" element={<BridgePage />} exact />
           <Route path="transact" element={<SendPage />} exact />
+          <Route path="stake" element={<StakePage />} exact />
         </Route>
       </Routes>
-    </DolphinBasePage>
+    </MantaBasePage>
   );
 };
 
@@ -41,14 +42,10 @@ const CalamariRoutes = () => {
 const RedirectRoutes = () => {
   return (
     <Routes>
-      <Route
-        index
-        element={<Navigate to="/calamari/transact" replace />}
-        exact
-      />
+      <Route index element={<Navigate to="/manta/transact" replace />} exact />
       <Route
         path="/stake"
-        element={<Navigate to="/calamari/stake" replace />}
+        element={<Navigate to="/manta/stake" replace />}
         exact
       />
     </Routes>
@@ -60,8 +57,8 @@ const AppRouter = () => {
     <Router>
       <GlobalContexts>
         <RedirectRoutes />
+        <MantaRoutes />
         <CalamariRoutes />
-        <DolphinRoutes />
       </GlobalContexts>
     </Router>
   );

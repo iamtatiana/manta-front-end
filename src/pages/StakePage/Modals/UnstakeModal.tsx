@@ -24,7 +24,7 @@ export const UnstakeModal = ({ hideModal }) => {
     selectedCollatorDelegation,
     setUnstakeTargetBalance,
     unstakeTargetBalance,
-    userAvailableBalance,
+    userAvailableBalance
   } = useStakeData();
   const {
     getUserCanUnstake,
@@ -41,14 +41,14 @@ export const UnstakeModal = ({ hideModal }) => {
   const { usdPrices } = useUsdPrices();
   const nativeTokenUsdValue = usdPrices?.[AssetType.Native(config).baseTicker];
 
-
   const [inputValue, setInputValue] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [warningMessage, setWarningMessage] = useState(null);
 
+  const nativeTokenTicker = AssetType.Native(config).baseTicker;
   const delegationAmountNum = selectedCollatorDelegation
     ? `${selectedCollatorDelegation.delegatedBalance.toDisplayString(0)}`
-    : '0 KMA';
+    : `0 ${nativeTokenTicker}`;
 
   const minimumStakeAmountString = selectedCollator.minStake.toDisplayString(0);
   const minimumStakeNum = `${minimumStakeAmountString}`;
@@ -188,10 +188,12 @@ export const UnstakeModal = ({ hideModal }) => {
 
       <div className="mt-6 w-full">
         <Button
-          className={ classNames('font-red-hat-text text-base w-full btn-primary', { 'filter brightness-50': !inputValue }) }
+          className={classNames(
+            'font-red-hat-text text-base w-full btn-primary',
+            { 'filter brightness-50': !inputValue }
+          )}
           onClick={onClickUnstake}
-          disabled={!inputValue}
-        >
+          disabled={!inputValue}>
           Unstake
         </Button>
       </div>

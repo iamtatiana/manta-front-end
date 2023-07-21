@@ -263,9 +263,16 @@ export const KeyringContextProvider = ({
       try {
         await cryptoWaitReady();
         const isCalamari = window?.location?.pathname?.includes('calamari');
+        const isManta = window?.location?.pathname?.includes('manta');
+        let ss58Format;
+        if (isCalamari) {
+          ss58Format = SS58.CALAMARI;
+        } else if (isManta) {
+          ss58Format = SS58.MANTA;
+        }
         keyring.loadAll(
           {
-            ss58Format: isCalamari ? SS58.CALAMARI : SS58.DOLPHIN
+            ss58Format
           },
           []
         );

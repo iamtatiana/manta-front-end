@@ -1,4 +1,3 @@
-import { ReactComponent as dolphin } from 'resources/images/dolphin.svg';
 import { ReactComponent as calamari } from 'resources/images/calamari.svg';
 import { ReactComponent as calamariLogo } from 'resources/images/calamariLogo.svg';
 import { ReactComponent as manta } from 'resources/images/manta.svg';
@@ -14,6 +13,7 @@ import { ReactComponent as kar } from 'resources/icons/coins/kar-icon.svg';
 import { ReactComponent as kbtc } from 'resources/icons/coins/kbtc-icon.svg';
 import { ReactComponent as roc } from 'resources/icons/coins/roc-icon.svg';
 import { ReactComponent as movr } from 'resources/icons/coins/movr-icon.svg';
+import { ReactComponent as moonbeam } from 'resources/icons/coins/moonbeam-icon.svg';
 import { ReactComponent as tether } from 'resources/icons/coins/tether-icon.svg';
 import { ReactComponent as statemine } from 'resources/icons/coins/statemine-icon.svg';
 import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
@@ -91,6 +91,7 @@ import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
 
 // links icons
+import { ReactComponent as MantaWebsite } from 'resources/icons/links/MantaWebsite.svg';
 import { ReactComponent as CalamariWebsite } from 'resources/icons/links/CalamariWebsite.svg';
 import { ReactComponent as twitter } from 'resources/icons/links/Twitter.svg';
 import { ReactComponent as Discord } from 'resources/icons/links/Discord.svg';
@@ -102,7 +103,6 @@ import { ReactComponent as BugReport } from 'resources/icons/links/BugReport.svg
 import { ReactComponent as activityRightArrow } from 'resources/icons/activity-right-arrow.svg';
 
 const icons = {
-  dolphin,
   calamari,
   calamariLogo,
   manta,
@@ -117,6 +117,7 @@ const icons = {
   kbtc,
   roc,
   movr,
+  moonbeam,
   tether,
   dai,
   usdc,
@@ -182,6 +183,7 @@ const icons = {
   grayThinLine,
   blueSolidLine,
   threeRightArrow,
+  MantaWebsite,
   CalamariWebsite,
   Twitter: twitter,
   Discord,

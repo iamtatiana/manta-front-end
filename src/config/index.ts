@@ -1,6 +1,6 @@
 // @ts-nocheck
 import configCommon from './common.json';
-import configDolphin from './dolphin.json';
+import configManta from './manta.json';
 import configCalamari from './calamari.json';
 
 // Using `require` as `import` does not support dynamic loading (yet).
@@ -15,8 +15,8 @@ const envVars = envVarNames.reduce((mem, n) => {
   return mem;
 }, {});
 
-export const dolphinConfig = { ...configCommon, ...configDolphin, ...configEnv, ...envVars };
-dolphinConfig.PROVIDER_SOCKET = dolphinConfig.DOLPHIN_SOCKET;
+export const mantaConfig = { ...configCommon, ...configManta, ...configEnv, ...envVars };
+mantaConfig.PROVIDER_SOCKET = mantaConfig.MANTA_SOCKET;
 
 export const calamariConfig = { ...configCommon, ...configCalamari, ...configEnv, ...envVars };
 calamariConfig.PROVIDER_SOCKET = calamariConfig.CALAMARI_SOCKET;

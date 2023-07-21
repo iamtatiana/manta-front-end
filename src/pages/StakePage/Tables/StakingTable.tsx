@@ -10,6 +10,7 @@ import getTableHeight from 'utils/ui/getTableHeight';
 import { useSubstrate } from 'contexts/substrateContext';
 import Collator from 'types/Collator';
 import { useConfig } from 'contexts/configContext';
+import AssetType from 'types/AssetType';
 import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
@@ -17,6 +18,7 @@ import StakeErrorDisplay from '../StakeErrorDisplay';
 import CollatorDisplayCell from './CollatorDisplayCell';
 
 const NothingStakedDisplay = () => {
+  const config = useConfig();
   const { externalAccount } = usePublicAccount();
   let primaryText = '';
   let secondaryText = '';
@@ -25,16 +27,15 @@ const NothingStakedDisplay = () => {
     secondaryText =
       'polkadot.js, SubWallet, or Talisman wallet must be connected to see your balance and rewards';
   } else {
-    primaryText = 'You are not currently staking KMA';
+    const nativeTokenTicker = AssetType.Native(config).baseTicker;
+    primaryText = `You are not currently staking ${nativeTokenTicker}`;
     secondaryText = 'Select a collator below to begin staking';
   }
 
   return (
     <div className="mt-4 w-full p-6 shadow-2xl bg-secondary rounded-lg text-white text-opacity-80 text-sm">
       <h1 className="font-semibold font-red-hat-text">{primaryText}</h1>
-      <h1 className="mt-4 font-semibold font-red-hat-text">
-        {secondaryText}
-      </h1>
+      <h1 className="mt-4 font-semibold font-red-hat-text">{secondaryText}</h1>
     </div>
   );
 };
@@ -198,14 +199,12 @@ const StakingTable = () => {
               <>
                 <Button
                   className="px-6 btn-secondary flex items-center justify-center h-10"
-                  onClick={onClickStake}
-                >
+                  onClick={onClickStake}>
                   Stake
                 </Button>
                 <Button
                   className="btn-thirdry flex items-center justify-center h-10 text-bg-thirdry"
-                  onClick={onClickUnstake}
-                >
+                  onClick={onClickUnstake}>
                   Unstake
                 </Button>
               </>

@@ -1,4 +1,5 @@
 // @ts-nocheck
+import NETWORK from 'constants/NetworkConstants';
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import detectEthereumProvider from '@metamask/detect-provider';
@@ -7,8 +8,8 @@ import {
   getHasAuthToConnectMetamaskStorage,
   setHasAuthToConnectMetamaskStorage
 } from 'utils/persistence/connectAuthorizationStorage';
-import { useConfig } from './configContext';
 import { useActive } from 'hooks/useActive';
+import { useConfig } from './configContext';
 
 const MetamaskContext = createContext();
 
@@ -27,16 +28,20 @@ export const MetamaskContextProvider = (props) => {
     !window.ethereum?.isBraveWallet &&
     !window.ethereum.isTalisman;
 
-  const configureMoonRiver = async () => {
+  const configureMoonBeam = async () => {
     if (!metamaskIsInstalled) {
       return;
     }
     try {
+      const chain =
+        config.NETWORK_NAME === NETWORK.CALAMARI
+          ? Chain.Moonriver(config)
+          : Chain.Moonbeam(config);
       await provider?.request({ method: 'eth_requestAccounts' });
-      if (provider?.chainId !== Chain.Moonriver(config).ethMetadata.chainId) {
+      if (provider?.chainId !== chain.ethMetadata.chainId) {
         await provider.request({
           method: 'wallet_addEthereumChain',
-          params: [Chain.Moonriver(config).ethMetadata]
+          params: [chain.ethMetadata]
         });
       }
       setHasAuthConnectMetamask(true);
@@ -73,7 +78,7 @@ export const MetamaskContextProvider = (props) => {
 
   useEffect(() => {
     const interval = setInterval(async () => {
-      if(isActive) detectMetamask();
+      if (isActive) detectMetamask();
     }, 500);
     return () => clearInterval(interval);
   });
@@ -107,7 +112,7 @@ export const MetamaskContextProvider = (props) => {
     chainId,
     setProvider,
     ethAddress,
-    configureMoonRiver,
+    configureMoonBeam,
     setHasAuthConnectMetamask
   };
 

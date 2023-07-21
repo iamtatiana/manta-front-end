@@ -4,31 +4,45 @@ import store from 'store';
 import AssetType from 'types/AssetType';
 import Balance from 'types/Balance';
 import Chain from 'types/Chain';
+import {
+  setBridgeDestinationChainName,
+  setBridgeOriginChainName,
+  getBridgeOriginChainName,
+  getBridgeDestinationChainName
+} from 'utils/persistence/bridgeChainStorage';
 import BRIDGE_ACTIONS from './bridgeActions';
 
 const getDestinationChainOptions = (originChain, originChainOptions) => {
   return originChainOptions
-    .filter(chain => chain.name !== originChain.name)
-    .filter(chain => originChain.canTransferXcm(chain));
+    .filter((chain) => chain.name !== originChain.name)
+    .filter((chain) => originChain.canTransferXcm(chain));
 };
 
 const getSenderAssetTypeOptions = (config, originChain, destinationChain) => {
-  return AssetType.AllCurrencies(config, false).filter(
-    assetType => assetType.canTransferXcm(originChain, destinationChain));
+  return AssetType.AllCurrencies(config, false).filter((assetType) =>
+    assetType.canTransferXcm(originChain, destinationChain)
+  );
 };
 
 const getNewSenderAssetType = (prevSenderAssetType, senderAssetTypeOptions) => {
   return (
-    senderAssetTypeOptions.find(assetType => assetType.name === prevSenderAssetType?.name)
-    || senderAssetTypeOptions[0] || null
+    senderAssetTypeOptions.find(
+      (assetType) => assetType.name === prevSenderAssetType?.name
+    ) ||
+    senderAssetTypeOptions[0] ||
+    null
   );
 };
 
-const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) => {
+const getNewSenderAssetTargetBalance = (
+  newSenderAssetType,
+  prevTargetBalance
+) => {
   let targetBalance = null;
   if (prevTargetBalance && newSenderAssetType) {
     targetBalance = Balance.fromBaseUnits(
-      newSenderAssetType, prevTargetBalance.valueBaseUnits()
+      newSenderAssetType,
+      prevTargetBalance.valueBaseUnits()
     );
   }
   return targetBalance;
@@ -36,28 +50,47 @@ const getNewSenderAssetTargetBalance = (newSenderAssetType, prevTargetBalance) =
 
 export const buildInitState = (config) => {
   // user's prev selecting
-  const prevBridgeOriginChainName = store.get(localStorageKeys.BridgeOriginChainName);
-  const prevBridgeDestinationChainName = store.get(localStorageKeys.BridgeDestinationChainName);
+  const prevBridgeOriginChainName = getBridgeOriginChainName(
+    config.NETWORK_NAME
+  );
+  const prevBridgeDestinationChainName = getBridgeDestinationChainName(
+    config.NETWORK_NAME
+  );
 
   const initOriginChainOptions = Chain.All(config);
   let initOriginChain;
   if (prevBridgeOriginChainName) {
-    initOriginChain = initOriginChainOptions?.find(chain => chain.name === prevBridgeOriginChainName);
+    initOriginChain = initOriginChainOptions?.find(
+      (chain) => chain.name === prevBridgeOriginChainName
+    );
+    // not found
+    if (!initOriginChain) {
+      initOriginChain = initOriginChainOptions[0];
+    }
   } else {
     initOriginChain = initOriginChainOptions[0];
   }
 
   const initDestinationChainOptions = getDestinationChainOptions(
-    initOriginChain, initOriginChainOptions
+    initOriginChain,
+    initOriginChainOptions
   );
   let initDestinationChain;
   if (prevBridgeDestinationChainName) {
-    initDestinationChain = initDestinationChainOptions?.find(chain => chain.name === prevBridgeDestinationChainName);
+    initDestinationChain = initDestinationChainOptions?.find(
+      (chain) => chain.name === prevBridgeDestinationChainName
+    );
+    // not found
+    if (!initDestinationChain) {
+      initDestinationChain = initDestinationChainOptions[0];
+    }
   } else {
     initDestinationChain = initDestinationChainOptions[0];
   }
   const initSenderAssetTypeOptions = getSenderAssetTypeOptions(
-    config, initOriginChain, initDestinationChain
+    config,
+    initOriginChain,
+    initDestinationChain
   );
   const initSenderAssetType = initSenderAssetTypeOptions[0];
 
@@ -84,50 +117,50 @@ export const buildInitState = (config) => {
     destinationChain: initDestinationChain,
     destinationChainOptions: initDestinationChainOptions,
     destinationAddress: null,
-    destinationFee: null,
+    destinationFee: null
   };
 };
 
 const bridgeReducer = (state, action) => {
   switch (action.type) {
-  case BRIDGE_ACTIONS.SET_API_IS_INITIALIZED:
-    return setApiIsInitialized(state, action);
+    case BRIDGE_ACTIONS.SET_API_IS_INITIALIZED:
+      return setApiIsInitialized(state, action);
 
-  case BRIDGE_ACTIONS.SET_IS_API_DISCONNECTED:
-    return setIsApiDisconnected(state, action);
+    case BRIDGE_ACTIONS.SET_IS_API_DISCONNECTED:
+      return setIsApiDisconnected(state, action);
 
-  case BRIDGE_ACTIONS.SET_BRIDGE:
-    return setBridge(state, action);
+    case BRIDGE_ACTIONS.SET_BRIDGE:
+      return setBridge(state, action);
 
-  case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
-    return setSelectedAssetType(state, action);
+    case BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE:
+      return setSelectedAssetType(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
-    return setSenderAssetCurrentBalance(state, action);
+    case BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE:
+      return setSenderAssetCurrentBalance(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
-    return setSenderAssetTargetBalance(state, action);
+    case BRIDGE_ACTIONS.SET_SENDER_ASSET_TARGET_BALANCE:
+      return setSenderAssetTargetBalance(state, action);
 
-  case BRIDGE_ACTIONS.SET_FEE_ESTIMATES:
-    return setFeeEstimates(state, action);
+    case BRIDGE_ACTIONS.SET_FEE_ESTIMATES:
+      return setFeeEstimates(state, action);
 
-  case BRIDGE_ACTIONS.SET_ORIGIN_CHAIN:
-    return setOriginChain(state, action);
+    case BRIDGE_ACTIONS.SET_ORIGIN_CHAIN:
+      return setOriginChain(state, action);
 
-  case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
-    return setDestinationChain(state, action);
+    case BRIDGE_ACTIONS.SET_DESTINATION_CHAIN:
+      return setDestinationChain(state, action);
 
-  case BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS:
-    return setDestinationAddress(state, action);
+    case BRIDGE_ACTIONS.SET_DESTINATION_ADDRESS:
+      return setDestinationAddress(state, action);
 
-  case BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION:
-    return switchOriginAndDestination(state, action);
+    case BRIDGE_ACTIONS.SWITCH_ORIGIN_AND_DESTINATION:
+      return switchOriginAndDestination(state, action);
 
-  case BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE:
-    return setSenderNativeAssetCurrentBalance(state, action);
+    case BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE:
+      return setSenderNativeAssetCurrentBalance(state, action);
 
-  default:
-    throw new Error(`Unknown type: ${action.type}`);
+    default:
+      throw new Error(`Unknown type: ${action.type}`);
   }
 };
 
@@ -159,7 +192,6 @@ const setIsApiDisconnected = (state, { chain, isApiDisconnected }) => {
   return state;
 };
 
-
 const setBridge = (state, { bridge }) => {
   return {
     ...state,
@@ -173,7 +205,8 @@ const setSelectedAssetType = (state, action) => {
   let senderAssetTargetBalance = null;
   if (state.senderAssetTargetBalance) {
     senderAssetTargetBalance = Balance.fromBaseUnits(
-      senderAssetType, state.senderAssetTargetBalance.valueBaseUnits()
+      senderAssetType,
+      state.senderAssetTargetBalance.valueBaseUnits()
     );
   }
   return {
@@ -185,7 +218,12 @@ const setSelectedAssetType = (state, action) => {
 };
 
 const setSenderAssetCurrentBalance = (state, action) => {
-  if (balanceUpdateIsStale(state?.senderAssetType, action.senderAssetCurrentBalance?.assetType)) {
+  if (
+    balanceUpdateIsStale(
+      state?.senderAssetType,
+      action.senderAssetCurrentBalance?.assetType
+    )
+  ) {
     return state;
   }
   return {
@@ -194,12 +232,16 @@ const setSenderAssetCurrentBalance = (state, action) => {
   };
 };
 
-
-const setSenderNativeAssetCurrentBalance = (state, {senderNativeAssetCurrentBalance}) => {
+const setSenderNativeAssetCurrentBalance = (
+  state,
+  { senderNativeAssetCurrentBalance }
+) => {
   if (
     balanceUpdateIsStale(
-      state?.originChain?.nativeAsset, senderNativeAssetCurrentBalance?.assetType
-    )) {
+      state?.originChain?.nativeAsset,
+      senderNativeAssetCurrentBalance?.assetType
+    )
+  ) {
     return state;
   }
   return {
@@ -216,7 +258,7 @@ const setSenderAssetTargetBalance = (state, action) => {
 };
 
 const setFeeEstimates = (state, action) => {
-  const { originFee, destinationFee, maxInput, minInput  } = action;
+  const { originFee, destinationFee, maxInput, minInput } = action;
   return {
     ...state,
     originFee,
@@ -226,20 +268,35 @@ const setFeeEstimates = (state, action) => {
   };
 };
 
-const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnected }) => {
-  store.set(localStorageKeys.BridgeOriginChainName, originChain.name);
+const setOriginChain = (
+  state,
+  { originChain, isApiInitialized, isApiDisconnected }
+) => {
+  setBridgeOriginChainName(originChain.name, state.config.NETWORK_NAME);
   let destinationChain = state.destinationChain;
-  const destinationChainOptions = getDestinationChainOptions(originChain, state.originChainOptions);
+  const destinationChainOptions = getDestinationChainOptions(
+    originChain,
+    state.originChainOptions
+  );
   if (!originChain.canTransferXcm(destinationChain)) {
     destinationChain = destinationChainOptions[0];
-    store.set(localStorageKeys.BridgeDestinationChainName, destinationChain.name);
+    setBridgeDestinationChainName(
+      destinationChain.name,
+      state.config.NETWORK_NAME
+    );
   }
   const senderAssetTypeOptions = getSenderAssetTypeOptions(
-    state.config, originChain, destinationChain
+    state.config,
+    originChain,
+    destinationChain
   );
-  const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
+  const senderAssetType = getNewSenderAssetType(
+    state.senderAssetType,
+    senderAssetTypeOptions
+  );
   const senderAssetTargetBalance = getNewSenderAssetTargetBalance(
-    senderAssetType, state.senderAssetTargetBalance
+    senderAssetType,
+    state.senderAssetTargetBalance
   );
 
   return {
@@ -260,13 +317,22 @@ const setOriginChain = (state, { originChain, isApiInitialized, isApiDisconnecte
 };
 
 const setDestinationChain = (state, { destinationChain }) => {
-  store.set(localStorageKeys.BridgeDestinationChainName, destinationChain.name);
-  const senderAssetTypeOptions = getSenderAssetTypeOptions(
-    state.config, state.originChain, destinationChain
+  setBridgeDestinationChainName(
+    destinationChain.name,
+    state.config.NETWORK_NAME
   );
-  const senderAssetType = getNewSenderAssetType(state.senderAssetType, senderAssetTypeOptions);
+  const senderAssetTypeOptions = getSenderAssetTypeOptions(
+    state.config,
+    state.originChain,
+    destinationChain
+  );
+  const senderAssetType = getNewSenderAssetType(
+    state.senderAssetType,
+    senderAssetTypeOptions
+  );
   const senderAssetTargetBalance = getNewSenderAssetTargetBalance(
-    senderAssetType, state.senderAssetTargetBalance
+    senderAssetType,
+    state.senderAssetTargetBalance
   );
 
   return {
@@ -289,21 +355,39 @@ const setDestinationAddress = (state, { destinationAddress }) => {
   };
 };
 
-const switchOriginAndDestination = (state, { isApiInitialized, isApiDisconnected }) => {
-  const { originChain, originChainOptions, destinationChain, senderAssetType, senderAssetTypeOptions} = state;
+const switchOriginAndDestination = (
+  state,
+  { isApiInitialized, isApiDisconnected }
+) => {
+  const {
+    originChain,
+    originChainOptions,
+    destinationChain,
+    senderAssetType,
+    senderAssetTypeOptions
+  } = state;
   if (destinationChain.canTransferXcm(originChain)) {
     const newDestinationChain = originChain;
     const newOriginChain = destinationChain;
-    store.set(localStorageKeys.BridgeOriginChainName, newOriginChain.name);
-    store.set(localStorageKeys.BridgeDestinationChainName, newDestinationChain.name);
+    setBridgeOriginChainName(newOriginChain.name, state.config.NETWORK_NAME);
+    setBridgeDestinationChainName(
+      newDestinationChain.name,
+      state.config.NETWORK_NAME
+    );
     return {
       ...state,
       isApiInitialized,
       isApiDisconnected,
       originChain: newOriginChain,
       destinationChain: newDestinationChain,
-      destinationChainOptions: getDestinationChainOptions(newOriginChain, originChainOptions),
-      senderAssetType: getNewSenderAssetType(senderAssetType, senderAssetTypeOptions),
+      destinationChainOptions: getDestinationChainOptions(
+        newOriginChain,
+        originChainOptions
+      ),
+      senderAssetType: getNewSenderAssetType(
+        senderAssetType,
+        senderAssetTypeOptions
+      ),
       senderNativeAssetCurrentBalance: null,
       senderAssetCurrentBalance: null,
       originFee: null,

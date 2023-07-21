@@ -175,10 +175,10 @@ export const MantaWalletContextProvider = ({
     // Use localstorage `lastAccessedWallet` value instead. The localstorage value changes after `selectedWallet` changes.
     // So use a setTimeout here.
     setTimeout(() => {
-      // because for now, we have dolphin & calamari mantaWalletContext running at the same time,
+      // because for now, we have manta & calamari mantaWalletContext running at the same time,
       // we have to add the network type check to only show the Notification once
       const isCalamari = window.location.pathname.includes('calamari');
-      const isDolphin = window.location.pathname.includes('dolphin');
+      const isManta = !isCalamari;
       const isMantapayPage = window.location.pathname.includes('transact');
       if (
         showChangeNetworkNotification &&
@@ -186,7 +186,7 @@ export const MantaWalletContextProvider = ({
           (!isMantapayPage &&
             getLastAccessedWallet()?.extensionName === WALLET_NAME.MANTA)) &&
         ((isCalamari && network === NETWORK.CALAMARI) ||
-          (isDolphin && network === NETWORK.DOLPHIN))
+          (isManta && network === NETWORK.MANTA))
       ) {
         const updateVersionWarningInfo = {
           title: 'Please switch networks',

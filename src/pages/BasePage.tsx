@@ -9,7 +9,6 @@ import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
 import { UsdPricesContextProvider } from 'contexts/usdPricesContext';
 import { ZkAccountBalancesContextProvider } from 'contexts/zkAccountBalancesContext';
 import { MantaWalletContextProvider } from 'contexts/mantaWalletContext';
-import MantaWalletIntroModal from 'components/Modal/MantaWalletIntroModal';
 
 import PropTypes from 'prop-types';
 import { useEffect } from 'react';
@@ -63,10 +62,31 @@ BasePage.propTypes = {
   children: PropTypes.any
 };
 
+export const MantaBasePage = ({ children }) => {
+  return (
+    <ConfigContextProvider network={NETWORK.MANTA}>
+      <BasePage>
+        <UsdPricesContextProvider>
+          <MetamaskContextProvider>
+            <MantaWalletContextProvider>
+              <ZkAccountBalancesContextProvider>
+                {children}
+              </ZkAccountBalancesContextProvider>
+            </MantaWalletContextProvider>
+          </MetamaskContextProvider>
+        </UsdPricesContextProvider>
+      </BasePage>
+    </ConfigContextProvider>
+  );
+};
+
+MantaBasePage.propTypes = {
+  children: PropTypes.any
+};
+
 export const CalamariBasePage = ({ children }) => {
   return (
     <ConfigContextProvider network={NETWORK.CALAMARI}>
-      <MantaWalletIntroModal />
       <BasePage>
         <UsdPricesContextProvider>
           <MetamaskContextProvider>
@@ -83,27 +103,5 @@ export const CalamariBasePage = ({ children }) => {
 };
 
 CalamariBasePage.propTypes = {
-  children: PropTypes.any
-};
-
-export const DolphinBasePage = ({ children }) => {
-  return (
-    <ConfigContextProvider network={NETWORK.DOLPHIN}>
-      <BasePage>
-        <UsdPricesContextProvider>
-          <MetamaskContextProvider>
-            <MantaWalletContextProvider>
-              <ZkAccountBalancesContextProvider>
-                {children}
-              </ZkAccountBalancesContextProvider>
-            </MantaWalletContextProvider>
-          </MetamaskContextProvider>
-        </UsdPricesContextProvider>
-      </BasePage>
-    </ConfigContextProvider>
-  );
-};
-
-DolphinBasePage.propTypes = {
   children: PropTypes.any
 };

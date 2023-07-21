@@ -114,6 +114,7 @@ const AccountDisplay = () => {
             <h2 className="text-white font-medium text-base font-red-hat-text">
               Resources
             </h2>
+            {/** TODO, below left four urls should include manta url */}
             <div className="mt-4">
               <a
                 href="https://docs.manta.network/docs/calamari/Staking/Overview"
@@ -129,7 +130,7 @@ const AccountDisplay = () => {
                 className="text-third-80 text-sm hover:text-link-hover"
                 target="_blank"
                 rel="noreferrer">
-                Calamari block explorer
+                {`${config.NETWORK_NAME} block explorer`}
               </a>
             </div>
             <div className="mt-4">

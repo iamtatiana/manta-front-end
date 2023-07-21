@@ -1,8 +1,8 @@
 {
-    "VERSION": "6.2.2",
+    "VERSION": "7.0.0",
     "DOWNTIME": false,
     "PAGE_TITLE": "Manta dApp",
-    "MIN_REQUIRED_WALLET_VERSION": "0.0.14",
+    "MIN_REQUIRED_WALLET_VERSION": "0.0.23",
     "SUBSCAN_API_KEY": "35770f43091fd396d35192f5b6c499db",
     "COINGECKO_PROXY_URL": "https://52rhbkf39l.execute-api.eu-central-1.amazonaws.com/prod",
     "RPC": {

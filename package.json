@@ -1,6 +1,6 @@
 {
     "name": "manta-web-app",
-    "version": "6.2.2",
+    "version": "7.0.0",
     "private": false,
     "dependencies": {
         "@acala-network/api": "^5.0.2",
@@ -48,9 +48,8 @@
         "ethereum-blockies-base64": "^1.0.2",
         "ethers": "^5.6.9",
         "husky": "^7.0.1",
+        "manta-bridge": "^0.0.1",
         "manta-extension-connect": "^1.2.3",
-        "manta-polkawallet-bridge": "0.6.0",
-        "manta.js": "3.0.2",
         "moonbeam-types-bundle": "2.0.8",
         "node-sass": "^7.0.1",
         "patch-package": "^7.0.0",

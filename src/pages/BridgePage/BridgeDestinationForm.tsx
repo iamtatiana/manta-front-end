@@ -11,21 +11,18 @@ import Icon from 'components/Icon';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 
-const BirdgeDestinationButton = ({onChangeDestinationtInput}) => {
-  const {
-    destinationAddress,
-    destinationChainIsEvm,
-    originChainIsEvm
-  } = useBridgeData();
+const BirdgeDestinationButton = ({ onChangeDestinationtInput }) => {
+  const { destinationAddress, destinationChainIsEvm, originChainIsEvm } =
+    useBridgeData();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const { selectedWallet } = useKeyring();
-  const { ethAddress, configureMoonRiver } = useMetamask();
+  const { ethAddress, configureMoonBeam } = useMetamask();
   const { externalAccount } = usePublicAccount();
 
   const onClick = () => {
     if (!ethAddress && destinationChainIsEvm) {
-      configureMoonRiver();
+      configureMoonBeam();
     } else if (!externalAccount && originChainIsEvm) {
       return;
     } else {
@@ -79,18 +76,23 @@ const BirdgeDestinationButton = ({onChangeDestinationtInput}) => {
   };
 
   if (!externalAccount && originChainIsEvm) {
-    return <ConnectWalletButton className={classNames(
-      'w-32 ml-1 h-16 rounded-lg text-black',
-      'dark:text-white outline-none rounded-2xl border-2 border-solid border-white border-opacity-20',
-      'text-xs text-black dark:text-white',
-      { disabled: disabled }
-    )}
-    />;
+    return (
+      <ConnectWalletButton
+        className={classNames(
+          'w-32 ml-1 h-16 rounded-lg text-black',
+          'dark:text-white outline-none rounded-2xl border-2 border-solid border-white border-opacity-20',
+          'text-xs text-black dark:text-white',
+          { disabled: disabled }
+        )}
+      />
+    );
   }
 
   const ButtonContents = () => {
-    const destinationAccountIsMine = destinationAddress &&
-    (destinationAddress === externalAccount?.address || destinationAddress === ethAddress);
+    const destinationAccountIsMine =
+      destinationAddress &&
+      (destinationAddress === externalAccount?.address ||
+        destinationAddress === ethAddress);
     if (destinationAccountIsMine) {
       return <SelectedAccountText />;
     } else if (!ethAddress && destinationChainIsEvm) {
@@ -153,7 +155,9 @@ const BridgeDestinationForm = () => {
     }
   };
 
-  const placeholderMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
+  const placeholderMsg = `Enter ${
+    originChainIsEvm ? 'substrate' : 'EVM'
+  } address`;
 
   return (
     <div className="flex items-center flex-grow h-16 mt-6">

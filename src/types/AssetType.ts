@@ -14,21 +14,18 @@ const CalamariAssetIds = {
   USDC: 16
 };
 
-const DolphinAssetIds = {
-  DOL: 1,
-  KAR: 8,
-  AUSD: 9,
-  LKSM: 10,
-  MOVR: 11,
-  KSM: 12,
-  USDT: 14
+const MantaAssetIds = {
+  MANTA: 1,
+  DOT: 8,
+  GLMR: 10,
+  ACA: 11,
 };
 
 const getAssetIds = (config) => {
   if (config.NETWORK_NAME === NETWORK.CALAMARI) {
     return CalamariAssetIds;
-  } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
-    return DolphinAssetIds;
+  } else  {
+    return MantaAssetIds;
   }
 };
 
@@ -80,24 +77,8 @@ export default class AssetType {
     if (config.NETWORK_NAME === 'Calamari') {
       return AssetType.Calamari(config, false);
     } else {
-      return AssetType.DolphinSkinnedCalamari(config, false);
+      return AssetType.Manta(config, false);
     }
-  }
-
-  static DolphinSkinnedCalamari(config, isPrivate) {
-    return new AssetType(
-      getAssetIds(config).DOL,
-      'Dolphin',
-      'DOL',
-      'dolphin',
-      12,
-      new BN('100000000000'),
-      isPrivate,
-      'dolphin',
-      config.IS_TESTNET,
-      true,
-      'KMA'
-    );
   }
 
   static Calamari(config, isPrivate) {
@@ -229,19 +210,70 @@ export default class AssetType {
     );
   }
 
+  // mainnet
+  static Manta(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).MANTA,
+      'Manta',
+      'MANTA',
+      'manta',
+      18,
+      new BN('100000000000000000'),
+      isPrivate,
+      'manta-network', // todo: use actual manta coingecko id when available
+      config.IS_TESTNET,
+      true
+    );
+  }
+
+  static Acala(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).ACA,
+      'Acala',
+      'ACA',
+      'acala',
+      12,
+      new BN('100000000000'),
+      isPrivate,
+      'karura',
+      config.IS_TESTNET,
+    );
+  }
+
+  static Polkadot(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).DOT,
+      'Polkadot',
+      'DOT',
+      'polkadot',
+      10,
+      new BN('500000000'),
+      isPrivate,
+      'polkadot',
+      config.IS_TESTNET,
+    );
+  }
+  static Moonbeam(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).GLMR,
+      'Moonbeam',
+      'GLMR',
+      'moonbeam',
+      18,
+      new BN('1'),
+      isPrivate,
+      'moonbeam',
+      config.IS_TESTNET,
+    );
+  }
 
   static AllCurrencies(config, isPrivate) {
-    if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+    if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        AssetType.DolphinSkinnedCalamari(config, isPrivate),
-        // AssetType.Karura(config, isPrivate),
-        AssetType.Kusama(config, isPrivate),
-        AssetType.Moonriver(config, isPrivate),
-        AssetType.Tether(config, isPrivate),
-        // AssetType.WrappedBitcoin(config, isPrivate),
-        // AssetType.WrappedEthereum(config, isPrivate),
-        // AssetType.Dai(config, isPrivate),
-        // AssetType.UsdCoin(config, isPrivate)
+        AssetType.Manta(config, isPrivate),
+        AssetType.Polkadot(config, isPrivate),
+        AssetType.Acala(config, isPrivate),
+        AssetType.Moonbeam(config, isPrivate),
       ];
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [

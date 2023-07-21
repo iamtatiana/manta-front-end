@@ -1,5 +1,6 @@
 // @ts-nocheck
 import WALLET_NAME from 'constants/WalletConstants';
+import NETWORK from 'constants/NetworkConstants';
 import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -44,6 +45,11 @@ const ValidationButton = () => {
   let isConnectWallet = false;
   let isSwitchNetwork = false;
   let connectWalletText = 'Connect Wallet';
+  const evmChain =
+    config.NETWORK_NAME === NETWORK.MANTA
+      ? Chain.Moonbeam(config)
+      : Chain.Moonriver(config);
+  const evmChainId = evmChain.ethChainId;
 
   if (!externalAccount) {
     isConnectWallet = true;
@@ -55,7 +61,7 @@ const ValidationButton = () => {
   } else if (
     evmIsEnabled &&
     originChainIsEvm &&
-    chainId !== Chain.Moonriver(config).ethChainId
+    Number(chainId) !== Number(evmChainId)
   ) {
     isSwitchNetwork = true;
   } else if (
@@ -117,12 +123,15 @@ const ValidationButton = () => {
 };
 
 const SwitchNetworkButton = () => {
-  const { configureMoonRiver } = useMetamask();
+  const config = useConfig();
+  const { configureMoonBeam } = useMetamask();
 
   const onClick = () => {
-    configureMoonRiver();
+    configureMoonBeam();
   };
 
+  const networkName =
+    config.NETWORK_NAME === NETWORK.MANTA ? 'Moonbeam' : 'Moonriver';
   return (
     <button
       onClick={onClick}
@@ -130,7 +139,7 @@ const SwitchNetworkButton = () => {
         'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
         'text-center text-white rounded-lg w-full'
       )}>
-      Switch Network to Moonriver
+      {`Switch Network to ${networkName}`}
     </button>
   );
 };

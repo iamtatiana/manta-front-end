@@ -1,13 +1,14 @@
 // @ts-nocheck
 import NETWORK from 'constants/NetworkConstants';
-import { KaruraAdapter } from 'manta-polkawallet-bridge/build/adapters/acala';
-import { CalamariAdapter } from 'manta-polkawallet-bridge/build/adapters/manta';
-import { KusamaAdapter } from 'manta-polkawallet-bridge/build/adapters/polkadot';
-import { MoonriverAdapter } from 'manta-polkawallet-bridge/build/adapters/moonbeam';
-// import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
+// import { KaruraAdapter } from '/Users/xuzuo/github/bridge/build/adapters/acala/index.js';
 import { typesBundlePre900 } from 'moonbeam-types-bundle';
 import { options } from '@acala-network/api';
 import { ApiPromise, WsProvider } from '@polkadot/api';
+import { AcalaAdapter, KaruraAdapter } from 'manta-bridge/build/adapters/acala';
+import { MantaAdapter, CalamariAdapter } from 'manta-bridge/build/adapters/manta';
+import { PolkadotAdapter, KusamaAdapter } from 'manta-bridge/build/adapters/polkadot';
+import { MoonbeamAdapter, MoonriverAdapter } from 'manta-bridge/build/adapters/moonbeam';
+// import { StatemineAdapter } from 'manta-polkawallet-bridge/build/adapters/statemint';
 import types from '../config/types.json';
 import AssetType from './AssetType';
 
@@ -60,17 +61,17 @@ export default class Chain {
     this.api = null;
   }
 
-  static DolphinSkinnedCalamari(config) {
+  static Manta(config) {
     return new Chain(
-      'calamari',
-      'Dolphin',
-      2084,
-      'dolphin',
-      config.DOLPHIN_SOCKET,
-      config.DOLPHIN_SUBSCAN_URL,
-      [AssetType.Kusama(config), AssetType.Karura(config), AssetType.Moonriver(config), AssetType.Tether(config)],
-      AssetType.DolphinSkinnedCalamari(config),
-      CalamariAdapter,
+      'manta',
+      'Manta',
+      2104,
+      'mantaLogo',
+      config.MANTA_SOCKET,
+      config.MANTA_SUBSCAN_URL,
+      [AssetType.Manta(config), AssetType.Acala(config), AssetType.Polkadot(config), AssetType.Moonbeam(config)],
+      AssetType.Manta(config),
+      MantaAdapter,
       types
     );
   }
@@ -87,6 +88,20 @@ export default class Chain {
       AssetType.Calamari(config),
       CalamariAdapter,
       types
+    );
+  }
+
+  static Polkadot(config) {
+    return new Chain(
+      'polkadot',
+      'Polkadot',
+      null,
+      'polkadot',
+      config.POLKADOT_SOCKET,
+      config.POLKADOT_SUBSCAN_URL,
+      [AssetType.Polkadot(config)],
+      AssetType.Polkadot(config),
+      PolkadotAdapter
     );
   }
 
@@ -118,6 +133,21 @@ export default class Chain {
   //   );
   // }
 
+  static Acala(config) {
+    return new Chain(
+      'acala',
+      'Acala',
+      2000,
+      'kar',
+      config.ACALA_SOCKET,
+      config.ACALA_SUBSCAN_URL,
+      [AssetType.Acala(config)],
+      AssetType.Acala(config),
+      AcalaAdapter,
+      null,
+      options
+    );
+  }
 
   static Karura(config) {
     return new Chain(
@@ -132,6 +162,36 @@ export default class Chain {
       KaruraAdapter,
       null,
       options
+    );
+  }
+
+  static Moonbeam(config) {
+    const moonbeamEthMetadata = {
+      chainId: '0x504',
+      chainName: 'Moonbeam',
+      nativeCurrency: {
+        name: 'GLMR',
+        symbol: 'GMLR',
+        decimals: 18
+      },
+      rpcUrls: [config.MOONBEAM_RPC]
+    };
+
+    return new Chain(
+      'moonbeam',
+      'Moonbeam',
+      2004,
+      'moonbeam',
+      config.MOONBEAM_SOCKET,
+      config.MOONBEAM_SUBSCAN_URL,
+      [AssetType.Moonbeam(config)],
+      AssetType.Moonbeam(config),
+      MoonbeamAdapter,
+      typesBundlePre900,
+      null,
+      null,
+      moonbeamEthMetadata,
+      1284
     );
   }
 
@@ -174,13 +234,9 @@ export default class Chain {
         Chain.Moonriver(config),
         // Chain.Statemine(config)
       ];
-    } else if (config.NETWORK_NAME === NETWORK.DOLPHIN) {
+    } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        Chain.DolphinSkinnedCalamari(config),
-        Chain.Kusama(config),
-        // Chain.Karura(config),
-        Chain.Moonriver(config),
-        // Chain.Statemine(config)
+        Chain.Manta(config), Chain.Polkadot(config), Chain.Acala(config), Chain.Moonbeam(config)
       ];
     }
   }

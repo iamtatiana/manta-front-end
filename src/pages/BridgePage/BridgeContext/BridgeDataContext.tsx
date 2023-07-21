@@ -8,12 +8,12 @@ import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
 import { useMetamask } from 'contexts/metamaskContext';
-import { Bridge } from 'manta-polkawallet-bridge/build';
 import { useConfig } from 'contexts/configContext';
 import { firstValueFrom } from 'rxjs';
 import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { useActive } from 'hooks/useActive';
+import { Bridge } from 'manta-bridge/build';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 
@@ -39,9 +39,10 @@ export const BridgeDataContextProvider = (props) => {
     destinationAddress
   } = state;
 
-  const originAddress = originChain?.getXcmAdapter().chain.type === 'ethereum'
-    ? ethAddress
-    : externalAccount?.address;
+  const originAddress =
+    originChain?.getXcmAdapter().chain.type === 'ethereum'
+      ? ethAddress
+      : externalAccount?.address;
 
   const originXcmAdapter = bridge?.adapters.find(
     (adapter) => adapter.chain.id === originChain?.name
@@ -49,8 +50,10 @@ export const BridgeDataContextProvider = (props) => {
 
   const originApi = originXcmAdapter?.api;
 
-  const originChainIsEvm = originChain?.getXcmAdapter().chain.type === 'ethereum';
-  const destinationChainIsEvm = destinationChain?.getXcmAdapter().chain.type === 'ethereum';
+  const originChainIsEvm =
+    originChain?.getXcmAdapter().chain.type === 'ethereum';
+  const destinationChainIsEvm =
+    destinationChain?.getXcmAdapter().chain.type === 'ethereum';
 
   /**
    *
@@ -66,12 +69,11 @@ export const BridgeDataContextProvider = (props) => {
       const adapters = originChainOptions.map((chain) => chain.getXcmAdapter());
       dispatch({
         type: BRIDGE_ACTIONS.SET_BRIDGE,
-        bridge: new Bridge({ adapters }),
+        bridge: new Bridge({ adapters })
       });
     };
     initBridge();
   }, [externalAccount, originChainOptions]);
-
 
   const handleApiDisconnect = (chain) => {
     dispatch({
@@ -79,7 +81,10 @@ export const BridgeDataContextProvider = (props) => {
       isApiDisconnected: true,
       chain
     });
-    if (txStatusRef.current?.isProcessing() && chain.name === originChain.name) {
+    if (
+      txStatusRef.current?.isProcessing() &&
+      chain.name === originChain.name
+    ) {
       setTxStatus(TxStatus.disconnected());
     }
   };
@@ -98,13 +103,18 @@ export const BridgeDataContextProvider = (props) => {
         return;
       }
       for (const chain of originChainOptions) {
-        const adapter = bridge.adapters.find((adapter) => adapter.chain.id === chain.name);
+        const adapter = bridge.adapters.find(
+          (adapter) => adapter.chain.id === chain.name
+        );
         const api = chain.getXcmApi();
         api.on('connected', () => {
           handleApiConnect(chain);
           api.isReady.then(() => {
             if (chain.name === 'karura' || chain.name === 'acala') {
-              const socket = chain.name === 'karura' ? config.KARURA_SOCKET : config.ACALA_SOCKET;
+              const socket =
+                chain.name === 'karura'
+                  ? config.KARURA_SOCKET
+                  : config.ACALA_SOCKET;
               const acalaConfigs = { evmProvider: new EvmRpcProvider(socket) };
               const wallet = new Wallet(api, acalaConfigs);
               wallet.isReady.then(async () => {
@@ -180,11 +190,18 @@ export const BridgeDataContextProvider = (props) => {
 
   const subscribeSenderBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      senderAssetType.logicalTicker, originAddress
+      senderAssetType.logicalTicker,
+      originAddress
     );
     const unsub = balanceObserveable.subscribe(async (balanceRaw) => {
-      const newBalance = Balance.fromBaseUnits(senderAssetType, balanceRaw.free);
-      if (senderAssetCurrentBalance && newBalance.eq(senderAssetCurrentBalance)) {
+      const newBalance = Balance.fromBaseUnits(
+        senderAssetType,
+        balanceRaw.free
+      );
+      if (
+        senderAssetCurrentBalance &&
+        newBalance.eq(senderAssetCurrentBalance)
+      ) {
         return;
       }
       await waitForTxFinished();
@@ -198,10 +215,14 @@ export const BridgeDataContextProvider = (props) => {
 
   const subscribeSenderNativeTokenBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      originChain.nativeAsset.logicalTicker, originAddress
+      originChain.nativeAsset.logicalTicker,
+      originAddress
     );
     const unsub = balanceObserveable.subscribe((balanceRaw) => {
-      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(originChain.nativeAsset, balanceRaw.free);
+      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
+        originChain.nativeAsset,
+        balanceRaw.free
+      );
       dispatch({
         type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
         senderNativeAssetCurrentBalance
@@ -215,11 +236,11 @@ export const BridgeDataContextProvider = (props) => {
     let senderBalanceUnsub = null;
     const subscribeBalances = async () => {
       if (
-        !senderAssetType
-        || !originAddress
-        || !isApiInitialized
-        || !originChain
-        || !isActive
+        !senderAssetType ||
+        !originAddress ||
+        !isApiInitialized ||
+        !originChain ||
+        !isActive
       ) {
         return;
       }
@@ -260,7 +281,10 @@ export const BridgeDataContextProvider = (props) => {
     const getMaxInput = (inputConfig) => {
       return Balance.fromBaseUnits(
         senderAssetType,
-        Decimal.max(new Decimal(inputConfig.maxInput.toString()), new Decimal(0))
+        Decimal.max(
+          new Decimal(inputConfig.maxInput.toString()),
+          new Decimal(0)
+        )
       );
     };
     const getMinInput = (inputConfig) => {
@@ -288,7 +312,8 @@ export const BridgeDataContextProvider = (props) => {
       let address = destinationAddress;
       // allows us to get fee estimates for EVM chains even when destination address not set
       if (destinationChainIsEvm) {
-        const ARBITRARY_EVM_ADDRESS = '0x000000000000000000000000000000000000dead';
+        const ARBITRARY_EVM_ADDRESS =
+          '0x000000000000000000000000000000000000dead';
         address = ARBITRARY_EVM_ADDRESS;
       }
       return {
@@ -302,28 +327,36 @@ export const BridgeDataContextProvider = (props) => {
 
     const subscribeInputConfig = async () => {
       if (
-        !isActive
-        || !senderAssetType
-        || !originAddress
-        || !isApiInitialized
-        || !originChain
-        || !destinationAddress
+        !isActive ||
+        !senderAssetType ||
+        !originAddress ||
+        !isApiInitialized ||
+        !originChain ||
+        !destinationAddress
       ) {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection
-      (originChain.name === 'karura' || originChain.name === 'acala') && await originXcmAdapter.wallet.isReady;
+      (originChain.name === 'karura' || originChain.name === 'acala') &&
+        (await originXcmAdapter.wallet.isReady);
       const inputConfigParams = getInputConfigParams();
-      const inputConfigObservable = originXcmAdapter.subscribeInputConfig(inputConfigParams);
+      const inputConfigObservable =
+        originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };
     subscribeInputConfig();
-  },[
-    isActive, senderAssetType, senderAssetCurrentBalance, senderAssetTargetBalance,
-    originAddress, destinationAddress, originChain, destinationChain, isApiInitialized
+  }, [
+    isActive,
+    senderAssetType,
+    senderAssetCurrentBalance,
+    senderAssetTargetBalance,
+    originAddress,
+    destinationAddress,
+    originChain,
+    destinationChain,
+    isApiInitialized
   ]);
-
 
   /**
    *
@@ -332,7 +365,10 @@ export const BridgeDataContextProvider = (props) => {
 
   // Sets the asset type to be transacted
   const setSelectedAssetType = (selectedAssetType) => {
-    dispatch({ type: BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE, selectedAssetType });
+    dispatch({
+      type: BRIDGE_ACTIONS.SET_SELECTED_ASSET_TYPE,
+      selectedAssetType
+    });
   };
 
   // Sets the balance the user intends to send
@@ -411,7 +447,9 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   return (
-    <BridgeDataContext.Provider value={value}>{props.children}</BridgeDataContext.Provider>
+    <BridgeDataContext.Provider value={value}>
+      {props.children}
+    </BridgeDataContext.Provider>
   );
 };
 
