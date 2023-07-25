@@ -14,9 +14,10 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import TxStatus from 'types/TxStatus';
 import { useActive } from 'hooks/useActive';
 import { Bridge } from 'manta-bridge/build';
+import { ethers } from 'ethers';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
-
+import mantaAbi from './mantaAbi';
 const BridgeDataContext = React.createContext();
 
 export const BridgeDataContextProvider = (props) => {
@@ -40,6 +41,7 @@ export const BridgeDataContextProvider = (props) => {
   } = state;
 
   const originAddress =
+    originChain.name === 'ethereum' ||
     originChain?.getXcmAdapter().chain.type === 'ethereum'
       ? ethAddress
       : externalAccount?.address;
@@ -51,10 +53,11 @@ export const BridgeDataContextProvider = (props) => {
   const originApi = originXcmAdapter?.api;
 
   const originChainIsEvm =
+    originChain.name === 'ethereum' ||
     originChain?.getXcmAdapter().chain.type === 'ethereum';
   const destinationChainIsEvm =
+    destinationChain.name === 'ethereum' ||
     destinationChain?.getXcmAdapter().chain.type === 'ethereum';
-
   /**
    *
    * Initialization logic
@@ -66,7 +69,9 @@ export const BridgeDataContextProvider = (props) => {
       if (bridge || !externalAccount || !originChainOptions) {
         return;
       }
-      const adapters = originChainOptions.map((chain) => chain.getXcmAdapter());
+      const adapters = originChainOptions
+        .filter((chain) => chain.name !== 'ethereum')
+        .map((chain) => chain.getXcmAdapter());
       dispatch({
         type: BRIDGE_ACTIONS.SET_BRIDGE,
         bridge: new Bridge({ adapters })
@@ -102,7 +107,19 @@ export const BridgeDataContextProvider = (props) => {
       if (!bridge) {
         return;
       }
-      for (const chain of originChainOptions) {
+      // mock init ethereum api
+      const ethereumChain = originChainOptions.find(
+        (chain) => chain.name === 'ethereum'
+      );
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+        chain: ethereumChain
+      });
+
+      const xcmOriginChainOptions = originChainOptions.filter(
+        (chain) => chain.name !== 'ethereum'
+      );
+      for (const chain of xcmOriginChainOptions) {
         const adapter = bridge.adapters.find(
           (adapter) => adapter.chain.id === chain.name
         );
@@ -232,6 +249,59 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   useEffect(() => {
+    async function getBalance() {
+      if (!window.ethereum || originChain.name !== 'ethereum') {
+        return;
+      }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      // native token
+      const nativeTokenBalance = await provider.getBalance(ethAddress);
+      const formatNativeTokenBalance =
+        ethers.utils.formatEther(nativeTokenBalance);
+      const senderNativeAssetCurrentBalance = Balance.fromBaseUnits(
+        originChain.nativeAsset,
+        new Decimal(formatNativeTokenBalance)
+      );
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_NATIVE_ASSET_CURRENT_BALANCE,
+        senderNativeAssetCurrentBalance
+      });
+
+      // senderBalance, should use `senderAssetType`
+      // below is a demo for ERC-20 KINE token
+      const mantaAddress = '0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D';
+      const mantaContract = new ethers.Contract(
+        mantaAddress,
+        mantaAbi,
+        provider
+      );
+      const senderTokenBalance = await mantaContract.balanceOf(ethAddress);
+      const formatSenderTokenBalance =
+        ethers.utils.formatEther(senderTokenBalance);
+      const newBalance = Balance.fromBaseUnits(
+        senderAssetType,
+        new Decimal(formatSenderTokenBalance)
+      );
+      if (
+        senderAssetCurrentBalance &&
+        newBalance.eq(senderAssetCurrentBalance)
+      ) {
+        return;
+      }
+      await waitForTxFinished();
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+        senderAssetCurrentBalance: newBalance
+      });
+    }
+    const timer = setInterval(async () => {
+      getBalance();
+    }, 3000);
+    return () => clearInterval(timer);
+  }, [originChain, ethAddress]);
+
+  useEffect(() => {
     let nativeTokenUnsub = null;
     let senderBalanceUnsub = null;
     const subscribeBalances = async () => {
@@ -242,6 +312,9 @@ export const BridgeDataContextProvider = (props) => {
         !originChain ||
         !isActive
       ) {
+        return;
+      }
+      if (originChain.name === 'ethereum') {
         return;
       }
       nativeTokenUnsub = subscribeSenderNativeTokenBalance();
@@ -264,6 +337,22 @@ export const BridgeDataContextProvider = (props) => {
     destinationChain,
     txStatus
   ]);
+
+  useEffect(() => {
+    function setFees() {
+      if (originChain.name !== 'ethereum') {
+        return;
+      }
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+        originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.00265399'),
+        destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
+        maxInput: senderAssetCurrentBalance,
+        minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
+      });
+    }
+    setFees();
+  }, [originChain, senderAssetCurrentBalance, senderAssetType]);
 
   useEffect(() => {
     const getDestinationFee = (inputConfig) => {
@@ -334,6 +423,9 @@ export const BridgeDataContextProvider = (props) => {
         !originChain ||
         !destinationAddress
       ) {
+        return;
+      }
+      if (originChain.name === 'ethereum') {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection
@@ -418,6 +510,9 @@ export const BridgeDataContextProvider = (props) => {
 
   // Returns true if the given chain's api is ready
   const getisApiInitialized = (chain) => {
+    if (chain.name === 'ethereum') {
+      return true;
+    }
     const xcmAdapter = bridge?.adapters.find(
       (adapter) => adapter.chain.id === chain?.name
     );
@@ -425,6 +520,9 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   const getisApiDisconnected = (chain) => {
+    if (chain.name === 'ethereum') {
+      return false;
+    }
     const xcmAdapter = bridge?.adapters.find(
       (adapter) => adapter.chain.id === chain?.name
     );

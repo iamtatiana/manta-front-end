@@ -51,6 +51,8 @@ export const BridgeTxContextProvider = (props) => {
       !originFee
     ) {
       return null;
+    } else if (originChain.name === 'ethereum') {
+      return senderNativeAssetCurrentBalance.gte(originFee);
     } else if (
       senderNativeAssetCurrentBalance.assetType.assetId !==
       originFee.assetType.assetId

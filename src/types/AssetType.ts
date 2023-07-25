@@ -19,6 +19,7 @@ const MantaAssetIds = {
   DOT: 8,
   GLMR: 10,
   ACA: 11,
+  ETH: null
 };
 
 const getAssetIds = (config) => {
@@ -211,6 +212,21 @@ export default class AssetType {
   }
 
   // mainnet
+  static Ethereum(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).ETH,
+      'Ethereum',
+      'ETH',
+      'ethereum',
+      18,
+      new BN(0), // no ED
+      isPrivate,
+      'eth',
+      config.IS_TESTNET,
+      true
+    );
+  }
+
   static Manta(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).MANTA,

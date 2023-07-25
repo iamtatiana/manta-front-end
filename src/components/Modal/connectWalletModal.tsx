@@ -103,7 +103,6 @@ const ConnectWalletBlock = ({
 };
 
 const MetamaskConnectWalletBlock = ({ hideModal }) => {
-  const config = useConfig();
   const { configureMoonBeam, ethAddress } = useMetamask();
   const metamaskIsInstalled =
     window.ethereum?.isMetaMask &&
@@ -115,13 +114,10 @@ const MetamaskConnectWalletBlock = ({ hideModal }) => {
     isConnected && hideModal();
   };
 
-  const evmChainName =
-    config.NETWORK_NAME.toLowerCase() === 'manta' ? 'Moonbeam' : 'Moonriver';
-
   return (
     <ConnectWalletBlock
       key={'metamask'}
-      walletName={`MetaMask (for ${evmChainName})`}
+      walletName={'MetaMask'}
       isWalletInstalled={metamaskIsInstalled}
       walletInstallLink={'https://metamask.io/'}
       walletLogo="metamask"

@@ -14,5 +14,6 @@
   "POLKADOT_SOCKET": "wss://rpc.polkadot.io",
   "ACALA_SOCKET": "wss://acala-rpc-0.aca-api.network",
   "MOONBEAM_SOCKET": "wss://wss.api.moonbeam.network",
-  "MOONBEAM_RPC": "https://rpc.api.moonbeam.network"
+  "MOONBEAM_RPC": "https://rpc.api.moonbeam.network",
+  "ETHEREUM_RPC": "https://mainnet.infura.io/v3/"
 }

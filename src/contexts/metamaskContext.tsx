@@ -28,21 +28,25 @@ export const MetamaskContextProvider = (props) => {
     !window.ethereum?.isBraveWallet &&
     !window.ethereum.isTalisman;
 
-  const configureMoonBeam = async () => {
+  const configureMoonBeam = async (networkName = 'Ethereum') => {
     if (!metamaskIsInstalled) {
       return;
     }
     try {
-      const chain =
-        config.NETWORK_NAME === NETWORK.CALAMARI
-          ? Chain.Moonriver(config)
-          : Chain.Moonbeam(config);
+      const chain = Chain[networkName](config);
       await provider?.request({ method: 'eth_requestAccounts' });
       if (provider?.chainId !== chain.ethMetadata.chainId) {
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [chain.ethMetadata]
-        });
+        if (networkName === 'Ethereum') {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: '0x1' }]
+          });
+        } else {
+          await provider.request({
+            method: 'wallet_addEthereumChain',
+            params: [chain.ethMetadata]
+          });
+        }
       }
       setHasAuthConnectMetamask(true);
       setHasAuthToConnectMetamaskStorage(true);

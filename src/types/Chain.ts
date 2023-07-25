@@ -138,7 +138,7 @@ export default class Chain {
       'acala',
       'Acala',
       2000,
-      'kar',
+      'acala',
       config.ACALA_SOCKET,
       config.ACALA_SUBSCAN_URL,
       [AssetType.Acala(config)],
@@ -162,6 +162,35 @@ export default class Chain {
       KaruraAdapter,
       null,
       options
+    );
+  }
+
+  static Ethereum(config) {
+    const ethMetadata = {
+      chainId: '0x1',
+      chainName: 'Ethereum Mainnet',
+      nativeCurrency: {
+        name: 'Ethereum',
+        symbol: 'ETH',
+        decimals: 18
+      },
+      rpcUrls: [config.ETHEREUM_RPC]
+    };
+    return new Chain(
+      'ethereum',
+      'Ethereum',
+      1,
+      'ethereum',
+      null,
+      null,
+      [AssetType.Manta(config)],
+      AssetType.Ethereum(config),
+      null,
+      null,
+      null,
+      null,
+      ethMetadata,
+      1
     );
   }
 
@@ -236,7 +265,7 @@ export default class Chain {
       ];
     } else if (config.NETWORK_NAME === NETWORK.MANTA) {
       return [
-        Chain.Manta(config), Chain.Polkadot(config), Chain.Acala(config), Chain.Moonbeam(config)
+        Chain.Ethereum(config), Chain.Manta(config), Chain.Polkadot(config), Chain.Acala(config), Chain.Moonbeam(config)
       ];
     }
   }
@@ -253,6 +282,9 @@ export default class Chain {
   }
 
   getXcmAdapter() {
+    if (this.name === 'ethereum') {
+      return null;
+    }
     return new this.xcmAdapterClass();
   }
 

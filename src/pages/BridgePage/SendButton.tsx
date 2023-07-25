@@ -45,10 +45,15 @@ const ValidationButton = () => {
   let isConnectWallet = false;
   let isSwitchNetwork = false;
   let connectWalletText = 'Connect Wallet';
-  const evmChain =
-    config.NETWORK_NAME === NETWORK.MANTA
-      ? Chain.Moonbeam(config)
-      : Chain.Moonriver(config);
+  let evmChain;
+  if (originChain.name === 'ethereum') {
+    evmChain = Chain.Ethereum(config);
+  } else {
+    evmChain =
+      config.NETWORK_NAME === NETWORK.MANTA
+        ? Chain.Moonbeam(config)
+        : Chain.Moonriver(config);
+  }
   const evmChainId = evmChain.ethChainId;
 
   if (!externalAccount) {
@@ -125,13 +130,20 @@ const ValidationButton = () => {
 const SwitchNetworkButton = () => {
   const config = useConfig();
   const { configureMoonBeam } = useMetamask();
+  const { originChain } = useBridgeData();
+
+  let networkName;
+  if (originChain.name === 'ethereum') {
+    networkName = 'Ethereum';
+  } else {
+    networkName =
+      config.NETWORK_NAME === NETWORK.MANTA ? 'Moonbeam' : 'Moonriver';
+  }
 
   const onClick = () => {
-    configureMoonBeam();
+    configureMoonBeam(networkName);
   };
 
-  const networkName =
-    config.NETWORK_NAME === NETWORK.MANTA ? 'Moonbeam' : 'Moonriver';
   return (
     <button
       onClick={onClick}
