@@ -41,6 +41,7 @@ svg {
   --color-text-secondary: #a4a3a7;
   --color-text-thirdry: #ffffff;
   --color-text-accent: #ffffff;
+  --color-text-red-warning: #F30E37;
   --color-text-warning: #e96e79;
   --color-manta-blue: #239cff;
   --color-fill-secondary: #ffffff;
@@ -80,6 +81,7 @@ svg {
   --color-text-secondary: #212f41;
   --color-text-thirdry: #070707;
   --color-text-accent: #33385f;
+  --color-text-red-warning: #F30E37;
   --color-text-warning: #ef9f9f;
   --color-manta-blue: #239cff;
   --color-fill-secondary: #889ebc;

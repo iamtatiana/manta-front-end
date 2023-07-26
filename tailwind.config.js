@@ -98,6 +98,7 @@ module.exports = {
         'third-80': 'var(--color-bg-button-third-80)',
         'link-hover': '#00D8CB',
         warning: 'var(--color-text-warning)',
+        'red-warning': 'var(--color-text-red-warning)',
         'gray-light': 'var(--color-text-gray)',
         'manta-gray': 'var(--color-bg-manta-gray)',
         'manta-blue': 'var(--color-manta-blue)',

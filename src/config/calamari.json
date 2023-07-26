@@ -17,5 +17,12 @@
     "KARURA_SOCKET": "wss://karura-rpc-1.aca-api.network",
     "MOONRIVER_SOCKET": "wss://wss.api.moonriver.moonbeam.network",
     "STATEMINE_SOCKET": "wss://statemine-rpc.polkadot.io",
-    "MOONRIVER_RPC": "https://rpc.moonriver.moonbeam.network"
+    "MOONRIVER_RPC": "https://rpc.moonriver.moonbeam.network",
+    "MOONBASE_RPC": "https://moonbeam-alpha.api.onfinality.io/public",
+    "MOONBASE_SOCKET": "wss://moonbase-alpha.public.blastapi.io",
+    "MOONBASE_SUBSCAN_URL": "https://moonbase.subscan.io",
+    "GEORLI_EXPLORER_URL": "https://goerli.etherscan.io",
+    "GEORLI_RPC": "https://endpoints.omniatech.io/v1/eth/goerli/public",
+    "MANTA_TESTNET_SOCKET": "wss://c1.manta.moonsea.systems",
+    "MANTA_TESTNET_SUBSCAN_URL": ""
 }

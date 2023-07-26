@@ -167,19 +167,19 @@ export default class Chain {
 
   static Ethereum(config) {
     const ethMetadata = {
-      chainId: '0x1',
-      chainName: 'Ethereum Mainnet',
+      chainId: '0x5',
+      chainName: 'Goerli',
       nativeCurrency: {
-        name: 'Ethereum',
-        symbol: 'ETH',
+        name: 'GoerliETH',
+        symbol: 'GoerliETH',
         decimals: 18
       },
-      rpcUrls: [config.ETHEREUM_RPC]
+      rpcUrls: [config.GOERLI_RPC]
     };
     return new Chain(
       'ethereum',
       'Ethereum',
-      1,
+      5,
       'ethereum',
       null,
       null,
@@ -190,7 +190,7 @@ export default class Chain {
       null,
       null,
       ethMetadata,
-      1
+      5
     );
   }
 

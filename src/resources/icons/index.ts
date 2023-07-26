@@ -89,6 +89,8 @@ import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg
 import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
 import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
+import { ReactComponent as successIcon } from 'resources/icons/success-icon.svg'
+import { ReactComponent as failedIcon } from 'resources/icons/failed-icon.svg'
 
 // links icons
 import { ReactComponent as MantaWebsite } from 'resources/icons/links/MantaWebsite.svg';
@@ -192,6 +194,8 @@ const icons = {
   Docs,
   BugReport,
   activityRightArrow,
-  warningV2
+  warningV2,
+  successIcon,
+  failedIcon
 };
 export default icons;

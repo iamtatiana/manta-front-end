@@ -270,7 +270,8 @@ export const BridgeDataContextProvider = (props) => {
 
       // senderBalance, should use `senderAssetType`
       // below is a demo for ERC-20 KINE token
-      const mantaAddress = '0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D';
+      // const mantaAddress = '0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D';
+      const mantaAddress = '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D'; // MANTA token deployed in Goerli
       const mantaContract = new ethers.Contract(
         mantaAddress,
         mantaAbi,
@@ -339,27 +340,17 @@ export const BridgeDataContextProvider = (props) => {
   ]);
 
   useEffect(() => {
-    async function setFees() {
-      if (originChain.name === 'ethereum') {
-        dispatch({
-          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-          originFee: Balance.fromBaseUnits(
-            originChain.nativeAsset,
-            '0.00265399'
-          ), // TODO get eth gasfee
-          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
-          maxInput: senderAssetCurrentBalance,
-          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
-        });
-      } else if (destinationChain.name === 'ethereum') {
-        dispatch({
-          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-          originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.0046'), // should fetch real value
-          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
-          maxInput: senderAssetCurrentBalance,
-          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
-        });
+    function setFees() {
+      if (originChain.name !== 'ethereum') {
+        return;
       }
+      dispatch({
+        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+        originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.00265399'),
+        destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
+        maxInput: senderAssetCurrentBalance,
+        minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
+      });
     }
     setFees();
   }, [originChain, senderAssetCurrentBalance, senderAssetType]);
@@ -435,10 +426,7 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      if (
-        originChain.name === 'ethereum' ||
-        destinationChain.name === 'ethereum'
-      ) {
+      if (originChain.name === 'ethereum') {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection

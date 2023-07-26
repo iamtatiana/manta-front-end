@@ -27,6 +27,7 @@ const ValidationButton = () => {
     minInput,
     originChain,
     originChainIsEvm,
+    destinationChain,
     destinationChainIsEvm,
     destinationAddress,
     senderAssetTargetBalance
@@ -108,10 +109,16 @@ const ValidationButton = () => {
   const shouldShowSwitchNetwork =
     !disabled && !isConnectWallet && !validationMsg && isSwitchNetwork;
 
+  let isEvmTransfer = false;
+  if (originChain.name === 'ethereum' && destinationChain.name === 'manta') {
+    isEvmTransfer = true;
+  }
+
   return (
     <>
       {disabled && <MantaLoading className="py-3" />}
-      {shouldShowSendButton && <SendButton />}
+      {shouldShowSendButton &&
+        (isEvmTransfer ? <EvmTransferButton /> : <SendButton />)}
       {shouldShowConnectWallet && (
         <ConnectWalletButton
           text={connectWalletText}
@@ -173,6 +180,54 @@ const SendButton = () => {
       )}>
       Submit
     </button>
+  );
+};
+
+const EvmTransferButton = () => {
+  const {
+    isApiInitialized,
+    isApiDisconnected,
+    senderAssetType,
+    senderAssetCurrentBalance,
+    senderAssetTargetBalance,
+    originChain,
+    originApi,
+    originChainIsEvm,
+    originXcmAdapter,
+    destinationChain,
+    destinationAddress,
+    maxInput,
+    minInput,
+    senderNativeAssetCurrentBalance,
+    originFee
+  } = useBridgeData();
+
+  const { ethAddress, provider } = useMetamask();
+
+  const onClick = () => {
+    // call metamask to approve
+    const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+    await provider.request({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: ethAddress,
+          to: '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D'
+        }
+      ]
+    });
+  };
+  return (
+    <div>
+      <button
+        onClick={onClick}
+        className={classNames(
+          'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+          'text-center text-white rounded-lg w-full'
+        )}>
+        Approve
+      </button>
+    </div>
   );
 };
 

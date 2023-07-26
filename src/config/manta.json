@@ -15,5 +15,6 @@
   "ACALA_SOCKET": "wss://acala-rpc-0.aca-api.network",
   "MOONBEAM_SOCKET": "wss://wss.api.moonbeam.network",
   "MOONBEAM_RPC": "https://rpc.api.moonbeam.network",
-  "ETHEREUM_RPC": "https://mainnet.infura.io/v3/"
+  "ETHEREUM_RPC": "https://mainnet.infura.io/v3/",
+  "GOERLI_RPC":"https://endpoints.omniatech.io/v1/eth/goerli/public"
 }
