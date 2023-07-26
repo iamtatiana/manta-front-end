@@ -339,17 +339,27 @@ export const BridgeDataContextProvider = (props) => {
   ]);
 
   useEffect(() => {
-    function setFees() {
-      if (originChain.name !== 'ethereum') {
-        return;
+    async function setFees() {
+      if (originChain.name === 'ethereum') {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+          originFee: Balance.fromBaseUnits(
+            originChain.nativeAsset,
+            '0.00265399'
+          ), // TODO get eth gasfee
+          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
+          maxInput: senderAssetCurrentBalance,
+          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
+        });
+      } else if (destinationChain.name === 'ethereum') {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+          originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.0046'), // should fetch real value
+          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
+          maxInput: senderAssetCurrentBalance,
+          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
+        });
       }
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-        originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.00265399'),
-        destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
-        maxInput: senderAssetCurrentBalance,
-        minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
-      });
     }
     setFees();
   }, [originChain, senderAssetCurrentBalance, senderAssetType]);
@@ -425,7 +435,10 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      if (originChain.name === 'ethereum') {
+      if (
+        originChain.name === 'ethereum' ||
+        destinationChain.name === 'ethereum'
+      ) {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection
