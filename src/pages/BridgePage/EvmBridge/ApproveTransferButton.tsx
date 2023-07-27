@@ -40,7 +40,7 @@ const EvmTransferButton = () => {
   const { ethAddress, provider } = useMetamask();
   const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer
   const [isEstimatingFee, setIsEstimatingFee] = useState(true);
-  const [bridgeFee, setBridgeFee] = useState();
+  const [bridgeFee, setBridgeFee] = useState({});
 
   const onClick = () => {
     if (status === 1) {
@@ -111,6 +111,7 @@ const EvmTransferButton = () => {
     const sourceChainId = ethereumChainID;
     const destinationChainId = moonbeamChainID;
 
+    // Generate data of Celer Contract
     const { data, transferId } = generateCelerContractData(
       sourceChainId,
       destinationChainId,
@@ -119,6 +120,7 @@ const EvmTransferButton = () => {
       amount,
       bridgeFee.max_slippage
     );
+
     setStatus(0);
     await provider
       .request({
@@ -184,11 +186,8 @@ const EvmTransferButton = () => {
     }
   };
 
-  return isEstimatingFee || status === 0 ? (
-    <Loading
-      style={{ alignSelf: 'center' }}
-      loading={true}
-      text="Processing..."></Loading>
+  return isEstimatingFee ? (
+    <LoadingIndicator />
   ) : (
     <div>
       <TransferFeeDisplay
@@ -196,14 +195,32 @@ const EvmTransferButton = () => {
         symbol={senderAssetType.baseTicker}
         numberOfDecimals={senderAssetType.numberOfDecimals}
       />
-      <button
-        onClick={onClick}
-        className={classNames(
-          'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-          'text-center text-white rounded-lg w-full'
-        )}>
-        {status === 1 ? 'Approve' : 'Transfer'}
-      </button>
+      <div>
+        {status === 0 ? (
+          <LoadingIndicator />
+        ) : (
+          <button
+            onClick={onClick}
+            className={classNames(
+              'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+              'text-center text-white rounded-lg w-full'
+            )}>
+            {status === 1 ? 'Approve' : 'Transfer'}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const LoadingIndicator = () => {
+  return (
+    <div className="my-5">
+      <Loading
+        style={{ alignSelf: 'center' }}
+        loading={true}
+        text="Processing..."
+      />
     </div>
   );
 };
