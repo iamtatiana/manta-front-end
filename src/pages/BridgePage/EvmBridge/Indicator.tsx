@@ -25,9 +25,9 @@ const Indicator = ({ chainList }: { chainList: Array<Chain> }) => {
                 className="w-2 h-2 rounded-full bg-white "
                 style={
                   status > 0
-                    ? status === 1
-                      ? successIndicator
-                      : failedIndicator
+                    ? status === 2
+                      ? failedIndicator
+                      : successIndicator
                     : {}
                 }
               />

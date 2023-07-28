@@ -27,9 +27,9 @@ const ChainStatus = ({ chainList }: { chainList: Array }) => {
               className="px-2 py-1 flex flex-row border border-white border-opacity-40 rounded-2xl bg-white bg-opacity-20 bg-manta-blue"
               style={
                 item.status > 0
-                  ? item.status === 1
-                    ? successChainName
-                    : failedChainName
+                  ? item.status === 2
+                    ? failedChainName
+                    : successChainName
                   : {}
               }>
               <Icon

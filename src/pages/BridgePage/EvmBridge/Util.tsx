@@ -1,7 +1,6 @@
 // @ts-nocheck
 import axios from 'axios';
 import { ethers } from 'ethers';
-const celerEndpoint = 'https://cbridge-v2-test.celer.network/';
 
 export const queryCelerBridgeFee = async (
   sourceChainId,
@@ -9,22 +8,27 @@ export const queryCelerBridgeFee = async (
   symbol,
   amount
 ) => {
+  const config = useConfig();
+
   // Query celer bridge fee
-  const feeResponse = await axios.get(`${celerEndpoint}/v2/estimateAmt`, {
-    params: {
-      src_chain_id: sourceChainId,
-      dst_chain_id: destinationChainId,
-      token_symbol: symbol,
-      amt: amount
-    },
-    headers: {
-      'Content-Type': 'application/json'
+  const feeResponse = await axios.get(
+    `${config.CelerEndpoint}/v2/estimateAmt`,
+    {
+      params: {
+        src_chain_id: sourceChainId,
+        dst_chain_id: destinationChainId,
+        token_symbol: symbol,
+        amt: amount
+      },
+      headers: {
+        'Content-Type': 'application/json'
+      }
     }
-  });
+  );
 
   // Query estimated time of arrival
   const latency = await axios.get(
-    `${celerEndpoint}/v2/getLatest7DayTransferLatencyForQuery`,
+    `${config.CelerEndpoint}/v2/getLatest7DayTransferLatencyForQuery`,
     {
       params: {
         src_chain_id: sourceChainId,
@@ -56,7 +60,7 @@ const stringToHex = (string) => {
     .slice(2);
 };
 
-const paddingZero = '000000000000000000000000';
+const addressPaddingZero = '000000000000000000000000';
 
 export const generateCelerContractData = (
   sourceChainId,
@@ -77,9 +81,9 @@ export const generateCelerContractData = (
 
   const data =
     hashedPrefix +
-    paddingZero +
+    addressPaddingZero +
     userAddress.slice(2) +
-    paddingZero +
+    addressPaddingZero +
     mantaEthereumContractAddress.slice(2) +
     approvedAmount +
     destinationChainIdHex +

@@ -4,28 +4,18 @@ import { ethers } from 'ethers';
 import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
+import { useConfig } from 'contexts/configContext';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import MantaABI from './abi/manta.json';
 import TransferFeeDisplay from './TransferFeeDisplay';
-
 import { queryCelerBridgeFee, generateCelerContractData } from './Util';
+import EvmBridge from './index';
 
-const mantaEthereumContractAddress =
-  '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D';
-const celerEthereumContractAddress =
-  '0x358234B325EF9eA8115291A8b81b7d33A2Fa762D';
 const mantaContractABI = MantaABI.abi;
-
-const ethereumChainID = 5;
-const moonbeamChainID = 1287;
-
-const paddingZero = '000000000000000000000000';
 
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
   const {
-    isApiInitialized,
-    isApiDisconnected,
     senderAssetType,
     senderAssetCurrentBalance,
     senderAssetTargetBalance,
@@ -37,10 +27,12 @@ const EvmTransferButton = () => {
     originFee
   } = useBridgeData();
 
+  const config = useConfig();
   const { ethAddress, provider } = useMetamask();
   const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer
-  const [isEstimatingFee, setIsEstimatingFee] = useState(true);
+  const [isEstimatingFee, setIsEstimatingFee] = useState(false);
   const [bridgeFee, setBridgeFee] = useState({});
+  const [transferId, setTransferId] = useState('');
 
   const onClick = () => {
     if (status === 1) {
@@ -52,10 +44,14 @@ const EvmTransferButton = () => {
 
   useEffect(async () => {
     console.log('query celer');
+    setTransferId(
+      '0xe1015da268695400a6417f4b94a6bff4620e2016626e5610539c3905f570fa3f'
+    );
+    return;
     setIsEstimatingFee(true);
     try {
-      const sourceChainId = ethereumChainID;
-      const destinationChainId = moonbeamChainID;
+      const sourceChainId = config.CelerEthereumChainId;
+      const destinationChainId = config.MoonbeamChainID;
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
 
       // Query latest Celer bridge fee
@@ -76,14 +72,17 @@ const EvmTransferButton = () => {
   const onApproveClick = async () => {
     // Approve Celer Contract Address to spend user's token
     // Create the data parameter of the eth_sendTransaction so that the Ethereum node understands the request
-    const spenderAddress = celerEthereumContractAddress
-      .slice(2)
-      .toLocaleLowerCase(); // Celer Bridge Contract Address
+    const spenderAddress =
+      config.CelerEthereumContractAddress.slice(2).toLocaleLowerCase(); // Celer Bridge Contract Address
     const defaultAmount =
       '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // default amount for metamask
     const hashedPrefix = '0x095ea7b3'; // web3.sha3("approve(address,uint256)").slice(0,10)
+    const addressPaddingZero = '000000000000000000000000';
     const data =
-      hashedPrefix + paddingZero + spenderAddress + defaultAmount.slice(2);
+      hashedPrefix +
+      addressPaddingZero +
+      spenderAddress +
+      defaultAmount.slice(2);
 
     setStatus(0);
     await provider
@@ -92,7 +91,7 @@ const EvmTransferButton = () => {
         params: [
           {
             from: ethAddress,
-            to: mantaEthereumContractAddress,
+            to: config.MantaEthereumContractAddress,
             data: data
           }
         ]
@@ -108,15 +107,15 @@ const EvmTransferButton = () => {
 
   const onTransferClick = async () => {
     const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
-    const sourceChainId = ethereumChainID;
-    const destinationChainId = moonbeamChainID;
+    const sourceChainId = config.CelerEthereumChainId;
+    const destinationChainId = config.MoonbeamChainID;
 
     // Generate data of Celer Contract
     const { data, transferId } = generateCelerContractData(
       sourceChainId,
       destinationChainId,
       ethAddress,
-      mantaEthereumContractAddress,
+      config.MantaEthereumContractAddress,
       amount,
       bridgeFee.max_slippage
     );
@@ -128,13 +127,13 @@ const EvmTransferButton = () => {
         params: [
           {
             from: ethAddress,
-            to: celerEthereumContractAddress,
+            to: config.CelerEthereumContractAddress,
             data: data
           }
         ]
       })
       .then(() => {
-        getTransferStatus(transferId);
+        setTransferId(transferId);
       })
       .catch(() => {
         setStatus(2);
@@ -146,14 +145,14 @@ const EvmTransferButton = () => {
     const ethersProvider = new ethers.providers.Web3Provider(provider);
     // Init Manta Token Smart Contract
     const mantaEthereumContract = new ethers.Contract(
-      mantaEthereumContractAddress,
+      config.MantaEthereumContractAddress,
       mantaContractABI,
       ethersProvider
     );
 
     const allowance = await mantaEthereumContract.allowance(
       ethAddress,
-      celerEthereumContractAddress
+      config.CelerEthereumContractAddress
     );
     if (allowance.toString() >= amount) {
       setStatus(2);
@@ -161,28 +160,6 @@ const EvmTransferButton = () => {
       setTimeout(() => {
         queryAllowance(mantaEthereumContract, ethAddress, amount);
       }, 3000);
-    }
-  };
-
-  const getTransferStatus = async (transferID: string) => {
-    try {
-      const data = { transfer_id: transferID };
-      const response = await axios.post(
-        `${celerEndpoint}/v2/getTransferStatus`,
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      console.log(response.data);
-      setTimeout(async () => {
-        await getTransferStatus(transferID);
-      }, 30000);
-    } catch (error) {
-      console.error('Error:', error);
-      throw error;
     }
   };
 
@@ -209,6 +186,7 @@ const EvmTransferButton = () => {
           </button>
         )}
       </div>
+      {transferId.length > 0 && <EvmBridge transferId={transferId} />}
     </div>
   );
 };
