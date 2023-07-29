@@ -15,17 +15,7 @@ const mantaContractABI = MantaABI.abi;
 
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
-  const {
-    senderAssetType,
-    senderAssetCurrentBalance,
-    senderAssetTargetBalance,
-    originChain,
-    originApi,
-    destinationChain,
-    destinationAddress,
-    senderNativeAssetCurrentBalance,
-    originFee
-  } = useBridgeData();
+  const { senderAssetType, senderAssetTargetBalance } = useBridgeData();
 
   const config = useConfig();
   const { ethAddress, provider } = useMetamask();
@@ -43,7 +33,6 @@ const EvmTransferButton = () => {
   };
 
   useEffect(async () => {
-    console.log('query celer');
     setTransferId(
       '0xe1015da268695400a6417f4b94a6bff4620e2016626e5610539c3905f570fa3f'
     );
@@ -59,7 +48,8 @@ const EvmTransferButton = () => {
         sourceChainId,
         destinationChainId,
         senderAssetType.baseTicker,
-        amount
+        amount,
+        config.CelerEndpoint
       );
       setBridgeFee(latestBridgeFee);
       setIsEstimatingFee(false);

@@ -6,29 +6,25 @@ export const queryCelerBridgeFee = async (
   sourceChainId,
   destinationChainId,
   symbol,
-  amount
+  amount,
+  celerEndpoint
 ) => {
-  const config = useConfig();
-
   // Query celer bridge fee
-  const feeResponse = await axios.get(
-    `${config.CelerEndpoint}/v2/estimateAmt`,
-    {
-      params: {
-        src_chain_id: sourceChainId,
-        dst_chain_id: destinationChainId,
-        token_symbol: symbol,
-        amt: amount
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
+  const feeResponse = await axios.get(`${celerEndpoint}/v2/estimateAmt`, {
+    params: {
+      src_chain_id: sourceChainId,
+      dst_chain_id: destinationChainId,
+      token_symbol: symbol,
+      amt: amount
+    },
+    headers: {
+      'Content-Type': 'application/json'
     }
-  );
+  });
 
   // Query estimated time of arrival
   const latency = await axios.get(
-    `${config.CelerEndpoint}/v2/getLatest7DayTransferLatencyForQuery`,
+    `${celerEndpoint}/v2/getLatest7DayTransferLatencyForQuery`,
     {
       params: {
         src_chain_id: sourceChainId,

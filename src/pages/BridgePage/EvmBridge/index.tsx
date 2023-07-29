@@ -1,10 +1,11 @@
 // @ts-nocheck
 import axios from 'axios';
-import { useEffect, useMemo } from 'react';
+import { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useModal } from 'hooks';
+import { Loading } from 'element-react';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
@@ -29,17 +30,22 @@ type EvmBridgeData = {
   transferId: string;
 };
 
+const buttonText = [
+  'Processing',
+  'Refund to be confirmed',
+  'Obtain Free GLMR',
+  'Send',
+  'Got it'
+];
+
 const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
   const { originChain, destinationChain } = useBridgeData();
 
   const config = useConfig();
-  const { loading, setLoading } = useState(true);
+  const [buttonStatus, setButtonStatus] = useState(0);
   const { ModalWrapper, showModal, hideModal } = useModal();
   const [chainList, setChainList] = useState(Array);
   const [steps, setSteps] = useState(Array);
-
-  const [buttonDisabled, setButtonDisabled] = useState(true);
-  const [buttonText, setButtonText] = useState('Sending');
 
   useEffect(() => {
     console.log('render evm bridge modal');
@@ -110,6 +116,7 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
       );
       const status = response.data.status;
       if (status < 5) {
+        updateSteps(0, 3, celerTransferStatus[status]);
         setTimeout(async () => {
           await getTransferStatus(transferId);
         }, 30000);
@@ -117,12 +124,21 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
         // celer transfer complete
         updateChainList(0, 1);
         updateSteps(0, 1, celerTransferStatus[status]);
+        setButtonStatus(2); // Obtain Free GLMR
+      } else {
+        // need refund or delayed
+        if (status === 8) {
+          setButtonStatus(1); // Refund to be confirmed
+        }
+        updateChainList(0, 2);
+        updateSteps(0, 2, celerTransferStatus[status]);
       }
     } catch (error) {
       console.error('Error:', error);
     }
   };
 
+  // update chain UI layou
   const updateChainList = (index, status) => {
     setChainList((preState) => {
       preState[index].status = status;
@@ -130,12 +146,27 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
     });
   };
 
+  // update step UI layout
   const updateSteps = (index, status, subtitle?) => {
     setSteps((preState) => {
       preState[index].status = status;
       preState[index].subtitle = subtitle;
       return preState;
     });
+  };
+
+  const onButtonClick = () => {
+    setButtonStatus(0);
+    if (buttonStatus === 1) {
+      // Refund to be confirmed
+    } else if (buttonStatus === 2) {
+      // Obtain Free GLMR
+    } else if (buttonStatus === 3) {
+      // Send
+    } else {
+      // Got it
+      hideModal();
+    }
   };
 
   return (
@@ -151,24 +182,28 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
         <Indicator chainList={chainList} />
         <ChainStatus chainList={chainList} />
         <StepStatus steps={steps} />
-        <Button text={buttonText} disabled={buttonDisabled} />
+        {buttonStatus === 0 ? (
+          <div className="mb-10">
+            <Loading
+              style={{ alignSelf: 'center' }}
+              loading={true}
+              text="Processing..."
+            />
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">
+            <div
+              className={classNames(
+                'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+                'text-center text-white rounded-lg w-6/12'
+              )}
+              onClick={onButtonClick}>
+              {buttonText[buttonStatus]}
+            </div>
+          </div>
+        )}
       </div>
     </ModalWrapper>
-  );
-};
-
-// Bottom button
-const Button = ({ text, disabled }: { text: string; disabled: boolean }) => {
-  return (
-    <div className="flex items-center justify-center">
-      <div
-        className={classNames(
-          'bg-connect-wallet-button py-2 unselectable-text text-center text-white',
-          'rounded-lg w-6/12 filter brightness-50'
-        )}>
-        {text}
-      </div>
-    </div>
   );
 };
 
