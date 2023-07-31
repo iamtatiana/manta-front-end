@@ -12,7 +12,7 @@ import Indicator from './Indicator';
 import StepStatus from './StepStatus';
 
 const celerTransferStatus = [
-  'Unknown',
+  'Please wait, this may take a few minutes.',
   'Submitting',
   'Failed',
   'Waiting for SGN confirmation',
@@ -106,7 +106,7 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
     try {
       const data = { transfer_id: transferId };
       const response = await axios.post(
-        `${config.CelerEndpoint}/v2/getTransferStatus`,
+        `${config.CelerEndpoint}/getTransferStatus`,
         data,
         {
           headers: {
@@ -119,7 +119,7 @@ const EvmBridgeModal = ({ transferId }: EvmBridgeData) => {
         updateSteps(0, 3, celerTransferStatus[status]);
         setTimeout(async () => {
           await getTransferStatus(transferId);
-        }, 30000);
+        }, 10000);
       } else if (status === 5) {
         // celer transfer complete
         updateChainList(0, 1);

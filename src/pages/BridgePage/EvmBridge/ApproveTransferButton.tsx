@@ -33,16 +33,11 @@ const EvmTransferButton = () => {
   };
 
   useEffect(async () => {
-    setTransferId(
-      '0xe1015da268695400a6417f4b94a6bff4620e2016626e5610539c3905f570fa3f'
-    );
-    return;
     setIsEstimatingFee(true);
     try {
       const sourceChainId = config.CelerEthereumChainId;
-      const destinationChainId = config.MoonbeamChainID;
+      const destinationChainId = config.CelerMoonbeamChainId;
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
-
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
         sourceChainId,
@@ -98,7 +93,7 @@ const EvmTransferButton = () => {
   const onTransferClick = async () => {
     const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
     const sourceChainId = config.CelerEthereumChainId;
-    const destinationChainId = config.MoonbeamChainID;
+    const destinationChainId = config.CelerMoonbeamChainId;
 
     // Generate data of Celer Contract
     const { data, transferId } = generateCelerContractData(
@@ -163,7 +158,7 @@ const EvmTransferButton = () => {
         numberOfDecimals={senderAssetType.numberOfDecimals}
       />
       <div>
-        {status === 0 ? (
+        {status === 0 && transferId.length === 0 ? (
           <LoadingIndicator />
         ) : (
           <button

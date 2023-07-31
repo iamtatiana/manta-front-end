@@ -10,7 +10,7 @@ export const queryCelerBridgeFee = async (
   celerEndpoint
 ) => {
   // Query celer bridge fee
-  const feeResponse = await axios.get(`${celerEndpoint}/v2/estimateAmt`, {
+  const feeResponse = await axios.get(`${celerEndpoint}/estimateAmt`, {
     params: {
       src_chain_id: sourceChainId,
       dst_chain_id: destinationChainId,
@@ -24,7 +24,7 @@ export const queryCelerBridgeFee = async (
 
   // Query estimated time of arrival
   const latency = await axios.get(
-    `${celerEndpoint}/v2/getLatest7DayTransferLatencyForQuery`,
+    `${celerEndpoint}/getLatest7DayTransferLatencyForQuery`,
     {
       params: {
         src_chain_id: sourceChainId,

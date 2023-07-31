@@ -15,7 +15,7 @@
             "explorer": "calamari.subscan.io"
         }
     ],
-    "CelerEndpoint": "https://cbridge-v2-test.celer.network",
+    "CelerEndpoint": "https://cbridge-v2-test.celer.network/v2",
     "MantaEthereumContractAddress": "0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D",
     "CelerEthereumContractAddress":"0x358234B325EF9eA8115291A8b81b7d33A2Fa762D",
     "CelerEthereumChainId":5,

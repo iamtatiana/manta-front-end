@@ -36,7 +36,7 @@ const TransferFeeDisplay = (params) => {
   }, [bridgeFee]);
 
   return (
-    <div className="flex flex-col gap-4 mb-7">
+    <div className="flex flex-col gap-4 mb-10">
       {displayObject.map((item, index) => {
         return (
           <div
