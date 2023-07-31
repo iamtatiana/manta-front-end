@@ -33,6 +33,13 @@ const EvmTransferButton = () => {
   };
 
   useEffect(async () => {
+    //////////////////////////////////////////////////
+    // Debug Purpose
+    setTransferId(
+      '0x1188c34b06edb80af7838595a039f3ab573cb983cd569a3ecbc6c603e35399f8'
+    );
+    return;
+    //////////////////////////////////////////////////
     setIsEstimatingFee(true);
     try {
       const sourceChainId = config.CelerEthereumChainId;
@@ -119,6 +126,7 @@ const EvmTransferButton = () => {
       })
       .then(() => {
         setTransferId(transferId);
+        setStatus(1);
       })
       .catch(() => {
         setStatus(2);
@@ -171,7 +179,9 @@ const EvmTransferButton = () => {
           </button>
         )}
       </div>
-      {transferId.length > 0 && <EvmBridge transferId={transferId} />}
+      {transferId.length > 0 && (
+        <EvmBridge transferId={transferId} latency={bridgeFee.latency} />
+      )}
     </div>
   );
 };
