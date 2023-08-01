@@ -5,6 +5,7 @@ import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useModal } from 'hooks';
+import { getFreeGas, checkTxStatus } from 'utils/api/evmBridgeFaucet';
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
@@ -13,13 +14,15 @@ import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
 import StepStatus from './StepStatus';
 
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const buttonStatus = [
   { index: 0, text: 'Sending', loading: true },
   { index: 1, text: 'Submitting', loading: true },
   { index: 2, text: 'Failed', loading: true },
   { index: 3, text: 'Waiting for SGN confirmation', loading: true },
   { index: 4, text: 'Waiting for fund release', loading: true },
-  { index: 5, text: 'Obtain free GLMR', loading: false },
+  { index: 5, text: 'Obtain free GLMR', loading: true },
   { index: 6, text: 'To be refunded', loading: true },
   { index: 7, text: 'Requesting refund', loading: true },
   { index: 8, text: 'Refund to be confirmed', loading: false },
@@ -37,7 +40,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   console.log('transferId: ' + transferId);
   console.log('latency: ' + latency);
   const { setTxStatus } = useTxStatus();
-  const { provider } = useMetamask();
+  const { provider, ethAddress } = useMetamask();
   const {
     originChain,
     destinationChain,
@@ -51,6 +54,14 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   const [currentButtonStatus, setCurrentButtonStatus] = useState(
     buttonStatus[0]
   );
+  const [captcha, setCaptcha] = useState('');
+
+  useEffect(() => {
+    // captcha length is 4
+    if (captcha.length === 4 && modalText.steps[1].status !== 3) {
+      setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
+    }
+  }, [captcha]);
 
   useEffect(() => {
     let originChainName = originChain.name;
@@ -156,9 +167,41 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       return;
     }
     const index = currentButtonStatus.index;
-    setCurrentButtonStatus(buttonStatus[0]);
     if (index === 5) {
       // Obtain free GLMR (Step 2)
+      if (!ethAddress || !captcha) return;
+      setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+      updateStepStatus(1, 3);
+      try {
+        const freeGas = await getFreeGas(ethAddress, captcha);
+
+        // TODO
+        // if http code === 400, show the feedback msg and directly skip to step3
+
+        const txHash = freeGas?.data?.txHash;
+        if (txHash) {
+          let checkingStatus = true;
+          while (checkingStatus) {
+            try {
+              const status = await checkTxStatus(txHash);
+              const confirmed = status?.data?.confirmed;
+              if (confirmed) {
+                checkingStatus = false;
+              }
+            } catch (e) {
+              console.log(e.message);
+              checkingStatus = false;
+            }
+            await sleep(3000);
+          }
+        }
+
+        // show step3 and update UI
+        setCurrentButtonStatus(buttonStatus[11]);
+        updateStepStatus(1, 1);
+      } catch (e) {
+        console.log(e.message);
+      }
     } else if (index === 8) {
       // Refund to be confirmed
     } else if (index === 10) {
@@ -195,8 +238,8 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
 
   return (
     <ModalWrapper>
-      <div className="px-12" style={{ width: '638px' }}>
-        <div className="unselectable-text text-lg text-white text-center text-xl mb-2.5 font-semibold">
+      <div className="px-12 bg-fourth" style={{ width: '638px' }}>
+        <div className="unselectable-text text-white text-center text-xl mb-2.5 font-semibold">
           {modalText.title}
         </div>
         <div className="text-sm text-center text-white text-opacity-60">
@@ -204,7 +247,12 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         </div>
         <Indicator chainList={modalText.chainList} />
         <ChainStatus chainList={modalText.chainList} />
-        <StepStatus steps={modalText.steps} />
+        <StepStatus
+          steps={modalText.steps}
+          ethAddress={ethAddress}
+          setCaptcha={setCaptcha}
+          currentButtonIndex={currentButtonStatus.index}
+        />
 
         <div className="flex items-center justify-center">
           <div

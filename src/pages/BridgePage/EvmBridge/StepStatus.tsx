@@ -1,8 +1,15 @@
 // @ts-nocheck
 import Icon, { IconName } from 'components/Icon';
+import { useEffect, useState } from 'react';
+import { getCaptcha } from 'utils/api/evmBridgeFaucet';
 
 const failedColor = '#F9413E';
 const successColor = '#2EE9A5';
+
+const borderStyle = {
+  borderBottomWidth: '1px',
+  borderColor: 'rgba(255,255,255,0.2)'
+};
 
 type Step = {
   index: number;
@@ -13,11 +20,34 @@ type Step = {
 };
 
 // Step steps
-const StepStatus = ({ steps }: { steps: Array<Step> }) => {
-  const borderStyle = {
-    borderBottomWidth: '1px',
-    borderColor: 'rgba(255,255,255,0.2)'
+const StepStatus = ({
+  steps,
+  ethAddress,
+  captcha,
+  setCaptcha,
+  currentButtonIndex
+}: {
+  steps: Array<Step>;
+  ethAddress: string;
+  captcha: string;
+  setCaptcha: React.Dispatch<React.SetStateAction<string>>;
+  currentButtonIndex: number;
+}) => {
+  const [captchaImg, setCaptchaImg] = useState('');
+
+  const fetch = async () => {
+    if (!ethAddress) return;
+    const captchaRes = await getCaptcha(ethAddress);
+    setCaptchaImg(captchaRes.data);
   };
+
+  const handleInputChange = (e) => {
+    setCaptcha(e.target.value);
+  };
+
+  useEffect(() => {
+    fetch();
+  }, [ethAddress]);
 
   return (
     <div className="flex items-center justify-center py-10">
@@ -40,6 +70,24 @@ const StepStatus = ({ steps }: { steps: Array<Step> }) => {
                   }>
                   {item.subtitle}
                 </p>
+                {index === 1 && currentButtonIndex === 5 && (
+                  <div className="mt-3">
+                    <div
+                      className="cursor-pointer h-10 rounded-lg inline-block"
+                      onClick={fetch}
+                      dangerouslySetInnerHTML={{ __html: captchaImg }}
+                    />
+                    <div className="block mb-2">
+                      To continue, type the characters above:
+                    </div>
+                    <input
+                      className="placeholder-gray-500 rounded bg-primary h-10 px-3"
+                      placeholder="please type the captcha"
+                      value={captcha}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           );

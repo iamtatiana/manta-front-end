@@ -115,3 +115,7 @@ svg {
 /* .btn-animation {
   @apply transition duration-100 ease-in-out transform hover:-translate-y-1;
 } */
+
+input {
+  all: unset;
+}
