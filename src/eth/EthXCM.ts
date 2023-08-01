@@ -78,3 +78,49 @@ export const transferGlmrFromMoonbeamToManta = async (config, provider, balance,
     return false;
   }
 };
+
+// xToken contract address list
+const xTokenContractAddressList = {
+  'MANTA': '0xfFFffFFf7D3875460d4509eb8d0362c611B4E841'
+}
+
+export const transferTokenFromMoonbeamToManta = async (
+  xTokenType,
+  config,
+  provider,
+  balance,
+  address
+) => {
+  // init moonbeam contract
+  const abi = Xtokens.abi;
+  const ethersProvider = new ethers.providers.Web3Provider(provider);
+  const signer = ethersProvider.getSigner();
+  const contract = new ethers.Contract(XTOKENS_PRECOMPILE_ADDRESS, abi, signer);
+
+  // init XCM transaction data
+  const amount = balance.valueAtomicUnits.toString();
+  const accountId = addressToAccountId(address);
+  let parachainId;
+  if (config.NETWORK_NAME === NETWORK.MANTA) {
+    parachainId = Chain.Manta(config).parachainId;
+  } else {
+    throw new Error('Unsupported network');
+  }
+  const destination = getXtokensPrecompileLocation(parachainId, accountId);
+  const weight = DESTINATION_WEIGHT;
+
+  try {
+    const createReceipt = await contract.transfer(
+      xTokenContractAddressList[xTokenType],
+      amount,
+      destination,
+      weight
+    );
+    await createReceipt.wait();
+    return createReceipt.hash;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+

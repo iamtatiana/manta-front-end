@@ -426,7 +426,10 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      if (originChain.name === 'ethereum') {
+      if (
+        originChain.name === 'ethereum' ||
+        destinationChain.name === 'ethereum'
+      ) {
         return;
       }
       // Workaround for Karura adapter internals not being ready on initial connection

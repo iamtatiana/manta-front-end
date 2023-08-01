@@ -5,6 +5,9 @@ import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useModal } from 'hooks';
+import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
+import { useTxStatus } from 'contexts/txStatusContext';
+import { useMetamask } from 'contexts/metamaskContext';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
@@ -31,7 +34,16 @@ type EvmBridgeData = {
 };
 
 const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
-  const { originChain, destinationChain } = useBridgeData();
+  console.log('transferId: ' + transferId);
+  console.log('latency: ' + latency);
+  const { setTxStatus } = useTxStatus();
+  const { provider } = useMetamask();
+  const {
+    originChain,
+    destinationChain,
+    destinationAddress,
+    senderAssetTargetBalance
+  } = useBridgeData();
 
   const config = useConfig();
   const { ModalWrapper, showModal, hideModal } = useModal();
@@ -41,7 +53,6 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   );
 
   useEffect(() => {
-    console.log('render evm bridge modal');
     let originChainName = originChain.name;
     originChainName =
       originChainName.charAt(0).toUpperCase() + originChainName.slice(1);
@@ -140,20 +151,45 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
     });
   };
 
-  const onButtonClick = () => {
+  const onButtonClick = async () => {
     if (currentButtonStatus.loading) {
       return;
     }
+    const index = currentButtonStatus.index;
     setCurrentButtonStatus(buttonStatus[0]);
-    if (buttonStatus.index === 5) {
+    if (index === 5) {
       // Obtain free GLMR (Step 2)
-    } else if (buttonStatus.index === 8) {
+    } else if (index === 8) {
       // Refund to be confirmed
-    } else if (buttonStatus.index === 10) {
+    } else if (index === 10) {
       // Refunded, try again
       hideModal();
-    } else if (buttonStatus.index === 11) {
+    } else if (index === 11) {
       // Submit (Step 3)
+      try {
+        // switch user's metamask to moonbeam network
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x5' }]
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        console.log(switchError);
+      }
+
+      // send token from moonbeam to manta
+      const txHash = await transferTokenFromMoonbeamToManta(
+        'MANTA',
+        config,
+        provider,
+        senderAssetTargetBalance,
+        destinationAddress
+      );
+      if (txHash) {
+        setTxStatus(TxStatus.finalized(txHash));
+      } else {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+      }
     }
   };
 
