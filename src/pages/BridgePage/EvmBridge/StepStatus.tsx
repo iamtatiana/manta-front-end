@@ -19,21 +19,29 @@ type Step = {
   subtitleWarning: boolean;
 };
 
+type ErrMsgObj = {
+  index: number;
+  errMsg: string;
+};
+
 // Step steps
 const StepStatus = ({
   steps,
   ethAddress,
   captcha,
   setCaptcha,
-  currentButtonIndex
+  currentButtonIndex,
+  errMsgObj
 }: {
   steps: Array<Step>;
   ethAddress: string;
   captcha: string;
   setCaptcha: React.Dispatch<React.SetStateAction<string>>;
   currentButtonIndex: number;
+  errMsgObj: ErrMsgObj;
 }) => {
   const [captchaImg, setCaptchaImg] = useState('');
+  const [errMsg, setErrMsg] = useState('');
 
   const fetch = async () => {
     if (!ethAddress) return;
@@ -42,12 +50,22 @@ const StepStatus = ({
   };
 
   const handleInputChange = (e) => {
+    setErrMsg('');
     setCaptcha(e.target.value);
   };
 
   useEffect(() => {
     fetch();
   }, [ethAddress]);
+
+  useEffect(() => {
+    if (errMsgObj.errMsg) {
+      setErrMsg(errMsgObj.errMsg);
+    }
+    if (errMsgObj.index === 1) {
+      fetch();
+    }
+  }, [errMsgObj]);
 
   return (
     <div className="flex items-center justify-center py-10">
@@ -86,6 +104,11 @@ const StepStatus = ({
                       value={captcha}
                       onChange={handleInputChange}
                     />
+                  </div>
+                )}
+                {index === errMsgObj.index && (
+                  <div style={{ color: '#f9413e', marginTop: '4px' }}>
+                    {errMsg}
                   </div>
                 )}
               </div>

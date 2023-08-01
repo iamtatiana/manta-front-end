@@ -15,13 +15,15 @@ import TxStatus from 'types/TxStatus';
 import { useActive } from 'hooks/useActive';
 import { Bridge } from 'manta-bridge/build';
 import { ethers } from 'ethers';
+import Chain from 'types/Chain';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 import mantaAbi from './mantaAbi';
+
 const BridgeDataContext = React.createContext();
 
 export const BridgeDataContextProvider = (props) => {
-  const { ethAddress } = useMetamask();
+  const { ethAddress, chainId } = useMetamask();
   const config = useConfig();
   const { externalAccount } = usePublicAccount();
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
@@ -250,7 +252,12 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     async function getBalance() {
-      if (!window.ethereum || originChain.name !== 'ethereum') {
+      if (
+        !window.ethereum ||
+        originChain.name !== 'ethereum' ||
+        !ethAddress ||
+        Number(chainId) !== Chain.Ethereum(config).ethChainId
+      ) {
         return;
       }
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -268,9 +275,6 @@ export const BridgeDataContextProvider = (props) => {
         senderNativeAssetCurrentBalance
       });
 
-      // senderBalance, should use `senderAssetType`
-      // below is a demo for ERC-20 KINE token
-      // const mantaAddress = '0xCbfef8fdd706cde6F208460f2Bf39Aa9c785F05D';
       const mantaAddress = '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D'; // MANTA token deployed in Goerli
       const mantaContract = new ethers.Contract(
         mantaAddress,

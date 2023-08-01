@@ -36,7 +36,7 @@ const ValidationButton = () => {
   const { txIsOverMinAmount, userHasSufficientFunds, userCanPayOriginFee } =
     useBridgeTx();
   const { ethAddress, chainId } = useMetamask();
-  const { txStatus } = useTxStatus();
+  const { txStatus, EVMBridgeProcessing } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
@@ -68,7 +68,8 @@ const ValidationButton = () => {
   } else if (
     evmIsEnabled &&
     originChainIsEvm &&
-    Number(chainId) !== Number(evmChainId)
+    Number(chainId) !== Number(evmChainId) &&
+    !EVMBridgeProcessing
   ) {
     isSwitchNetwork = true;
   } else if (

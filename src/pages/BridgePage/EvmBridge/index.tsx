@@ -9,6 +9,7 @@ import { getFreeGas, checkTxStatus } from 'utils/api/evmBridgeFaucet';
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
+import TxStatus from 'types/TxStatus';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
@@ -39,7 +40,7 @@ type EvmBridgeData = {
 const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   console.log('transferId: ' + transferId);
   console.log('latency: ' + latency);
-  const { setTxStatus } = useTxStatus();
+  const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress } = useMetamask();
   const {
     originChain,
@@ -49,21 +50,28 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   } = useBridgeData();
 
   const config = useConfig();
-  const { ModalWrapper, showModal, hideModal } = useModal();
+
+  const { ModalWrapper, showModal, hideModal } = useModal({
+    closeCallback: () => SetEVMBridgeProcessing(false)
+  });
   const [modalText, setModalText] = useState({});
   const [currentButtonStatus, setCurrentButtonStatus] = useState(
     buttonStatus[0]
   );
   const [captcha, setCaptcha] = useState('');
+  const [errMsgObj, setErrMsgObj] = useState({});
 
   useEffect(() => {
     // captcha length is 4
-    if (captcha.length === 4 && modalText.steps[1].status !== 3) {
+    if (captcha.length !== 4) {
+      setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+    } else if (modalText.steps[1].status !== 3) {
       setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
     }
   }, [captcha]);
 
   useEffect(() => {
+    SetEVMBridgeProcessing(true);
     let originChainName = originChain.name;
     originChainName =
       originChainName.charAt(0).toUpperCase() + originChainName.slice(1);
@@ -174,10 +182,6 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       updateStepStatus(1, 3);
       try {
         const freeGas = await getFreeGas(ethAddress, captcha);
-
-        // TODO
-        // if http code === 400, show the feedback msg and directly skip to step3
-
         const txHash = freeGas?.data?.txHash;
         if (txHash) {
           let checkingStatus = true;
@@ -197,10 +201,21 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         }
 
         // show step3 and update UI
-        setCurrentButtonStatus(buttonStatus[11]);
         updateStepStatus(1, 1);
+        setCurrentButtonStatus(buttonStatus[11]);
       } catch (e) {
-        console.log(e.message);
+        if (e.response.status === 400) {
+          const errMsg = e.response.data.message;
+          // TODO, need to check the msg content with backend
+          if (errMsg === 'already have fetched free gas') {
+            // skip to step3
+            updateStepStatus(1, 1);
+            setCurrentButtonStatus(buttonStatus[11]);
+            return;
+          }
+          setErrMsgObj({ index: 1, errMsg });
+        }
+        updateStepStatus(1, 0);
       }
     } else if (index === 8) {
       // Refund to be confirmed
@@ -211,34 +226,41 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       // Submit (Step 3)
       try {
         // switch user's metamask to moonbeam network
-        await window.ethereum.request({
+        // TODO, refer to metamask context, switch or add
+        await provider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x5' }]
+          params: [{ chainId: '0x507' }]
         });
-      } catch (switchError) {
-        // This error code indicates that the chain has not been added to MetaMask.
-        console.log(switchError);
-      }
 
-      // send token from moonbeam to manta
-      const txHash = await transferTokenFromMoonbeamToManta(
-        'MANTA',
-        config,
-        provider,
-        senderAssetTargetBalance,
-        destinationAddress
-      );
-      if (txHash) {
-        setTxStatus(TxStatus.finalized(txHash));
-      } else {
-        setTxStatus(TxStatus.failed('Transaction declined'));
+        setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+        updateStepStatus(2, 3);
+        // send token from moonbeam to manta
+        const txHash = await transferTokenFromMoonbeamToManta(
+          'MANTA',
+          config,
+          provider,
+          senderAssetTargetBalance,
+          destinationAddress
+        );
+        if (txHash) {
+          setTxStatus(TxStatus.finalized(txHash));
+          hideModal();
+        } else {
+          setTxStatus(TxStatus.failed('Transaction declined'));
+        }
+      } catch (e) {
+        console.log('step3 error', e);
+        setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
+        updateStepStatus(2, 0);
       }
     }
   };
 
   return (
     <ModalWrapper>
-      <div className="px-12 bg-fourth" style={{ width: '638px' }}>
+      <div
+        className="rounded-xl bg-fourth"
+        style={{ width: '638px', padding: '24px 72px', margin: '-24px' }}>
         <div className="unselectable-text text-white text-center text-xl mb-2.5 font-semibold">
           {modalText.title}
         </div>
@@ -252,6 +274,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
           ethAddress={ethAddress}
           setCaptcha={setCaptcha}
           currentButtonIndex={currentButtonStatus.index}
+          errMsgObj={errMsgObj}
         />
 
         <div className="flex items-center justify-center">

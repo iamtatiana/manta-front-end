@@ -5,9 +5,10 @@ import PropTypes from 'prop-types';
 const TxStatusContext = createContext();
 
 export const TxStatusContextProvider = (props) => {
-
   const [txStatus, _setTxStatus] = useState(null);
   const txStatusRef = useRef(null);
+
+  const [EVMBridgeProcessing, SetEVMBridgeProcessing] = useState(false);
 
   const setTxStatus = (status) => {
     _setTxStatus(status);
@@ -18,6 +19,8 @@ export const TxStatusContextProvider = (props) => {
     txStatus,
     txStatusRef,
     setTxStatus,
+    EVMBridgeProcessing,
+    SetEVMBridgeProcessing
   };
 
   return (
@@ -28,9 +31,9 @@ export const TxStatusContextProvider = (props) => {
 };
 
 TxStatusContextProvider.propTypes = {
-  children: PropTypes.any,
+  children: PropTypes.any
 };
 
 export const useTxStatus = () => ({
-  ...useContext(TxStatusContext),
+  ...useContext(TxStatusContext)
 });
