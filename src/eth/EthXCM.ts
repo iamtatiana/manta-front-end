@@ -84,6 +84,14 @@ const xTokenContractAddressList = {
   'MANTA': '0xfFFffFFf7D3875460d4509eb8d0362c611B4E841'
 }
 
+/**
+  * Transfer token from Moonbeam to Manta via XCM
+  * @param {string}    xTokenType - token type name
+  * @param {object}    config     - config object
+  * @param {object}    provider   - metamask provider
+  * @param {BigNumber} balance    - account balance
+  * @param {string}    address    - account address
+  */
 export const transferTokenFromMoonbeamToManta = async (
   xTokenType,
   config,
@@ -101,17 +109,26 @@ export const transferTokenFromMoonbeamToManta = async (
   const amount = balance.valueAtomicUnits.toString();
   const accountId = addressToAccountId(address);
   let parachainId;
+  let tokenContractAddress;
+
   if (config.NETWORK_NAME === NETWORK.MANTA) {
     parachainId = Chain.Manta(config).parachainId;
   } else {
     throw new Error('Unsupported network');
   }
+
+  if(xTokenContractAddressList[xTokenType]){
+    tokenContractAddress = xTokenContractAddressList[xTokenType];
+  }else{
+    throw new Error('Unsupported token');
+  }
+
   const destination = getXtokensPrecompileLocation(parachainId, accountId);
   const weight = DESTINATION_WEIGHT;
 
   try {
     const createReceipt = await contract.transfer(
-      xTokenContractAddressList[xTokenType],
+      tokenContractAddress,
       amount,
       destination,
       weight
