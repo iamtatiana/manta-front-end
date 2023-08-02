@@ -14,6 +14,7 @@ import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
 import StepStatus from './StepStatus';
+import { queryCelerTransferStatus, generateCelerRefundData } from './Util';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -26,7 +27,7 @@ const buttonStatus = [
   { index: 5, text: 'Obtain free GLMR', loading: true },
   { index: 6, text: 'To be refunded', loading: true },
   { index: 7, text: 'Requesting refund', loading: true },
-  { index: 8, text: 'Refund to be confirmed', loading: false },
+  { index: 8, text: 'Confirm Refund', loading: false },
   { index: 9, text: 'Confirming your refund', loading: true },
   { index: 10, text: 'Refunded, try again', loading: false },
   { index: 11, text: 'Submit', loading: false }
@@ -38,8 +39,6 @@ type EvmBridgeData = {
 };
 
 const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
-  console.log('transferId: ' + transferId);
-  console.log('latency: ' + latency);
   const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress } = useMetamask();
   const {
@@ -60,6 +59,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   );
   const [captcha, setCaptcha] = useState('');
   const [errMsgObj, setErrMsgObj] = useState({});
+  const [refundData, setRefundData] = useState({});
 
   useEffect(() => {
     // captcha length is 4
@@ -126,36 +126,65 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
 
     setModalText(initialModalText);
     showModal();
-    getTransferStatus(transferId);
+    updateTransferStatus(transferId);
   }, []);
 
-  const getTransferStatus = async (transferId) => {
+  const updateTransferStatus = async (transferId) => {
     try {
-      const data = { transfer_id: transferId };
-      const response = await axios.post(
-        `${config.CelerEndpoint}/getTransferStatus`,
-        data,
-        {
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        }
+      const data = await queryCelerTransferStatus(
+        config.CelerEndpoint,
+        transferId
       );
-      const status = response.data.status;
+      if (!data) {
+        return;
+      }
+      const status = data.status;
       const currentIndex = 0;
-      if (status < 5) {
+      if (status < 5 || status === 6 || status === 7) {
         // celer transfer pending
         setTimeout(async () => {
-          await getTransferStatus(transferId);
+          await updateTransferStatus(transferId);
         }, 10000);
       } else if (status === 5) {
         // celer transfer complete
         updateStepStatus(currentIndex, 1);
       } else {
+        if (status === 8) {
+          const newRefundData = {
+            wdmsg: data.wd_onchain,
+            sortedSigs: data.sorted_sigs,
+            signers: data.signers,
+            powers: data.powers
+          };
+          setRefundData(newRefundData);
+        }
         // celer transfer failed
         updateStepStatus(currentIndex, 2);
       }
       setCurrentButtonStatus(buttonStatus[status]);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const updateRefundStatus = async (transferId) => {
+    try {
+      const data = await queryCelerTransferStatus(
+        config.CelerEndpoint,
+        transferId
+      );
+      if (!data) {
+        return;
+      }
+      const status = data.status;
+      if (status === 8) {
+        // celer refund is still submitting
+        setTimeout(async () => {
+          await updateRefundStatus(transferId);
+        }, 10000);
+      } else {
+        setCurrentButtonStatus(buttonStatus[status]);
+      }
     } catch (error) {
       console.error('Error:', error);
     }
@@ -218,7 +247,26 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         updateStepStatus(1, 0);
       }
     } else if (index === 8) {
-      // Refund to be confirmed
+      // Confirm Refund
+      const data = generateCelerRefundData(refundData);
+      setCurrentButtonStatus(buttonStatus[0]);
+      await provider
+        .request({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: ethAddress,
+              to: config.CelerEthereumContractAddress,
+              data: data
+            }
+          ]
+        })
+        .then(() => {
+          updateRefundStatus(transferId);
+        })
+        .catch(() => {
+          setCurrentButtonStatus(buttonStatus[8]);
+        });
     } else if (index === 10) {
       // Refunded, try again
       hideModal();

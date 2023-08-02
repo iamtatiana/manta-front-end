@@ -15,7 +15,6 @@ const mantaContractABI = MantaABI.abi;
 
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
-  console.log('EvmTransferButton render');
   const { senderAssetType, senderAssetTargetBalance } = useBridgeData();
 
   const config = useConfig();
@@ -152,7 +151,7 @@ const EvmTransferButton = () => {
       setStatus(2);
     } else {
       setTimeout(() => {
-        queryAllowance(mantaEthereumContract, ethAddress, amount);
+        queryAllowance(ethAddress, amount);
       }, 3000);
     }
   };
