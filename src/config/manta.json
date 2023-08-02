@@ -1,7 +1,7 @@
 {
   "NETWORK_NAME": "Manta",
   "SUBSCAN_URL": "https://manta.subscan.io",
-  "IS_TESTNET": false,
+  "IS_TESTNET": true,
   "SS58_FORMAT": 77,
   "SUBSCAN_API_ENDPOINT": "https://manta.api.subscan.io/api/scan",
   "MANTA_SUBSCAN_URL": "https://manta.subscan.io",

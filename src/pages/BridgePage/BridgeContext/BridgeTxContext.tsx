@@ -181,17 +181,22 @@ export const BridgeTxContextProvider = (props) => {
   };
 
   // Attempts to build and send a bridge transaction with a substrate origin chain
-  const sendSubstrate = async () => {
+  // with `handleTxResCb` means this is used in EVM bridge, step of manta -> moonbeam
+  const sendSubstrate = async (handleTxResCb) => {
     const value = senderAssetTargetBalance.valueAtomicUnits.toString();
     const tx = originXcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
-      to: destinationChain.name,
+      to: handleTxResCb ? 'moonbeam' : destinationChain.name,
       token: senderAssetTargetBalance.assetType.logicalTicker,
       address: destinationAddress
     });
     try {
       setApiSigner(originApi);
-      await tx.signAndSend(externalAccountSigner, { nonce: -1 }, handleTxRes);
+      await tx.signAndSend(
+        externalAccountSigner,
+        { nonce: -1 },
+        handleTxResCb || handleTxRes
+      );
     } catch (error) {
       console.error('Transaction failed', error);
       setTxStatus(TxStatus.failed('Transaction declined'));
@@ -220,7 +225,8 @@ export const BridgeTxContextProvider = (props) => {
     txIsOverMinAmount,
     isValidToSend,
     userCanPayOriginFee,
-    send
+    send,
+    sendSubstrate
   };
 
   return (

@@ -11,6 +11,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import TxStatus from 'types/TxStatus';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
+import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
 import StepStatus from './StepStatus';
@@ -30,12 +31,14 @@ const buttonStatus = [
   { index: 8, text: 'Confirm Refund', loading: false },
   { index: 9, text: 'Confirming your refund', loading: true },
   { index: 10, text: 'Refunded, try again', loading: false },
-  { index: 11, text: 'Submit', loading: false }
+  { index: 11, text: 'Submit', loading: false },
+  { index: 12, text: 'Transfer', loading: false },
+  { index: 13, text: 'Approval', loading: false } // moonbeam -> ethereum, you change this text as you need
 ];
 
 type EvmBridgeData = {
-  transferId: string;
-  latency: number;
+  transferId?: string;
+  latency?: number;
 };
 
 const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
@@ -47,7 +50,8 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
     destinationAddress,
     senderAssetTargetBalance
   } = useBridgeData();
-
+  const isEthereumToManta = originChain?.name === 'ethereum';
+  const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
 
   const { ModalWrapper, showModal, hideModal } = useModal({
@@ -55,7 +59,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
   });
   const [modalText, setModalText] = useState({});
   const [currentButtonStatus, setCurrentButtonStatus] = useState(
-    buttonStatus[0]
+    isEthereumToManta ? buttonStatus[0] : buttonStatus[5]
   );
   const [captcha, setCaptcha] = useState('');
   const [errMsgObj, setErrMsgObj] = useState({});
@@ -101,23 +105,28 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       ],
       steps: [
         {
-          index: 1,
+          index: isEthereumToManta ? 1 : 2,
           title: `Send MANTA from ${originChainName} to Moonbeam`,
-          subtitle: `Please wait. Estimated time of arrival: ${latency} minutes`,
-          status: 3,
+          subtitle: isEthereumToManta
+            ? `Please wait. Estimated time of arrival: ${latency} minutes`
+            : 'Please send your MANTA from Manta to Moonbeam to via XCM.',
+          status: isEthereumToManta ? 3 : 0,
           subtitleWarning: false
         },
         {
-          index: 2,
+          index: isEthereumToManta ? 2 : 1,
           title: 'Obtain free GLMR to cover transfer fee',
           subtitle: 'Obtain GLMR for free to cover your future transfer fees.',
           status: 0,
-          subtitleWarning: false
+          subtitleWarning: false,
+          withCaptcha: true
         },
         {
           index: 3,
           title: `Send MANTA from Moonbeam to ${destinationChainName}`,
-          subtitle: `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`,
+          subtitle:
+            isEthereumToManta &&
+            `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`,
           status: 0,
           subtitleWarning: false
         }
@@ -126,7 +135,11 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
 
     setModalText(initialModalText);
     showModal();
-    updateTransferStatus(transferId);
+    if (isEthereumToManta) {
+      updateTransferStatus(transferId);
+    } else {
+      setCurrentButtonStatus(buttonStatus[5]);
+    }
   }, []);
 
   const updateTransferStatus = async (transferId) => {
@@ -208,12 +221,13 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       // Obtain free GLMR (Step 2)
       if (!ethAddress || !captcha) return;
       setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
-      updateStepStatus(1, 3);
+      updateStepStatus(isEthereumToManta ? 1 : 0, 3);
       try {
         const freeGas = await getFreeGas(ethAddress, captcha);
         const txHash = freeGas?.data?.txHash;
         if (txHash) {
-          let checkingStatus = true;
+          const checkingStatus = true;
+          // you can comment below while statement for fast test
           while (checkingStatus) {
             try {
               const status = await checkTxStatus(txHash);
@@ -229,22 +243,21 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
           }
         }
 
-        // show step3 and update UI
-        updateStepStatus(1, 1);
-        setCurrentButtonStatus(buttonStatus[11]);
+        updateStepStatus(isEthereumToManta ? 1 : 0, 1);
+        setCurrentButtonStatus(buttonStatus[12]);
       } catch (e) {
+        const errMsg = e.response.data.message;
+        setErrMsgObj({ index: isEthereumToManta ? 1 : 0, errMsg });
         if (e.response.status === 400) {
-          const errMsg = e.response.data.message;
           // TODO, need to check the msg content with backend
           if (errMsg === 'already have fetched free gas') {
-            // skip to step3
-            updateStepStatus(1, 1);
-            setCurrentButtonStatus(buttonStatus[11]);
+            updateStepStatus(isEthereumToManta ? 1 : 0, 1);
+            setCurrentButtonStatus(buttonStatus[12]);
             return;
           }
-          setErrMsgObj({ index: 1, errMsg });
         }
-        updateStepStatus(1, 0);
+        updateStepStatus(isEthereumToManta ? 1 : 0, 2);
+        setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
       }
     } else if (index === 8) {
       // Confirm Refund
@@ -301,6 +314,40 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
         updateStepStatus(2, 0);
       }
+    } else if (index === 12) {
+      // manta to moonbeam
+      const handleTxRes = ({ status, dispatchError }) => {
+        if (status.isInBlock) {
+          if (dispatchError) {
+            if (dispatchError.isModule) {
+              const decoded = api?.registry.findMetaError(
+                dispatchError.asModule
+              ) as any;
+              const errorMsg = `${decoded.section}.${decoded.name}`;
+              setErrMsgObj({
+                index: 1,
+                errMsg: errorMsg
+              });
+            } else {
+              const errorMsg = dispatchError.toString();
+              setErrMsgObj({
+                index: 1,
+                errMsg: errorMsg
+              });
+            }
+            updateStepStatus(1, 2);
+            setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
+          } else {
+            // succeed
+            updateStepStatus(1, 1);
+            setCurrentButtonStatus(buttonStatus[13]);
+          }
+        }
+      };
+
+      setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+      updateStepStatus(1, 3);
+      await sendSubstrate(handleTxRes);
     }
   };
 

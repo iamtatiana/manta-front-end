@@ -112,7 +112,7 @@ const ValidationButton = () => {
     !disabled && !isConnectWallet && !validationMsg && isSwitchNetwork;
 
   let isEvmTransfer = false;
-  if (originChain.name === 'ethereum' && destinationChain.name === 'manta') {
+  if (originChain.name === 'ethereum' || destinationChain.name === 'ethereum') {
     isEvmTransfer = true;
   }
 

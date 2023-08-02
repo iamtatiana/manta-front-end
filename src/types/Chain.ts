@@ -196,7 +196,7 @@ export default class Chain {
 
   static Moonbeam(config) {
     const moonbeamEthMetadata = {
-      chainId: '0x504',
+      chainId: config.IS_TESTNET ? '0x507' : '0x504',
       chainName: 'Moonbeam',
       nativeCurrency: {
         name: 'GLMR',
@@ -209,7 +209,7 @@ export default class Chain {
     return new Chain(
       'moonbeam',
       'Moonbeam',
-      2004,
+      config.IS_TESTNET ? 1000 : 2004,
       'moonbeam',
       config.MOONBEAM_SOCKET,
       config.MOONBEAM_SUBSCAN_URL,
@@ -220,7 +220,7 @@ export default class Chain {
       null,
       null,
       moonbeamEthMetadata,
-      1284
+      config.IS_TESTNET ? 1287 : 1284
     );
   }
 

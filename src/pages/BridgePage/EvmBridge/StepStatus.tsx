@@ -62,7 +62,7 @@ const StepStatus = ({
     if (errMsgObj.errMsg) {
       setErrMsg(errMsgObj.errMsg);
     }
-    if (errMsgObj.index === 1) {
+    if (errMsgObj.errMsg === 'Captcha verify failed') {
       fetch();
     }
   }, [errMsgObj]);
@@ -70,51 +70,54 @@ const StepStatus = ({
   return (
     <div className="flex items-center justify-center py-10">
       <div className="flex flex-col text-white">
-        {steps.map((item, index) => {
-          return (
-            <div
-              key={index}
-              className="basis-1/3 flex flex-row items-center justify-content py-4"
-              style={index < 2 ? borderStyle : {}}>
-              <StepNumberIndicator currentStep={item} />
+        {steps
+          .sort((a, b) => a.index - b.index)
+          .map((item, index) => {
+            return (
+              <div
+                key={index}
+                className="basis-1/3 flex flex-row items-center justify-content py-4"
+                style={index < 2 ? borderStyle : {}}>
+                <StepNumberIndicator currentStep={item} />
 
-              <div className="pl-10">
-                <p className="text-sm	font-semibold">{item.title}</p>
-                <p
-                  className={
-                    item.subtitleWarning
-                      ? 'text-sm text-white text-opacity-60 text-red-warning'
-                      : 'text-sm text-white text-opacity-60'
-                  }>
-                  {item.subtitle}
-                </p>
-                {index === 1 && currentButtonIndex === 5 && (
-                  <div className="mt-3">
-                    <div
-                      className="cursor-pointer h-10 rounded-lg inline-block"
-                      onClick={fetch}
-                      dangerouslySetInnerHTML={{ __html: captchaImg }}
-                    />
-                    <div className="block mb-2">
-                      To continue, type the characters above:
+                <div className="pl-10">
+                  <p className="text-sm	font-semibold">{item.title}</p>
+                  <p
+                    className={
+                      item.subtitleWarning
+                        ? 'text-sm text-white text-opacity-60 text-red-warning'
+                        : 'text-sm text-white text-opacity-60'
+                    }>
+                    {item.subtitle}
+                  </p>
+                  {item.withCaptcha && currentButtonIndex === 5 && (
+                    <div className="mt-3">
+                      <div
+                        className="cursor-pointer h-10 rounded-lg inline-block"
+                        onClick={fetch}
+                        dangerouslySetInnerHTML={{ __html: captchaImg }}
+                      />
+                      <div className="block mb-2">
+                        To continue, type the characters above:
+                      </div>
+                      <input
+                        className="placeholder-gray-500 rounded bg-primary h-10 px-3"
+                        maxLength="4"
+                        placeholder="please type the captcha"
+                        value={captcha}
+                        onChange={handleInputChange}
+                      />
                     </div>
-                    <input
-                      className="placeholder-gray-500 rounded bg-primary h-10 px-3"
-                      placeholder="please type the captcha"
-                      value={captcha}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                )}
-                {index === errMsgObj.index && (
-                  <div style={{ color: '#f9413e', marginTop: '4px' }}>
-                    {errMsg}
-                  </div>
-                )}
+                  )}
+                  {index === errMsgObj.index && (
+                    <div style={{ color: '#f9413e', marginTop: '4px' }}>
+                      {errMsg}
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </div>
     </div>
   );

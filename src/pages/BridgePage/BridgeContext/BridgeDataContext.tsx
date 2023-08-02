@@ -345,19 +345,29 @@ export const BridgeDataContextProvider = (props) => {
 
   useEffect(() => {
     function setFees() {
-      if (originChain.name !== 'ethereum') {
-        return;
+      if (
+        originChain.name === 'ethereum' ||
+        destinationChain.name === 'ethereum'
+      ) {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
+          originFee: Balance.fromBaseUnits(
+            originChain.nativeAsset,
+            '0.00265399'
+          ),
+          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
+          maxInput: senderAssetCurrentBalance,
+          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
+        });
       }
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-        originFee: Balance.fromBaseUnits(originChain.nativeAsset, '0.00265399'),
-        destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
-        maxInput: senderAssetCurrentBalance,
-        minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
-      });
     }
     setFees();
-  }, [originChain, senderAssetCurrentBalance, senderAssetType]);
+  }, [
+    originChain,
+    destinationChain,
+    senderAssetCurrentBalance,
+    senderAssetType
+  ]);
 
   useEffect(() => {
     const getDestinationFee = (inputConfig) => {

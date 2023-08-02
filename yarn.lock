@@ -19,6 +19,13 @@
   dependencies:
     "@acala-network/types" "5.1.1"
 
+"@acala-network/api-derive@5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@acala-network/api-derive/-/api-derive-5.1.2.tgz#45aae41ca89dea88719b2f4259890ff2e4ae8a9c"
+  integrity sha512-wj1x4gm7waLrVmCQ4Excxdz+by3lk2ZPrKTWuc3ZwyU5yxb8UCGvdc/MvxUy3tpRMjNU8Bsf+Btd7eOl01ExCA==
+  dependencies:
+    "@acala-network/types" "5.1.2"
+
 "@acala-network/api@4.1.8-14", "@acala-network/api@~4.1.8-9":
   version "4.1.8-14"
   resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-4.1.8-14.tgz#5496901f9467bb88d04f5e5c211ff2de91a25d54"
@@ -31,7 +38,15 @@
     "@polkadot/api" "^9.9.1"
     "@polkadot/rpc-core" "^9.9.1"
 
-"@acala-network/api@^5", "@acala-network/api@^5.0.2":
+"@acala-network/api@^5":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-5.1.2.tgz#9b5ece35f1822b80a3e9227e4175154afd2a1dc9"
+  integrity sha512-bw2kK6cPD+ZC/0J3Jtoh8Fap7HY+LKvqaITUstfFXN3PS6qgkFNu151Pv+Y+5eJHZISIFpd7V0iuKt6gJt0AyA==
+  dependencies:
+    "@acala-network/api-derive" "5.1.2"
+    "@acala-network/types" "5.1.2"
+
+"@acala-network/api@^5.0.2":
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/@acala-network/api/-/api-5.1.1.tgz#93ab0931c6d367b485e2fffaf59f6f8fb4b22054"
   integrity sha512-hO9fWkj5/MeD4v5XYsWlrrwBG70o6VErhwI/xzwx1rs5Fq5b/Mx39nUyZMjT3NYY5xT1o/BaCMoo6pPbudQtMA==
@@ -206,6 +221,11 @@
   resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-5.1.1.tgz#16c723f0561d9d54b4877bc51399c01a43490852"
   integrity sha512-QNhPwWePz/gFluSACKIhq0Z7rTntS21uIZUNpp9tsvc0zlJ20QjHJnv+ZfkdaKauFrL5upFfTgWqrLhN0jV0JQ==
 
+"@acala-network/type-definitions@5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@acala-network/type-definitions/-/type-definitions-5.1.2.tgz#533b7e65e166f56607eb084a1efb44ca2bae6e98"
+  integrity sha512-di3HH8Zn8i1jkQkQiwc44A8ovN9MvK5HwcNV3ngvW3TeF0dHbpHBQHdElJYpVge5IaEyhQ0kWihIEnVqpw4G9A==
+
 "@acala-network/types@4.1.8-14", "@acala-network/types@~4.1.8-9":
   version "4.1.8-14"
   resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-4.1.8-14.tgz#9b5a52ea92e0878bfd240e4ce532eefeacb99804"
@@ -223,6 +243,13 @@
   dependencies:
     "@acala-network/type-definitions" "5.1.1"
     "@open-web3/orml-types" "^2.0.1"
+
+"@acala-network/types@5.1.2":
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-5.1.2.tgz#a3f6dc2dba9ce3bef06356682022f64ab2424a23"
+  integrity sha512-mU8yJQcxVB9WLhGSItlL6vTchI70Dxd+WXlZZkjL6kWsSrEzj2oP3hcOC9d43tSsWABacDkOjbCyh11EIpZSfA==
+  dependencies:
+    "@acala-network/type-definitions" "5.1.2"
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
@@ -4719,9 +4746,9 @@
     form-data "^3.0.0"
 
 "@types/node@*":
-  version "20.4.2"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.2.tgz#129cc9ae69f93824f92fac653eebfb4812ab4af9"
-  integrity sha512-Dd0BYtWgnWJKwO1jkmTrzofjK2QXXcai0dmtzvIBhcA+RsG5h8R3xlyta0kGOZRNfL9GuRtb1knmPEhQrePCEw==
+  version "20.4.5"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-20.4.5.tgz#9dc0a5cb1ccce4f7a731660935ab70b9c00a5d69"
+  integrity sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==
 
 "@types/node@^17.0.23":
   version "17.0.45"
@@ -11493,10 +11520,10 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-bridge@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/manta-bridge/-/manta-bridge-0.0.1.tgz#5d698dad3bbf3899e3c34fdaa2f34d935acfac83"
-  integrity sha512-sfv+dkvSSlT93mYFdHWqBMR6M0Wz8WrW/gLDWCdIFWrHIbvZQForeBSw/3/4MA8FkAyneSs40a7AND9qw5OxdA==
+manta-bridge@^0.0.2-dev:
+  version "0.0.2-dev1"
+  resolved "https://registry.yarnpkg.com/manta-bridge/-/manta-bridge-0.0.2-dev1.tgz#a2461b8861cbd23a0018069aaf55d04562478a27"
+  integrity sha512-d7Mf+/W8n7m8iEIiBjKbe00hEjiQ0vhZq1NeW+j2WqMH/1KyL+Ye+GB3ab3SC5eOHnimGjXOIoHylu6+KZqIIw==
   dependencies:
     "@acala-network/api" "^5"
     "@acala-network/sdk" "^4.1.8-14"
@@ -12095,9 +12122,9 @@ node-fetch@^2.6.7:
     whatwg-url "^5.0.0"
 
 node-fetch@^3.3.0, node-fetch@^3.3.1:
-  version "3.3.1"
-  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.3.1.tgz#b3eea7b54b3a48020e46f4f88b9c5a7430d20b2e"
-  integrity sha512-cRVc/kyto/7E5shrWca1Wsea4y6tL9iYJE5FBCius3JQfb/4P4I295PfhgbJQBLTx6lATE4z+wK0rPM4VS2uow==
+  version "3.3.2"
+  resolved "https://registry.yarnpkg.com/node-fetch/-/node-fetch-3.3.2.tgz#d1e889bacdf733b4ff3b2b243eb7a12866a0b78b"
+  integrity sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==
   dependencies:
     data-uri-to-buffer "^4.0.0"
     fetch-blob "^3.1.4"
@@ -16089,10 +16116,15 @@ tslib@^1.8.1, tslib@^1.9.0:
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-1.14.1.tgz#cf2d38bdc34a134bcaf1091c41f6619e2f672d00"
   integrity sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg==
 
-tslib@^2.0.3, tslib@^2.1.0, tslib@^2.4.1, tslib@^2.5.0, tslib@^2.5.2, tslib@^2.5.3:
+tslib@^2.0.3, tslib@^2.4.1:
   version "2.6.0"
   resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.0.tgz#b295854684dbda164e181d259a22cd779dcd7bc3"
   integrity sha512-7At1WUettjcSRHXCyYtTselblcHl9PJFFVKiCAy/bY97+BPZXSQ2wbq0P9s8tK2G7dFQfNnlJnPAiArVBVBsfA==
+
+tslib@^2.1.0, tslib@^2.5.0, tslib@^2.5.2, tslib@^2.5.3:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/tslib/-/tslib-2.6.1.tgz#fd8c9a0ff42590b25703c0acb3de3d3f4ede0410"
+  integrity sha512-t0hLfiEKfMUoqhG+U1oid7Pva4bbDPHYfJNiB7BiIjRkj1pyC++4N3huJfqY6aRH6VTB0rvtzQwjM4K6qpfOig==
 
 tsutils@^3.17.1, tsutils@^3.21.0:
   version "3.21.0"
