@@ -1,21 +1,29 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
 import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
-import MantaABI from './abi/manta.json';
 import TransferFeeDisplay from './TransferFeeDisplay';
-import { queryCelerBridgeFee, generateCelerContractData } from './Util';
+import {
+  queryCelerBridgeFee,
+  generateCelerContractData,
+  generateApproveData
+} from './Util';
 import EvmBridge from './index';
 
-const mantaContractABI = MantaABI.abi;
+const buttonText = [
+  '',
+  'Approve',
+  'Transfer',
+  'The received amount cannot cover fee'
+];
 
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
-  const { senderAssetType, senderAssetTargetBalance } = useBridgeData();
+  const { originChain, senderAssetType, senderAssetTargetBalance } =
+    useBridgeData();
 
   const config = useConfig();
   const { ethAddress, provider } = useMetamask();
@@ -35,15 +43,25 @@ const EvmTransferButton = () => {
   useEffect(async () => {
     //////////////////////////////////////////////////
     // Debug Purpose
-    setTransferId(
-      '0x1188c34b06edb80af7838595a039f3ab573cb983cd569a3ecbc6c603e35399f8'
-    );
-    return;
+    // setTransferId(
+    //   '0x01c49648bb6447c2bf393cb4d8ec132fcca88f24af5037b06780a5dd16a65371',
+    //   0,
+    //   bridgeFee.max_slippage
+    // );
+    // return;
     //////////////////////////////////////////////////
     setIsEstimatingFee(true);
     try {
-      const sourceChainId = config.CelerEthereumChainId;
-      const destinationChainId = config.CelerMoonbeamChainId;
+      let sourceChainId = 0;
+      let destinationChainId = 0;
+      if (originChain.name === 'ethereum') {
+        sourceChainId = config.CelerEthereumChainId;
+        destinationChainId = config.CelerMoonbeamChainId;
+      } else {
+        sourceChainId = config.CelerMoonbeamChainId;
+        destinationChainId = config.CelerEthereumChainId;
+      }
+
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
@@ -53,6 +71,13 @@ const EvmTransferButton = () => {
         amount,
         config.CelerEndpoint
       );
+
+      if (latestBridgeFee.estimated_receive_amt < 0) {
+        // The received amount cannot cover fee
+        setStatus(3);
+      } else {
+        setStatus(1);
+      }
       setBridgeFee(latestBridgeFee);
       setIsEstimatingFee(false);
     } catch (error) {
@@ -63,18 +88,7 @@ const EvmTransferButton = () => {
   // Call metamask to approve token
   const onApproveClick = async () => {
     // Approve Celer Contract Address to spend user's token
-    // Create the data parameter of the eth_sendTransaction so that the Ethereum node understands the request
-    const spenderAddress =
-      config.CelerEthereumContractAddress.slice(2).toLocaleLowerCase(); // Celer Bridge Contract Address
-    const defaultAmount =
-      '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // default amount for metamask
-    const hashedPrefix = '0x095ea7b3'; // web3.sha3("approve(address,uint256)").slice(0,10)
-    const addressPaddingZero = '000000000000000000000000';
-    const data =
-      hashedPrefix +
-      addressPaddingZero +
-      spenderAddress +
-      defaultAmount.slice(2);
+    const data = await generateApproveData(config.CelerContractOnEthereum);
 
     setStatus(0);
     await provider
@@ -83,7 +97,7 @@ const EvmTransferButton = () => {
         params: [
           {
             from: ethAddress,
-            to: config.MantaEthereumContractAddress,
+            to: config.MantaContractOnEthereum,
             data: data
           }
         ]
@@ -107,7 +121,7 @@ const EvmTransferButton = () => {
       sourceChainId,
       destinationChainId,
       ethAddress,
-      config.MantaEthereumContractAddress,
+      config.MantaContractOnEthereum,
       amount,
       bridgeFee.max_slippage
     );
@@ -119,13 +133,13 @@ const EvmTransferButton = () => {
         params: [
           {
             from: ethAddress,
-            to: config.CelerEthereumContractAddress,
+            to: config.CelerContractOnEthereum,
             data: data
           }
         ]
       })
       .then(() => {
-        setTransferId(transferId);
+        setTransferId(transferId, bridgeFee.latency, bridgeFee.max_slippage);
         setStatus(1);
       })
       .catch(() => {
@@ -135,19 +149,14 @@ const EvmTransferButton = () => {
 
   // Query user address allowance
   const queryAllowance = async (ethAddress, amount) => {
-    const ethersProvider = new ethers.providers.Web3Provider(provider);
-    // Init Manta Token Smart Contract
-    const mantaEthereumContract = new ethers.Contract(
-      config.MantaEthereumContractAddress,
-      mantaContractABI,
-      ethersProvider
+    const allowance = await queryTokenAllowance(
+      provider,
+      config.MantaContractOnEthereum,
+      ethAddress,
+      config.CelerContractOnEthereum
     );
 
-    const allowance = await mantaEthereumContract.allowance(
-      ethAddress,
-      config.CelerEthereumContractAddress
-    );
-    if (allowance.toString() >= amount) {
+    if (allowance >= amount) {
       setStatus(2);
     } else {
       setTimeout(() => {
@@ -173,9 +182,12 @@ const EvmTransferButton = () => {
             onClick={onClick}
             className={classNames(
               'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-              'text-center text-white rounded-lg w-full'
+              'text-center text-white rounded-lg w-full',
+              {
+                'filter brightness-50 cursor-not-allowed': status === 3
+              }
             )}>
-            {status === 1 ? 'Approve' : 'Transfer'}
+            {buttonText[status]}
           </button>
         )}
       </div>

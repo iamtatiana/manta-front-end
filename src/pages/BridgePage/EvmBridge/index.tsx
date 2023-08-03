@@ -1,5 +1,5 @@
 // @ts-nocheck
-import axios from 'axios';
+import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
@@ -15,7 +15,12 @@ import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
 import StepStatus from './StepStatus';
-import { queryCelerTransferStatus, generateCelerRefundData } from './Util';
+import {
+  queryCelerTransferStatus,
+  generateCelerRefundData,
+  generateCelerContractData,
+  queryTokenAllowance
+} from './Util';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -30,18 +35,24 @@ const buttonStatus = [
   { index: 7, text: 'Requesting refund', loading: true },
   { index: 8, text: 'Confirm Refund', loading: false },
   { index: 9, text: 'Confirming your refund', loading: true },
-  { index: 10, text: 'Refunded, try again', loading: false },
+  { index: 10, text: 'Transfer refund completed', loading: false },
   { index: 11, text: 'Submit', loading: false },
-  { index: 12, text: 'Transfer', loading: false },
-  { index: 13, text: 'Approval', loading: false } // moonbeam -> ethereum, you change this text as you need
+  { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
+  { index: 13, text: 'Approve', loading: false },
+  { index: 14, text: 'Transfer', loading: false } // moonbeam to ethereum
 ];
 
 type EvmBridgeData = {
   transferId?: string;
   latency?: number;
+  maxSlippage?: number;
 };
 
-const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
+const EvmBridgeModal = ({
+  transferId,
+  latency,
+  maxSlippage
+}: EvmBridgeData) => {
   const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress } = useMetamask();
   const {
@@ -124,9 +135,9 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         {
           index: 3,
           title: `Send MANTA from Moonbeam to ${destinationChainName}`,
-          subtitle:
-            isEthereumToManta &&
-            `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`,
+          subtitle: isEthereumToManta
+            ? `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`
+            : `Please wait. Estimated time of arrival: ${latency} minutes`,
           status: 0,
           subtitleWarning: false
         }
@@ -138,7 +149,8 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
     if (isEthereumToManta) {
       updateTransferStatus(transferId);
     } else {
-      setCurrentButtonStatus(buttonStatus[5]);
+      // setCurrentButtonStatus(buttonStatus[5]);
+      setCurrentButtonStatus(buttonStatus[13]);
     }
   }, []);
 
@@ -152,7 +164,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         return;
       }
       const status = data.status;
-      const currentIndex = 0;
+      const currentIndex = isEthereumToManta ? 0 : 2;
       if (status < 5 || status === 6 || status === 7) {
         // celer transfer pending
         setTimeout(async () => {
@@ -260,6 +272,22 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
         setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
       }
     } else if (index === 8) {
+      let to = '';
+      if (isEthereumToManta) {
+        to = config.CelerContractOnEthereum;
+        // swith to ethereum
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x5' }]
+        });
+      } else {
+        to = config.CelerContractOnMoonbeam;
+        // swith to moonbeam
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x507' }]
+        });
+      }
       // Confirm Refund
       const data = generateCelerRefundData(refundData);
       setCurrentButtonStatus(buttonStatus[0]);
@@ -269,7 +297,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
           params: [
             {
               from: ethAddress,
-              to: config.CelerEthereumContractAddress,
+              to: to,
               data: data
             }
           ]
@@ -340,7 +368,7 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
           } else {
             // succeed
             updateStepStatus(1, 1);
-            setCurrentButtonStatus(buttonStatus[13]);
+            setCurrentButtonStatus(buttonStatus[13]); // ready to approve
           }
         }
       };
@@ -348,6 +376,91 @@ const EvmBridgeModal = ({ transferId, latency }: EvmBridgeData) => {
       setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
       updateStepStatus(1, 3);
       await sendSubstrate(handleTxRes);
+    } else if (index === 13) {
+      // approve moonbeam to ethereum
+      // switch user's metamask to moonbeam network
+      // TODO, refer to metamask context, switch or add
+      await provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x507' }]
+      });
+
+      // Approve Celer Contract Address to spend user's token
+      const data = await generateApproveData(config.CelerContractOnMoonbeam);
+
+      setCurrentButtonStatus(buttonStatus[0]);
+      await provider
+        .request({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: ethAddress,
+              to: config.MantaContractOnMoonbeam,
+              data: data
+            }
+          ]
+        })
+        .then(() => {
+          const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+          queryAllowance(ethAddress, amount);
+        })
+        .catch(() => {
+          // ready to approve
+          setCurrentButtonStatus(buttonStatus[13]);
+        });
+    } else if (index === 14) {
+      // transfer moonbeam to ethereum
+      const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+      const sourceChainId = config.CelerMoonbeamChainId;
+      const destinationChainId = config.CelerEthereumChainId;
+
+      // Generate data of Celer Contract
+      const { data, transferId } = generateCelerContractData(
+        sourceChainId,
+        destinationChainId,
+        ethAddress,
+        config.MantaContractOnMoonbeam,
+        amount,
+        maxSlippage
+      );
+      console.log('transferId: ' + transferId);
+      setCurrentButtonStatus(buttonStatus[0]);
+      await provider
+        .request({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: ethAddress,
+              to: config.CelerContractOnMoonbeam,
+              data: data
+            }
+          ]
+        })
+        .then(() => {
+          updateTransferStatus(transferId);
+        })
+        .catch(() => {
+          //ready to transfer token from moonbeam to ethereum
+          setCurrentButtonStatus(buttonStatus[14]);
+        });
+    }
+  };
+
+  // Query user address allowance
+  const queryAllowance = async (ethAddress, amount) => {
+    const allowance = await queryTokenAllowance(
+      provider,
+      config.MantaContractOnMoonbeam,
+      ethAddress,
+      config.CelerContractOnMoonbeam
+    );
+
+    if (allowance >= amount) {
+      setCurrentButtonStatus(buttonStatus[14]);
+    } else {
+      setTimeout(() => {
+        queryAllowance(ethAddress, amount);
+      }, 3000);
     }
   };
 

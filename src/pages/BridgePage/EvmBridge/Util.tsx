@@ -2,6 +2,9 @@
 import axios from 'axios';
 import { ethers } from 'ethers';
 import { base64, getAddress, hexlify, hexZeroPad } from 'ethers/lib/utils';
+import MantaABI from './abi/manta.json';
+
+const mantaContractABI = MantaABI.abi;
 
 export const queryCelerBridgeFee = async (
   sourceChainId,
@@ -61,7 +64,7 @@ export const generateCelerContractData = (
   sourceChainId,
   destinationChainId,
   userAddress,
-  mantaEthereumContractAddress,
+  MantaContractOnEthereum,
   amount,
   maxSlippage
 ) => {
@@ -80,7 +83,7 @@ export const generateCelerContractData = (
     addressPaddingZero +
     userAddress.slice(2) +
     addressPaddingZero +
-    mantaEthereumContractAddress.slice(2) +
+    MantaContractOnEthereum.slice(2) +
     approvedAmount +
     destinationChainIdHex +
     nonceHex +
@@ -92,7 +95,7 @@ export const generateCelerContractData = (
     [
       userAddress, /// User's wallet address,
       userAddress, /// User's wallet address,
-      mantaEthereumContractAddress, /// Wrap token address ERC20 token address
+      MantaContractOnEthereum, /// Wrap token address ERC20 token address
       amount, /// Send amount in String
       destinationChainId.toString(), /// Destination chain id
       nonce.toString(), /// Nonce
@@ -109,6 +112,7 @@ export const generateCelerContractData = (
  */
 export const generateCelerRefundData = (refundData) => {
   // Init data to withdraw token from Celer contract
+  // https://cbridge-docs.celer.network/developer/api-reference/contract-pool-based-transfer-refund
   const wdmsg = base64.decode(refundData.wdmsg);
   const sigs = refundData.sortedSigs.map((item) => {
     return base64.decode(item);
@@ -157,4 +161,39 @@ export const queryCelerTransferStatus = async (celerEndpoint, transferId) => {
     console.error(e);
     return null;
   }
+};
+
+export const generateApproveData = async (spenderAddress) => {
+  // Approve Celer Contract Address to spend user's token
+  // Create the data parameter of the eth_sendTransaction so that the Ethereum node understands the request
+  spenderAddress = spenderAddress.slice(2).toLocaleLowerCase(); // Celer Bridge Contract Address
+  const defaultAmount =
+    '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // default amount for metamask
+  const hashedPrefix = '0x095ea7b3'; // web3.sha3("approve(address,uint256)").slice(0,10)
+  const data =
+    hashedPrefix + addressPaddingZero + spenderAddress + defaultAmount.slice(2);
+
+  return data;
+};
+
+// Query user address allowance
+export const queryTokenAllowance = async (
+  provider,
+  contractAddress,
+  userAddress,
+  spenderAddress
+) => {
+  const ethersProvider = new ethers.providers.Web3Provider(provider);
+  // Init Manta Token Smart Contract
+  const mantaEthereumContract = new ethers.Contract(
+    contractAddress,
+    mantaContractABI,
+    ethersProvider
+  );
+
+  const allowance = await mantaEthereumContract.allowance(
+    userAddress,
+    spenderAddress
+  );
+  return allowance.toString();
 };
