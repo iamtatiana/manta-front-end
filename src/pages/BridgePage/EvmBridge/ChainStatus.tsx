@@ -21,13 +21,15 @@ const ChainStatus = ({ chainList }: { chainList: Array }) => {
   return (
     <div className="flex flex-row	text-white pt-6">
       {chainList.map((item: Chain, index: number) => {
+        // status, 0 = default, 1 = success, 2 = failed, 3 = pending
+        const status = item.status;
         return (
           <div key={index} className="flex-1 flex justify-center items-center">
             <div
               className="px-2 py-1 flex flex-row border border-white border-opacity-40 rounded-2xl bg-white bg-opacity-20 bg-manta-blue"
               style={
-                item.status > 0
-                  ? item.status === 2
+                status > 0 && status < 3
+                  ? status === 2
                     ? failedChainName
                     : successChainName
                   : {}

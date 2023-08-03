@@ -6,6 +6,14 @@ import MantaABI from './abi/manta.json';
 
 const mantaContractABI = MantaABI.abi;
 
+/**
+ * Generate transfer data for Celer contract
+ * @param {number} sourceChainId - source chain id for Celer contract
+ * @param {number} destinationChainId - destination chain id for Celer contract
+ * @param {string} symbol - token symbol
+ * @param {number} amount - transfer amount
+ * @param {string} celerEndpoint - Celer RPC
+ */
 export const queryCelerBridgeFee = async (
   sourceChainId,
   destinationChainId,
@@ -60,6 +68,15 @@ const stringToHex = (string) => {
 
 const addressPaddingZero = '000000000000000000000000';
 
+/**
+ * Generate transfer data for Celer contract
+ * @param {number} sourceChainId - source chain id for Celer contract
+ * @param {number} destinationChainId - destination chain id for Celer contract
+ * @param {string} userAddress - user's address
+ * @param {string} MantaContractOnEthereum - Manta ERC20 contract address on Ethereum
+ * @param {number} amount - transfer amount
+ * @param {number} maxSlippage - max slippage for Celer contract
+ */
 export const generateCelerContractData = (
   sourceChainId,
   destinationChainId,
@@ -144,6 +161,11 @@ export const generateCelerRefundData = (refundData) => {
   return data;
 };
 
+/**
+ * Query transfer status of Celer
+ * @param {string} celerEndpoint - Celer RPC
+ * @param {string} transferId - transfer id of Celer transaction
+ */
 export const queryCelerTransferStatus = async (celerEndpoint, transferId) => {
   try {
     const data = { transfer_id: transferId };
@@ -163,6 +185,10 @@ export const queryCelerTransferStatus = async (celerEndpoint, transferId) => {
   }
 };
 
+/**
+ * Generate approve transaction data
+ * @param {string} spenderAddress - spender address
+ */
 export const generateApproveData = async (spenderAddress) => {
   // Approve Celer Contract Address to spend user's token
   // Create the data parameter of the eth_sendTransaction so that the Ethereum node understands the request
@@ -176,7 +202,13 @@ export const generateApproveData = async (spenderAddress) => {
   return data;
 };
 
-// Query user address allowance
+/**
+ * Query user address allowance
+ * @param {object} provider - metamask provider
+ * @param {string} contractAddress - ERC20 token contract address
+ * @param {string} userAddress - user's address
+ * @param {string} spenderAddress - spender's address
+ */
 export const queryTokenAllowance = async (
   provider,
   contractAddress,

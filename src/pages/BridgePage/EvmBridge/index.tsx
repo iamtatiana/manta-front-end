@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { ethers } from 'ethers';
 import { useEffect } from 'react';
 import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
@@ -19,7 +18,8 @@ import {
   queryCelerTransferStatus,
   generateCelerRefundData,
   generateCelerContractData,
-  queryTokenAllowance
+  queryTokenAllowance,
+  generateApproveData
 } from './Util';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -39,7 +39,8 @@ const buttonStatus = [
   { index: 11, text: 'Submit', loading: false },
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
   { index: 13, text: 'Approve', loading: false },
-  { index: 14, text: 'Transfer', loading: false } // moonbeam to ethereum
+  { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
+  { index: 15, text: 'Done', loading: false }
 ];
 
 type EvmBridgeData = {
@@ -147,10 +148,11 @@ const EvmBridgeModal = ({
     setModalText(initialModalText);
     showModal();
     if (isEthereumToManta) {
+      // query transfer status
       updateTransferStatus(transferId);
     } else {
-      // setCurrentButtonStatus(buttonStatus[5]);
-      setCurrentButtonStatus(buttonStatus[13]);
+      // eligible to get free GLMR
+      setCurrentButtonStatus(buttonStatus[5]);
     }
   }, []);
 
@@ -170,9 +172,16 @@ const EvmBridgeModal = ({
         setTimeout(async () => {
           await updateTransferStatus(transferId);
         }, 10000);
+        setCurrentButtonStatus(buttonStatus[status]);
       } else if (status === 5) {
         // celer transfer complete
         updateStepStatus(currentIndex, 1);
+        if (isEthereumToManta) {
+          setCurrentButtonStatus(buttonStatus[status]);
+        } else {
+          // moonbeam to ethereum complete
+          setCurrentButtonStatus(buttonStatus[15]);
+        }
       } else {
         if (status === 8) {
           const newRefundData = {
@@ -185,8 +194,8 @@ const EvmBridgeModal = ({
         }
         // celer transfer failed
         updateStepStatus(currentIndex, 2);
+        setCurrentButtonStatus(buttonStatus[status]);
       }
-      setCurrentButtonStatus(buttonStatus[status]);
     } catch (error) {
       console.error('Error:', error);
     }
@@ -238,7 +247,7 @@ const EvmBridgeModal = ({
         const freeGas = await getFreeGas(ethAddress, captcha);
         const txHash = freeGas?.data?.txHash;
         if (txHash) {
-          const checkingStatus = true;
+          let checkingStatus = true;
           // you can comment below while statement for fast test
           while (checkingStatus) {
             try {
@@ -256,7 +265,9 @@ const EvmBridgeModal = ({
         }
 
         updateStepStatus(isEthereumToManta ? 1 : 0, 1);
-        setCurrentButtonStatus(buttonStatus[12]);
+        setCurrentButtonStatus(
+          isEthereumToManta ? buttonStatus[11] : buttonStatus[12]
+        );
       } catch (e) {
         const errMsg = e.response.data.message;
         setErrMsgObj({ index: isEthereumToManta ? 1 : 0, errMsg });
@@ -264,7 +275,9 @@ const EvmBridgeModal = ({
           // TODO, need to check the msg content with backend
           if (errMsg === 'already have fetched free gas') {
             updateStepStatus(isEthereumToManta ? 1 : 0, 1);
-            setCurrentButtonStatus(buttonStatus[12]);
+            setCurrentButtonStatus(
+              isEthereumToManta ? buttonStatus[11] : buttonStatus[12]
+            );
             return;
           }
         }
@@ -388,6 +401,7 @@ const EvmBridgeModal = ({
       // Approve Celer Contract Address to spend user's token
       const data = await generateApproveData(config.CelerContractOnMoonbeam);
 
+      updateStepStatus(2, 3);
       setCurrentButtonStatus(buttonStatus[0]);
       await provider
         .request({
@@ -423,7 +437,6 @@ const EvmBridgeModal = ({
         amount,
         maxSlippage
       );
-      console.log('transferId: ' + transferId);
       setCurrentButtonStatus(buttonStatus[0]);
       await provider
         .request({
@@ -443,6 +456,8 @@ const EvmBridgeModal = ({
           //ready to transfer token from moonbeam to ethereum
           setCurrentButtonStatus(buttonStatus[14]);
         });
+    } else {
+      hideModal();
     }
   };
 

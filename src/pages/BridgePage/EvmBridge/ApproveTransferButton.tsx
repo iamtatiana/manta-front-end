@@ -9,47 +9,48 @@ import TransferFeeDisplay from './TransferFeeDisplay';
 import {
   queryCelerBridgeFee,
   generateCelerContractData,
-  generateApproveData
+  generateApproveData,
+  queryTokenAllowance
 } from './Util';
 import EvmBridge from './index';
 
 const buttonText = [
   '',
   'Approve',
-  'Transfer',
-  'The received amount cannot cover fee'
+  'Transfer', // ethereum to moonbeam
+  'The received amount cannot cover fee',
+  'Next' // show evm bridge modal
 ];
 
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
-  const { originChain, senderAssetType, senderAssetTargetBalance } =
-    useBridgeData();
+  const {
+    originChain,
+    destinationChain,
+    senderAssetType,
+    senderAssetTargetBalance
+  } = useBridgeData();
 
   const config = useConfig();
   const { ethAddress, provider } = useMetamask();
-  const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer
+  const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next
   const [isEstimatingFee, setIsEstimatingFee] = useState(false);
   const [bridgeFee, setBridgeFee] = useState({});
   const [transferId, setTransferId] = useState('');
+  const [showEvmBridgeModal, setShowEvmBridgeModal] = useState(false);
 
   const onClick = () => {
     if (status === 1) {
       onApproveClick();
     } else if (status === 2) {
       onTransferClick();
+    } else if (status === 4) {
+      setShowEvmBridgeModal(true);
     }
   };
 
   useEffect(async () => {
-    //////////////////////////////////////////////////
-    // Debug Purpose
-    // setTransferId(
-    //   '0x01c49648bb6447c2bf393cb4d8ec132fcca88f24af5037b06780a5dd16a65371',
-    //   0,
-    //   bridgeFee.max_slippage
-    // );
-    // return;
-    //////////////////////////////////////////////////
+    // calculate transaction fee
     setIsEstimatingFee(true);
     try {
       let sourceChainId = 0;
@@ -76,7 +77,17 @@ const EvmTransferButton = () => {
         // The received amount cannot cover fee
         setStatus(3);
       } else {
-        setStatus(1);
+        // eligible to transfer
+        if (
+          originChain.name === 'manta' &&
+          destinationChain.name === 'ethereum'
+        ) {
+          // show evm bridge modal
+          setStatus(4);
+        } else {
+          // approve token from ethereum to moonbeam
+          setStatus(1);
+        }
       }
       setBridgeFee(latestBridgeFee);
       setIsEstimatingFee(false);
@@ -139,7 +150,8 @@ const EvmTransferButton = () => {
         ]
       })
       .then(() => {
-        setTransferId(transferId, bridgeFee.latency, bridgeFee.max_slippage);
+        setTransferId(transferId);
+        setShowEvmBridgeModal(true);
         setStatus(1);
       })
       .catch(() => {
@@ -191,8 +203,12 @@ const EvmTransferButton = () => {
           </button>
         )}
       </div>
-      {transferId.length > 0 && (
-        <EvmBridge transferId={transferId} latency={bridgeFee.latency} />
+      {showEvmBridgeModal && (
+        <EvmBridge
+          transferId={transferId}
+          latency={bridgeFee.latency}
+          maxSlippage={bridgeFee.max_slippage}
+        />
       )}
     </div>
   );
