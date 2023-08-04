@@ -10,7 +10,9 @@ import {
   queryCelerBridgeFee,
   generateCelerContractData,
   generateApproveData,
-  queryTokenAllowance
+  queryTokenAllowance,
+  estimateApproveGasFee,
+  estimateSendGasFee
 } from './Util';
 import EvmBridge from './index';
 
@@ -49,44 +51,78 @@ const EvmTransferButton = () => {
     }
   };
 
+  const getOriginChainInfo = () => {
+    let sourceChainId = 0;
+    let destinationChainId = 0;
+    let celerContractAddress = '';
+    let mantaContractAddress = '';
+    let originChainGasFeeSymbol = '';
+    if (originChain.name === 'ethereum') {
+      sourceChainId = config.CelerEthereumChainId;
+      destinationChainId = config.CelerMoonbeamChainId;
+      celerContractAddress = config.CelerContractOnEthereum;
+      mantaContractAddress = config.MantaContractOnEthereum;
+      originChainGasFeeSymbol = 'ETH';
+    } else {
+      sourceChainId = config.CelerMoonbeamChainId;
+      destinationChainId = config.CelerEthereumChainId;
+      celerContractAddress = config.CelerContractOnMoonbeam;
+      mantaContractAddress = config.MantaContractOnMoonbeam;
+      originChainGasFeeSymbol = 'GLMR';
+    }
+
+    return {
+      sourceChainId: sourceChainId,
+      destinationChainId: destinationChainId,
+      celerContractAddress: celerContractAddress,
+      mantaContractAddress: mantaContractAddress,
+      originChainGasFeeSymbol: originChainGasFeeSymbol
+    };
+  };
+
   useEffect(async () => {
     // calculate transaction fee
     setIsEstimatingFee(true);
     try {
-      let sourceChainId = 0;
-      let destinationChainId = 0;
-      let celerContractAddress = '';
-      let mantaContractAddress = '';
-      let originChainGasFeeSymbol = '';
-      if (originChain.name === 'ethereum') {
-        sourceChainId = config.CelerEthereumChainId;
-        destinationChainId = config.CelerMoonbeamChainId;
-        celerContractAddress = config.CelerContractOnEthereum;
-        mantaContractAddress = config.MantaContractOnEthereum;
-        originChainGasFeeSymbol = 'ETH';
-      } else {
-        sourceChainId = config.CelerMoonbeamChainId;
-        destinationChainId = config.CelerEthereumChainId;
-        celerContractAddress = config.CelerContractOnMoonbeam;
-        mantaContractAddress = config.MantaContractOnMoonbeam;
-        originChainGasFeeSymbol = 'GLMR';
-      }
-
+      const originChainInfo = getOriginChainInfo();
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+
+      if (originChain.name === 'ethereum') {
+        // swith to ethereum
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x5' }]
+        });
+      } else {
+        // swith to moonbeam
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: '0x507' }]
+        });
+      }
 
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
-        sourceChainId,
-        destinationChainId,
+        originChainInfo.sourceChainId,
+        originChainInfo.destinationChainId,
         senderAssetType.baseTicker,
         amount,
-        config.CelerEndpoint,
-        celerContractAddress,
-        mantaContractAddress,
+        config.CelerEndpoint
+      );
+
+      // calculate approve gas fee
+      const approveGasFee = await estimateApproveGasFee(
+        amount,
+        originChainInfo.celerContractAddress,
+        originChainInfo.mantaContractAddress,
         provider,
         ethAddress,
-        originChainGasFeeSymbol
+        originChainInfo.originChainGasFeeSymbol
       );
+      console.log('approveGasFee: ' + approveGasFee);
+
+      latestBridgeFee.approveGasFee = approveGasFee;
+      latestBridgeFee.sendGasFee = 'Waitting for approve';
 
       if (latestBridgeFee.estimated_receive_amt < 0) {
         // The received amount cannot cover fee
@@ -184,6 +220,27 @@ const EvmTransferButton = () => {
     );
 
     if (allowance >= amount) {
+      // calculate transfer gas fee
+      const originChainInfo = getOriginChainInfo();
+      const sendGasFee = await estimateSendGasFee(
+        originChainInfo.sourceChainId,
+        originChainInfo.destinationChainId,
+        senderAssetTargetBalance.valueAtomicUnits.toString(),
+        originChainInfo.celerContractAddress,
+        originChainInfo.mantaContractAddress,
+        provider,
+        ethAddress,
+        originChainInfo.originChainGasFeeSymbol,
+        bridgeFee.max_slippage
+      );
+      console.log('sendGasFee: ' + sendGasFee);
+
+      // update gas fee
+      setBridgeFee((preState) => {
+        preState.sendGasFee = sendGasFee;
+        return preState;
+      });
+
       setStatus(2);
     } else {
       setTimeout(() => {

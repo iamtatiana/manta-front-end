@@ -24,12 +24,7 @@ export const queryCelerBridgeFee = async (
   destinationChainId,
   symbol,
   amount,
-  celerEndpoint,
-  celerContractAddress,
-  mantaContractAddress,
-  provider,
-  ethAddress,
-  originChainGasFeeSymbol
+  celerEndpoint
 ) => {
   // Query celer bridge fee
   const feeResponse = await axios.get(`${celerEndpoint}/estimateAmt`, {
@@ -58,13 +53,24 @@ export const queryCelerBridgeFee = async (
     }
   );
 
+  // Update bridge fee and time response
+  const latestBridgeFee = feeResponse.data;
+  latestBridgeFee.latency = Math.ceil(
+    latency.data.median_transfer_latency_in_second / 60
+  );
+  return latestBridgeFee;
+};
+
+export const estimateApproveGasFee = async (
+  amount,
+  celerContractAddress,
+  mantaContractAddress,
+  provider,
+  ethAddress,
+  originChainGasFeeSymbol
+) => {
   const ethersProvider = new ethers.providers.Web3Provider(provider);
   const feeData = await ethersProvider.getFeeData();
-
-  console.log(ethers.utils.formatUnits(feeData.gasPrice, 'wei'));
-  console.log(ethers.utils.formatUnits(feeData.lastBaseFeePerGas, 'wei'));
-  console.log(ethers.utils.formatUnits(feeData.maxFeePerGas, 'wei'));
-  console.log(ethers.utils.formatUnits(feeData.maxPriorityFeePerGas, 'wei'));
   const gasPrice = ethers.utils.formatUnits(
     feeData.maxPriorityFeePerGas,
     'wei'
@@ -78,7 +84,30 @@ export const queryCelerBridgeFee = async (
     data: approvedData
   });
   console.log('approveGasLimit: ' + approveGasLimit);
+  return (
+    ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
+    ' ' +
+    originChainGasFeeSymbol
+  );
+};
 
+export const estimateSendGasFee = async (
+  sourceChainId,
+  destinationChainId,
+  amount,
+  celerContractAddress,
+  mantaContractAddress,
+  provider,
+  ethAddress,
+  originChainGasFeeSymbol,
+  maxSlippage
+) => {
+  const ethersProvider = new ethers.providers.Web3Provider(provider);
+  const feeData = await ethersProvider.getFeeData();
+  const gasPrice = ethers.utils.formatUnits(
+    feeData.maxPriorityFeePerGas,
+    'wei'
+  );
   // calculate send transaction gas fee
   const sentData = await generateCelerContractData(
     sourceChainId,
@@ -86,7 +115,7 @@ export const queryCelerBridgeFee = async (
     ethAddress,
     mantaContractAddress,
     amount,
-    feeResponse.data.max_slippage
+    maxSlippage
   );
 
   const sendGasLimit = await ethersProvider.estimateGas({
@@ -96,21 +125,11 @@ export const queryCelerBridgeFee = async (
   });
 
   console.log('sendGasLimit: ' + sendGasLimit);
-
-  // Update bridge fee and time response
-  const latestBridgeFee = feeResponse.data;
-  latestBridgeFee.latency = Math.ceil(
-    latency.data.median_transfer_latency_in_second / 60
-  );
-  latestBridgeFee.approveGasFee =
-    ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
-    ' ' +
-    originChainGasFeeSymbol;
-  latestBridgeFee.sendGasFee =
+  return (
     ((sendGasLimit * gasPrice * 1.5) / decimal).toFixed(8) +
     ' ' +
-    originChainGasFeeSymbol;
-  return latestBridgeFee;
+    originChainGasFeeSymbol
+  );
 };
 
 // Number to bytes 32 hex

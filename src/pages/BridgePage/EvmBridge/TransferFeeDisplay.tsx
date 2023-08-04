@@ -1,17 +1,18 @@
 // @ts-nocheck
-import { useMemo } from 'react';
+import { useEffect, useState } from 'react';
 
 const TransferFeeDisplay = (params) => {
   const bridgeFee = params.bridgeFee;
   const symbol = params.symbol;
   const decimal = Math.pow(10, params.numberOfDecimals);
 
-  const displayObject = useMemo(() => {
+  const [gasFee, setGasFee] = useState([]);
+  useEffect(() => {
     const estimateReceive = (
       parseInt(bridgeFee.estimated_receive_amt) / decimal
     ).toFixed(6);
 
-    return [
+    const gasFeeData = [
       {
         name: 'Approve Gas Fee:',
         value: bridgeFee.approveGasFee
@@ -29,11 +30,13 @@ const TransferFeeDisplay = (params) => {
         value: bridgeFee.latency + ' minutes'
       }
     ];
-  }, [bridgeFee]);
+
+    setGasFee(gasFeeData);
+  }, [bridgeFee.sendGasFee]);
 
   return (
     <div className="flex flex-col gap-4 mb-10">
-      {displayObject.map((item, index) => {
+      {gasFee.map((item, index) => {
         return (
           <div
             key={index}
