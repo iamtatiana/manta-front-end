@@ -7,22 +7,18 @@ const TransferFeeDisplay = (params) => {
   const decimal = Math.pow(10, params.numberOfDecimals);
 
   const displayObject = useMemo(() => {
-    const baseFee = parseInt(bridgeFee.base_fee) / decimal;
-    const percFee = parseInt(bridgeFee.perc_fee) / decimal;
-    const fee = (baseFee + percFee).toFixed(6);
-
     const estimateReceive = (
       parseInt(bridgeFee.estimated_receive_amt) / decimal
     ).toFixed(6);
 
     return [
       {
-        name: 'Bridge Rate:',
-        value: bridgeFee.bridge_rate
+        name: 'Approve Gas Fee:',
+        value: bridgeFee.approveGasFee
       },
       {
-        name: 'Fee:',
-        value: `${fee} ${symbol}`
+        name: 'Send Gas Fee:',
+        value: bridgeFee.sendGasFee
       },
       {
         name: 'Estimate Receive:',

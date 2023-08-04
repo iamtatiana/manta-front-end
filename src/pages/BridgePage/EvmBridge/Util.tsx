@@ -5,6 +5,7 @@ import { base64, getAddress, hexlify, hexZeroPad } from 'ethers/lib/utils';
 import MantaABI from './abi/manta.json';
 
 const mantaContractABI = MantaABI.abi;
+const decimal = Math.pow(10, 18);
 
 /**
  * Generate transfer data for Celer contract
@@ -13,13 +14,22 @@ const mantaContractABI = MantaABI.abi;
  * @param {string} symbol - token symbol
  * @param {number} amount - transfer amount
  * @param {string} celerEndpoint - Celer RPC
+ * @param {string} celerContractAddress - celer Contract address
+ * @param {object} provider - metamask provider
+ * @param {string} ethAddress - user's metamask address
+ * @param {string} originChainGasFeeSymbol - gas fee symbol
  */
 export const queryCelerBridgeFee = async (
   sourceChainId,
   destinationChainId,
   symbol,
   amount,
-  celerEndpoint
+  celerEndpoint,
+  celerContractAddress,
+  mantaContractAddress,
+  provider,
+  ethAddress,
+  originChainGasFeeSymbol
 ) => {
   // Query celer bridge fee
   const feeResponse = await axios.get(`${celerEndpoint}/estimateAmt`, {
@@ -48,11 +58,58 @@ export const queryCelerBridgeFee = async (
     }
   );
 
+  const ethersProvider = new ethers.providers.Web3Provider(provider);
+  const feeData = await ethersProvider.getFeeData();
+
+  console.log(ethers.utils.formatUnits(feeData.gasPrice, 'wei'));
+  console.log(ethers.utils.formatUnits(feeData.lastBaseFeePerGas, 'wei'));
+  console.log(ethers.utils.formatUnits(feeData.maxFeePerGas, 'wei'));
+  console.log(ethers.utils.formatUnits(feeData.maxPriorityFeePerGas, 'wei'));
+  const gasPrice = ethers.utils.formatUnits(
+    feeData.maxPriorityFeePerGas,
+    'wei'
+  );
+
+  // calculate approved transaction gas fee
+  const approvedData = await generateApproveData(celerContractAddress, amount);
+  const approveGasLimit = await ethersProvider.estimateGas({
+    from: ethAddress,
+    to: mantaContractAddress,
+    data: approvedData
+  });
+  console.log('approveGasLimit: ' + approveGasLimit);
+
+  // calculate send transaction gas fee
+  const sentData = await generateCelerContractData(
+    sourceChainId,
+    destinationChainId,
+    ethAddress,
+    mantaContractAddress,
+    amount,
+    feeResponse.data.max_slippage
+  );
+
+  const sendGasLimit = await ethersProvider.estimateGas({
+    from: ethAddress,
+    to: celerContractAddress,
+    data: sentData.data
+  });
+
+  console.log('sendGasLimit: ' + sendGasLimit);
+
   // Update bridge fee and time response
   const latestBridgeFee = feeResponse.data;
   latestBridgeFee.latency = Math.ceil(
     latency.data.median_transfer_latency_in_second / 60
   );
+  latestBridgeFee.approveGasFee =
+    ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
+    ' ' +
+    originChainGasFeeSymbol;
+  latestBridgeFee.sendGasFee =
+    ((sendGasLimit * gasPrice * 1.5) / decimal).toFixed(8) +
+    ' ' +
+    originChainGasFeeSymbol;
   return latestBridgeFee;
 };
 
@@ -189,15 +246,16 @@ export const queryCelerTransferStatus = async (celerEndpoint, transferId) => {
  * Generate approve transaction data
  * @param {string} spenderAddress - spender address
  */
-export const generateApproveData = async (spenderAddress) => {
+export const generateApproveData = async (spenderAddress, amount?) => {
   // Approve Celer Contract Address to spend user's token
   // Create the data parameter of the eth_sendTransaction so that the Ethereum node understands the request
-  spenderAddress = spenderAddress.slice(2).toLocaleLowerCase(); // Celer Bridge Contract Address
-  const defaultAmount =
-    '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'; // default amount for metamask
-  const hashedPrefix = '0x095ea7b3'; // web3.sha3("approve(address,uint256)").slice(0,10)
-  const data =
-    hashedPrefix + addressPaddingZero + spenderAddress + defaultAmount.slice(2);
+
+  const ABI = ['function approve(address spender, uint256 amount)'];
+  const iface = new ethers.utils.Interface(ABI);
+  const data = iface.encodeFunctionData('approve', [
+    spenderAddress,
+    amount ? amount : decimal.toString()
+  ]);
 
   return data;
 };

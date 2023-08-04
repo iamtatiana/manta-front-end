@@ -55,22 +55,37 @@ const EvmTransferButton = () => {
     try {
       let sourceChainId = 0;
       let destinationChainId = 0;
+      let celerContractAddress = '';
+      let mantaContractAddress = '';
+      let originChainGasFeeSymbol = '';
       if (originChain.name === 'ethereum') {
         sourceChainId = config.CelerEthereumChainId;
         destinationChainId = config.CelerMoonbeamChainId;
+        celerContractAddress = config.CelerContractOnEthereum;
+        mantaContractAddress = config.MantaContractOnEthereum;
+        originChainGasFeeSymbol = 'ETH';
       } else {
         sourceChainId = config.CelerMoonbeamChainId;
         destinationChainId = config.CelerEthereumChainId;
+        celerContractAddress = config.CelerContractOnMoonbeam;
+        mantaContractAddress = config.MantaContractOnMoonbeam;
+        originChainGasFeeSymbol = 'GLMR';
       }
 
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
         sourceChainId,
         destinationChainId,
         senderAssetType.baseTicker,
         amount,
-        config.CelerEndpoint
+        config.CelerEndpoint,
+        celerContractAddress,
+        mantaContractAddress,
+        provider,
+        ethAddress,
+        originChainGasFeeSymbol
       );
 
       if (latestBridgeFee.estimated_receive_amt < 0) {
