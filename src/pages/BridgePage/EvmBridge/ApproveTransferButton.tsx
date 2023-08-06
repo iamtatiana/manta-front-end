@@ -252,7 +252,7 @@ const EvmTransferButton = () => {
   return isEstimatingFee ? (
     <LoadingIndicator />
   ) : (
-    <div>
+    <div className="mt-7">
       <TransferFeeDisplay
         bridgeFee={bridgeFee}
         symbol={senderAssetType.baseTicker}
@@ -288,7 +288,7 @@ const EvmTransferButton = () => {
 
 const LoadingIndicator = () => {
   return (
-    <div className="my-5">
+    <div className="mt-7">
       <Loading
         style={{ alignSelf: 'center' }}
         loading={true}

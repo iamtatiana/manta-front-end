@@ -43,6 +43,9 @@ const BridgeForm = () => {
   };
 
   const shouldShowDestinationForm = originChainIsEvm || destinationChainIsEvm;
+  const shouldShowBridgeFee = !(
+    originChain.name === 'ethereum' || destinationChain.name === 'ethereum'
+  );
 
   return (
     <div className="2xl:inset-x-0 justify-center min-h-full flex flex-col gap-6 items-center pb-2 pt-12">
@@ -74,7 +77,7 @@ const BridgeForm = () => {
           </div>
         </div>
         {shouldShowDestinationForm && <BridgeDestinationForm />}
-        <BridgeFeeDisplay />
+        {shouldShowBridgeFee && <BridgeFeeDisplay />}
         <SendButton />
       </div>
       <AssociatedBridges />

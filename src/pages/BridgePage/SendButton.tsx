@@ -96,7 +96,7 @@ const ValidationButton = () => {
     return (
       <div
         className={classNames(
-          'bg-connect-wallet-button py-2 unselectable-text text-center text-white',
+          'bg-connect-wallet-button py-2 unselectable-text text-center text-white mt-7',
           'rounded-lg w-full filter brightness-50 cursor-not-allowed'
         )}>
         {validationMsg}
@@ -125,7 +125,7 @@ const ValidationButton = () => {
         <ConnectWalletButton
           text={connectWalletText}
           className={classNames(
-            'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+            'bg-connect-wallet-button py-2 unselectable-text cursor-pointer mt-7',
             'text-center text-white rounded-lg w-full'
           )}
         />
@@ -157,7 +157,7 @@ const SwitchNetworkButton = () => {
     <button
       onClick={onClick}
       className={classNames(
-        'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+        'bg-connect-wallet-button py-2 unselectable-text cursor-pointer mt-7',
         'text-center text-white rounded-lg w-full'
       )}>
       {`Switch Network to ${networkName}`}
@@ -176,7 +176,7 @@ const SendButton = () => {
     <button
       onClick={onClick}
       className={classNames(
-        'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
+        'bg-connect-wallet-button py-2 unselectable-text cursor-pointer mt-7',
         'text-center text-white rounded-lg w-full',
         { 'filter brightness-50 cursor-not-allowed': !isValidToSend() }
       )}>

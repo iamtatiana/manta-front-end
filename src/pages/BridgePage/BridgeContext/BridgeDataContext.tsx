@@ -344,32 +344,6 @@ export const BridgeDataContextProvider = (props) => {
   ]);
 
   useEffect(() => {
-    function setFees() {
-      if (
-        originChain.name === 'ethereum' ||
-        destinationChain.name === 'ethereum'
-      ) {
-        dispatch({
-          type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-          originFee: Balance.fromBaseUnits(
-            originChain.nativeAsset,
-            '0.00265399'
-          ),
-          destinationFee: Balance.fromBaseUnits(senderAssetType, 0),
-          maxInput: senderAssetCurrentBalance,
-          minInput: Balance.fromBaseUnits(senderAssetType, new Decimal(1))
-        });
-      }
-    }
-    setFees();
-  }, [
-    originChain,
-    destinationChain,
-    senderAssetCurrentBalance,
-    senderAssetType
-  ]);
-
-  useEffect(() => {
     const getDestinationFee = (inputConfig) => {
       return Balance.fromBaseUnits(
         senderAssetType,
@@ -440,18 +414,25 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      if (
-        originChain.name === 'ethereum' ||
-        destinationChain.name === 'ethereum'
-      ) {
-        return;
-      }
+      let _originXcmAdapter = originXcmAdapter;
       // Workaround for Karura adapter internals not being ready on initial connection
       (originChain.name === 'karura' || originChain.name === 'acala') &&
-        (await originXcmAdapter.wallet.isReady);
+        (await _originXcmAdapter.wallet.isReady);
       const inputConfigParams = getInputConfigParams();
+      if (originChain.name === 'ethereum') {
+        return;
+        // testnet caused some error on moonbeam, we can calculate the gas on mainnet
+        // it is not a serious problem even we don't add the xcm fee
+        inputConfigParams.to = 'manta';
+        console.log(bridge?.adapters);
+        _originXcmAdapter = bridge?.adapters.find(
+          (adapter) => adapter.chain.id === 'moonbeam'
+        );
+      } else if (destinationChain.name === 'ethereum') {
+        inputConfigParams.to = 'moonbeam';
+      }
       const inputConfigObservable =
-        originXcmAdapter.subscribeInputConfig(inputConfigParams);
+        _originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };
