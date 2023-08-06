@@ -4,11 +4,19 @@ import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
 import { useState } from 'react';
 import { useModal } from 'hooks';
-import { getFreeGas, checkTxStatus } from 'utils/api/evmBridgeFaucet';
+import {
+  getRandomStr,
+  getFreeGasEth2Manta,
+  getFreeGasManta2Eth,
+  checkTxStatus
+} from 'utils/api/evmBridgeFaucet';
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import TxStatus from 'types/TxStatus';
+import { useKeyring } from 'contexts/keyringContext';
+import { usePublicAccount } from 'contexts/publicAccountContext';
+import { stringToHex } from '@polkadot/util';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
@@ -75,6 +83,8 @@ const EvmBridgeModal = ({
   );
   const [captcha, setCaptcha] = useState('');
   const [errMsgObj, setErrMsgObj] = useState({});
+  const { selectedWallet } = useKeyring();
+  const { externalAccount } = usePublicAccount();
   const [refundData, setRefundData] = useState({});
 
   useEffect(() => {
@@ -117,7 +127,7 @@ const EvmBridgeModal = ({
       ],
       steps: [
         {
-          index: isEthereumToManta ? 1 : 2,
+          index: 1,
           title: `Send MANTA from ${originChainName} to Moonbeam`,
           subtitle: isEthereumToManta
             ? `Please wait. Estimated time of arrival: ${latency} minutes`
@@ -126,7 +136,7 @@ const EvmBridgeModal = ({
           subtitleWarning: false
         },
         {
-          index: isEthereumToManta ? 2 : 1,
+          index: 2,
           title: 'Obtain free GLMR to cover transfer fee',
           subtitle: 'Obtain GLMR for free to cover your future transfer fees.',
           status: 0,
@@ -242,9 +252,28 @@ const EvmBridgeModal = ({
       // Obtain free GLMR (Step 2)
       if (!ethAddress || !captcha) return;
       setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
-      updateStepStatus(isEthereumToManta ? 1 : 0, 3);
+      updateStepStatus(1, 3);
       try {
-        const freeGas = await getFreeGas(ethAddress, captcha);
+        let freeGas;
+        if (isEthereumToManta) {
+          freeGas = await getFreeGasEth2Manta(ethAddress, captcha);
+        } else {
+          const randomStr = await getRandomStr(externalAccount.address);
+          const signedMsg = randomStr.data.randomStr;
+          const { signature } = await selectedWallet._signer.signRaw({
+            address: externalAccount.address,
+            data: stringToHex(signedMsg),
+            type: 'bytes'
+          });
+          if (signature) {
+            freeGas = await getFreeGasManta2Eth(
+              ethAddress,
+              captcha,
+              externalAccount.address,
+              signature
+            );
+          }
+        }
         const txHash = freeGas?.data?.txHash;
         if (txHash) {
           let checkingStatus = true;
@@ -262,26 +291,26 @@ const EvmBridgeModal = ({
             }
             await sleep(3000);
           }
-        }
 
-        updateStepStatus(isEthereumToManta ? 1 : 0, 1);
-        setCurrentButtonStatus(
-          isEthereumToManta ? buttonStatus[11] : buttonStatus[12]
-        );
+          updateStepStatus(1, 1);
+          setCurrentButtonStatus(
+            isEthereumToManta ? buttonStatus[11] : buttonStatus[13]
+          );
+        }
       } catch (e) {
-        const errMsg = e.response.data.message;
-        setErrMsgObj({ index: isEthereumToManta ? 1 : 0, errMsg });
-        if (e.response.status === 400) {
+        const errMsg = e.response?.data?.message || e.message;
+        setErrMsgObj({ index: 1, errMsg });
+        if (e.response?.status === 400) {
           // TODO, need to check the msg content with backend
           if (errMsg === 'already have fetched free gas') {
-            updateStepStatus(isEthereumToManta ? 1 : 0, 1);
+            updateStepStatus(1, 1);
             setCurrentButtonStatus(
-              isEthereumToManta ? buttonStatus[11] : buttonStatus[12]
+              isEthereumToManta ? buttonStatus[11] : buttonStatus[13]
             );
             return;
           }
         }
-        updateStepStatus(isEthereumToManta ? 1 : 0, 2);
+        updateStepStatus(1, 2);
         setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
       }
     } else if (index === 8) {
@@ -366,28 +395,28 @@ const EvmBridgeModal = ({
               ) as any;
               const errorMsg = `${decoded.section}.${decoded.name}`;
               setErrMsgObj({
-                index: 1,
+                index: 0,
                 errMsg: errorMsg
               });
             } else {
               const errorMsg = dispatchError.toString();
               setErrMsgObj({
-                index: 1,
+                index: 0,
                 errMsg: errorMsg
               });
             }
-            updateStepStatus(1, 2);
+            updateStepStatus(0, 2);
             setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
           } else {
             // succeed
-            updateStepStatus(1, 1);
-            setCurrentButtonStatus(buttonStatus[13]); // ready to approve
+            updateStepStatus(0, 1);
+            setCurrentButtonStatus(buttonStatus[5]);
           }
         }
       };
 
       setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
-      updateStepStatus(1, 3);
+      updateStepStatus(0, 3);
       await sendSubstrate(handleTxRes);
     } else if (index === 13) {
       // approve moonbeam to ethereum
