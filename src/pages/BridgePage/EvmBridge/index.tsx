@@ -428,7 +428,10 @@ const EvmBridgeModal = ({
       });
 
       // Approve Celer Contract Address to spend user's token
-      const data = await generateApproveData(config.CelerContractOnMoonbeam);
+      const data = await generateApproveData(
+        config.CelerContractOnMoonbeam,
+        senderAssetTargetBalance.valueAtomicUnits.toString()
+      );
 
       updateStepStatus(2, 3);
       setCurrentButtonStatus(buttonStatus[0]);
