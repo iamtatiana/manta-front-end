@@ -17,6 +17,8 @@ import TxStatus from 'types/TxStatus';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { stringToHex } from '@polkadot/util';
+import Balance from 'types/Balance';
+import BN from 'bn.js';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
@@ -55,21 +57,26 @@ type EvmBridgeData = {
   transferId?: string;
   latency?: number;
   maxSlippage?: number;
+  bridgeGasFee?: number;
 };
 
 const EvmBridgeModal = ({
   transferId,
   latency,
-  maxSlippage
+  maxSlippage,
+  bridgeGasFee
 }: EvmBridgeData) => {
   const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress } = useMetamask();
   const {
+    senderAssetType,
+    destGasFee,
     originChain,
     destinationChain,
     destinationAddress,
     senderAssetTargetBalance
   } = useBridgeData();
+  const _bridgeGasFee = new Balance(senderAssetType, new BN(bridgeGasFee));
   const isEthereumToManta = originChain?.name === 'ethereum';
   const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
@@ -161,8 +168,8 @@ const EvmBridgeModal = ({
       // query transfer status
       updateTransferStatus(transferId);
     } else {
-      // eligible to get free GLMR
-      setCurrentButtonStatus(buttonStatus[5]);
+      // manta to moonbeam
+      setCurrentButtonStatus(buttonStatus[12]);
     }
   }, []);
 
@@ -370,7 +377,7 @@ const EvmBridgeModal = ({
           'MANTA',
           config,
           provider,
-          senderAssetTargetBalance,
+          _bridgeGasFee,
           destinationAddress
         );
         if (txHash) {
@@ -430,7 +437,7 @@ const EvmBridgeModal = ({
       // Approve Celer Contract Address to spend user's token
       const data = await generateApproveData(
         config.CelerContractOnMoonbeam,
-        senderAssetTargetBalance.valueAtomicUnits.toString()
+        senderAssetTargetBalance.sub(destGasFee).valueAtomicUnits.toString()
       );
 
       updateStepStatus(2, 3);
@@ -447,7 +454,9 @@ const EvmBridgeModal = ({
           ]
         })
         .then(() => {
-          const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+          const amount = senderAssetTargetBalance
+            .sub(destGasFee)
+            .valueAtomicUnits.toString();
           queryAllowance(ethAddress, amount);
         })
         .catch(() => {
@@ -456,7 +465,9 @@ const EvmBridgeModal = ({
         });
     } else if (index === 14) {
       // transfer moonbeam to ethereum
-      const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+      const amount = senderAssetTargetBalance
+        .sub(destGasFee)
+        .valueAtomicUnits.toString();
       const sourceChainId = config.CelerMoonbeamChainId;
       const destinationChainId = config.CelerEthereumChainId;
 

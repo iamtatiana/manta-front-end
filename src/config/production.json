@@ -5,7 +5,7 @@
         {
             "name": "Manta",
             "path": "/manta",
-            "url": "wss://ws.manta.systems",
+            "url": "wss://c2.manta.moonsea.systems",
             "explorer": "manta.subscan.io"
           },
         {
@@ -15,5 +15,12 @@
             "url": "wss://calamari.systems",
             "explorer": "calamari.subscan.io"
         }
-    ]
+    ],
+    "CelerEndpoint": "https://cbridge-v2-test.celer.network/v2",
+    "MantaContractOnEthereum": "0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D",
+    "MantaContractOnMoonbeam":"0xfFFffFFf7D3875460d4509eb8d0362c611B4E841",
+    "CelerContractOnEthereum":"0x358234B325EF9eA8115291A8b81b7d33A2Fa762D",
+    "CelerContractOnMoonbeam":"0x841ce48F9446C8E281D3F1444cB859b4A6D0738C",
+    "CelerEthereumChainId":5,
+    "CelerMoonbeamChainId":1287
 }

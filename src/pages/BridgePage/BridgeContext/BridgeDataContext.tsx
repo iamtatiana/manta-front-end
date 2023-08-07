@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React, { useReducer, useContext, useEffect } from 'react';
+import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { Wallet } from '@acala-network/sdk/wallet';
 import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
@@ -42,15 +42,27 @@ export const BridgeDataContextProvider = (props) => {
     destinationAddress
   } = state;
 
+  const [originGasFee, setOriginGasFee] = useState<Balance>(
+    new Balance(senderAssetType, new BN(0))
+  );
+  const [destGasFee, setDestGasFee] = useState<Balance>(
+    new Balance(senderAssetType, new BN(0))
+  );
+
   const originAddress =
     originChain.name === 'ethereum' ||
     originChain?.getXcmAdapter().chain.type === 'ethereum'
       ? ethAddress
       : externalAccount?.address;
 
-  const originXcmAdapter = bridge?.adapters.find(
+  let originXcmAdapter = bridge?.adapters.find(
     (adapter) => adapter.chain.id === originChain?.name
   );
+  if (originChain.name === 'ethereum') {
+    originXcmAdapter = bridge?.adapters.find(
+      (adapter) => adapter.chain.id === 'moonbeam'
+    );
+  }
 
   const originApi = originXcmAdapter?.api;
 
@@ -373,6 +385,8 @@ export const BridgeDataContextProvider = (props) => {
     };
 
     const handleInputConfigChange = (inputConfig) => {
+      setOriginGasFee(getOriginFee(inputConfig));
+      setDestGasFee(getDestinationFee(inputConfig));
       dispatch({
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
         originFee: getOriginFee(inputConfig),
@@ -414,25 +428,19 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      let _originXcmAdapter = originXcmAdapter;
       // Workaround for Karura adapter internals not being ready on initial connection
       (originChain.name === 'karura' || originChain.name === 'acala') &&
-        (await _originXcmAdapter.wallet.isReady);
+        (await originXcmAdapter.wallet.isReady);
       const inputConfigParams = getInputConfigParams();
       if (originChain.name === 'ethereum') {
         return;
-        // testnet caused some error on moonbeam, we can calculate the gas on mainnet
-        // it is not a serious problem even we don't add the xcm fee
+        // use xcm sdk on mainnet
         inputConfigParams.to = 'manta';
-        console.log(bridge?.adapters);
-        _originXcmAdapter = bridge?.adapters.find(
-          (adapter) => adapter.chain.id === 'moonbeam'
-        );
       } else if (destinationChain.name === 'ethereum') {
         inputConfigParams.to = 'moonbeam';
       }
       const inputConfigObservable =
-        _originXcmAdapter.subscribeInputConfig(inputConfigParams);
+        originXcmAdapter.subscribeInputConfig(inputConfigParams);
       const inputConfig = await firstValueFrom(inputConfigObservable);
       handleInputConfigChange(inputConfig);
     };
@@ -529,6 +537,8 @@ export const BridgeDataContextProvider = (props) => {
   };
 
   const value = {
+    originGasFee,
+    destGasFee,
     originAddress,
     originApi,
     originXcmAdapter,
