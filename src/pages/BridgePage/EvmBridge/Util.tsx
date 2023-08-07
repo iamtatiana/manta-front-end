@@ -306,3 +306,38 @@ export const queryTokenAllowance = async (
   );
   return allowance.toString();
 };
+
+/**
+ * Query pending transaction of Celer bridge
+ * @param {string} celerEndpoint - Celer endpoint
+ * @param {string} address - user's address
+ */
+
+export const queryCelerPendingHistory = async (celerEndpoint, address) => {
+  try {
+    const response = await axios.get(
+      `${celerEndpoint}/pendingHistory?addr[]=${address}`,
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    const pendingHistory = response.data.action_transfer_history;
+    const formattedPendingList = pendingHistory.map((item) => {
+      const date = new Date(parseInt(item.update_ts));
+      return {
+        link: item.src_block_tx_link,
+        time: date.toLocaleString('en-US', {
+          hour12: false
+        }),
+        amount: parseInt(item.src_send_info.amount) / decimal
+      };
+    });
+    console.log(formattedPendingList);
+    return response.data;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
+};

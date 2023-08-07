@@ -3,6 +3,7 @@ import React from 'react';
 import AccountSelectMenu from 'components/Accounts/AccountSelectMenu';
 import Menu from 'components/Menu/DotMenu';
 import ActivityBanner from 'components/ActivityBanner';
+import TransactionHistory from 'components/TransactionHistory';
 import NavLinks from './NavLinks';
 import ChainSelector from './ChainSelector';
 
@@ -16,6 +17,7 @@ export const Navbar = () => {
           <NavLinks />
         </div>
         <div className="h-10 gap-4 flex flex-wrap justify-end items-center">
+          <TransactionHistory />
           <AccountSelectMenu />
           <Menu />
         </div>

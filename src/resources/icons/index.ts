@@ -59,7 +59,6 @@ import { ReactComponent as blueSolidLine } from 'resources/icons/blue-solid-line
 import { ReactComponent as unfilledCircle } from 'resources/icons/unfilled-circle.svg';
 import { ReactComponent as assetSelector } from 'resources/icons/asset-selector.svg';
 
-
 // chain data icons
 import { ReactComponent as Blocks } from 'resources/icons/chain/blocks.svg';
 import { ReactComponent as Sign } from 'resources/icons/chain/sign.svg';
@@ -79,6 +78,7 @@ import { ReactComponent as polkadot } from 'resources/icons/polkadot.svg';
 import { ReactComponent as dropUp } from 'resources/icons/drop-up.svg';
 import { ReactComponent as dropDown } from 'resources/icons/drop-down.svg';
 import { ReactComponent as detail } from 'resources/icons/detail.svg';
+import { ReactComponent as whiteDetail } from 'resources/icons/white-detail.svg';
 import { ReactComponent as user } from 'resources/icons/user.svg';
 import { ReactComponent as key } from 'resources/icons/key.svg';
 import { ReactComponent as warning } from 'resources/icons/warning.svg';
@@ -89,8 +89,8 @@ import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg
 import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
 import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
-import { ReactComponent as successIcon } from 'resources/icons/success-icon.svg'
-import { ReactComponent as failedIcon } from 'resources/icons/failed-icon.svg'
+import { ReactComponent as successIcon } from 'resources/icons/success-icon.svg';
+import { ReactComponent as failedIcon } from 'resources/icons/failed-icon.svg';
 
 // links icons
 import { ReactComponent as MantaWebsite } from 'resources/icons/links/MantaWebsite.svg';
@@ -196,6 +196,7 @@ const icons = {
   activityRightArrow,
   warningV2,
   successIcon,
-  failedIcon
+  failedIcon,
+  whiteDetail
 };
 export default icons;
