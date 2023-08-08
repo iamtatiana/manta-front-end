@@ -316,7 +316,7 @@ export const BridgeDataContextProvider = (props) => {
       getBalance();
     }, 3000);
     return () => clearInterval(timer);
-  }, [originChain, ethAddress]);
+  }, [originChain, ethAddress, chainId]);
 
   useEffect(() => {
     let nativeTokenUnsub = null;

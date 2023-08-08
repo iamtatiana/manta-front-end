@@ -4,6 +4,7 @@ import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
+import Chain from 'types/Chain';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import TransferFeeDisplay from './TransferFeeDisplay';
 import {
@@ -91,13 +92,13 @@ const EvmTransferButton = () => {
         // swith to ethereum
         await provider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x5' }]
+          params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
         });
       } else {
         // swith to moonbeam
         await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x507' }]
+          method: 'wallet_addEthereumChain',
+          params: [Chain.Moonbeam(config).ethMetadata]
         });
       }
 

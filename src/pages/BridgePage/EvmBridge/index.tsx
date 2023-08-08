@@ -19,6 +19,7 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import { stringToHex } from '@polkadot/util';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
+import Chain from 'types/Chain';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
@@ -327,14 +328,14 @@ const EvmBridgeModal = ({
         // swith to ethereum
         await provider.request({
           method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x5' }]
+          params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
         });
       } else {
         to = config.CelerContractOnMoonbeam;
         // swith to moonbeam
         await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x507' }]
+          method: 'wallet_addEthereumChain',
+          params: [Chain.Moonbeam(config).ethMetadata]
         });
       }
       // Confirm Refund
@@ -364,10 +365,9 @@ const EvmBridgeModal = ({
       // Submit (Step 3)
       try {
         // switch user's metamask to moonbeam network
-        // TODO, refer to metamask context, switch or add
         await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: '0x507' }]
+          method: 'wallet_addEthereumChain',
+          params: [Chain.Moonbeam(config).ethMetadata]
         });
 
         setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
@@ -428,10 +428,9 @@ const EvmBridgeModal = ({
     } else if (index === 13) {
       // approve moonbeam to ethereum
       // switch user's metamask to moonbeam network
-      // TODO, refer to metamask context, switch or add
       await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x507' }]
+        method: 'wallet_addEthereumChain',
+        params: [Chain.Moonbeam(config).ethMetadata]
       });
 
       // Approve Celer Contract Address to spend user's token

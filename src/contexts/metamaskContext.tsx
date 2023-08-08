@@ -39,7 +39,7 @@ export const MetamaskContextProvider = (props) => {
         if (networkName === 'Ethereum') {
           await provider.request({
             method: 'wallet_switchEthereumChain',
-            params: [{ chainId: '0x5' }]
+            params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
           });
         } else {
           await provider.request({

@@ -167,19 +167,19 @@ export default class Chain {
 
   static Ethereum(config) {
     const ethMetadata = {
-      chainId: '0x5',
-      chainName: 'Goerli',
+      chainId: config.IS_TESTNET ? '0x5' : '0x1',
+      chainName: config.IS_TESTNET ? 'Goerli' : 'Ethereum Mainnet',
       nativeCurrency: {
-        name: 'GoerliETH',
-        symbol: 'GoerliETH',
+        name: config.IS_TESTNET ? 'GoerliETH' : 'Ethereum',
+        symbol: config.IS_TESTNET ? 'GoerliETH' : 'ETH',
         decimals: 18
       },
-      rpcUrls: [config.GOERLI_RPC]
+      rpcUrls: [config.IS_TESTNET ? config.GOERLI_RPC : config.ETHEREUM_RPC]
     };
     return new Chain(
       'ethereum',
       'Ethereum',
-      5,
+      config.IS_TESTNET ? 5 : 1,
       'ethereum',
       null,
       null,
@@ -190,20 +190,20 @@ export default class Chain {
       null,
       null,
       ethMetadata,
-      5
+      config.IS_TESTNET ? 5 : 1
     );
   }
 
   static Moonbeam(config) {
     const moonbeamEthMetadata = {
       chainId: config.IS_TESTNET ? '0x507' : '0x504',
-      chainName: 'Moonbeam',
+      chainName: config.IS_TESTNET ? 'Moonbase Alpha' : 'Moonbeam',
       nativeCurrency: {
-        name: 'GLMR',
-        symbol: 'GMLR',
+        name: config.IS_TESTNET ? 'DEV' : 'GLMR',
+        symbol: config.IS_TESTNET ? 'DEV' : 'GMLR',
         decimals: 18
       },
-      rpcUrls: [config.MOONBEAM_RPC]
+      rpcUrls: [config.IS_TESTNET ? config.MOONBASE_RPC : config.MOONBEAM_RPC]
     };
 
     return new Chain(
