@@ -59,7 +59,7 @@ const StepStatus = ({
   }, [ethAddress]);
 
   useEffect(() => {
-    if (errMsgObj.errMsg) {
+    if (errMsgObj.errMsg !== undefined) {
       setErrMsg(errMsgObj.errMsg);
     }
     if (errMsgObj.index === 1) {

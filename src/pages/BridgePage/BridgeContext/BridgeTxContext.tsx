@@ -190,17 +190,12 @@ export const BridgeTxContextProvider = (props) => {
       token: senderAssetTargetBalance.assetType.logicalTicker,
       address: destinationAddress
     });
-    try {
-      setApiSigner(originApi);
-      await tx.signAndSend(
-        externalAccountSigner,
-        { nonce: -1 },
-        handleTxResCb || handleTxRes
-      );
-    } catch (error) {
-      console.error('Transaction failed', error);
-      setTxStatus(TxStatus.failed('Transaction declined'));
-    }
+    setApiSigner(originApi);
+    await tx.signAndSend(
+      externalAccountSigner,
+      { nonce: -1 },
+      handleTxResCb || handleTxRes
+    );
   };
 
   // Attempts to build and send a bridge transaction with an Eth-like origin chain

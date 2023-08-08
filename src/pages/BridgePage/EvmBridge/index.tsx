@@ -51,7 +51,8 @@ const buttonStatus = [
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
   { index: 13, text: 'Approve', loading: false },
   { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
-  { index: 15, text: 'Done', loading: false }
+  { index: 15, text: 'Done', loading: false },
+  { index: 16, text: 'Processing', loading: true }
 ];
 
 type EvmBridgeData = {
@@ -139,7 +140,7 @@ const EvmBridgeModal = ({
           title: `Send MANTA from ${originChainName} to Moonbeam`,
           subtitle: isEthereumToManta
             ? `Please wait. Estimated time of arrival: ${latency} minutes`
-            : 'Please send your MANTA from Manta to Moonbeam to via XCM.',
+            : 'Please send your MANTA from Manta to Moonbeam via XCM.',
           status: isEthereumToManta ? 3 : 0,
           subtitleWarning: false
         },
@@ -259,7 +260,7 @@ const EvmBridgeModal = ({
     if (index === 5) {
       // Obtain free GLMR (Step 2)
       if (!ethAddress || !captcha) return;
-      setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+      setCurrentButtonStatus(buttonStatus[16]);
       updateStepStatus(1, 3);
       try {
         let freeGas;
@@ -319,24 +320,70 @@ const EvmBridgeModal = ({
           }
         }
         updateStepStatus(1, 2);
-        setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
+        setCurrentButtonStatus({ ...buttonStatus[5], loading: false });
       }
     } else if (index === 8) {
+      if (errMsgObj.index === 0) {
+        setErrMsgObj({
+          index: 0,
+          errMsg: ''
+        });
+      }
       let to = '';
       if (isEthereumToManta) {
         to = config.CelerContractOnEthereum;
         // swith to ethereum
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
-        });
+        try {
+          await provider.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
+          });
+        } catch (e) {
+          setErrMsgObj({
+            index: 0,
+            errMsg: e.message
+          });
+          setCurrentButtonStatus(buttonStatus[8]);
+          updateStepStatus(0, 2);
+          return;
+        }
       } else {
         to = config.CelerContractOnMoonbeam;
         // swith to moonbeam
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [Chain.Moonbeam(config).ethMetadata]
-        });
+        // switch user's metamask to moonbeam network
+        try {
+          await ethereum.request({
+            method: 'wallet_switchEthereumChain',
+            params: [{ chainId: Chain.Moonbeam(config).ethMetadata.chainId }]
+          });
+        } catch (switchError) {
+          // This error code indicates that the chain has not been added to MetaMask.
+          if (switchError.code === 4902) {
+            try {
+              await provider.request({
+                method: 'wallet_addEthereumChain',
+                params: [Chain.Moonbeam(config).ethMetadata]
+              });
+            } catch (addError) {
+              // handle "add" error
+              setErrMsgObj({
+                index: 0,
+                errMsg: addError.message
+              });
+              setCurrentButtonStatus(buttonStatus[8]);
+              updateStepStatus(0, 2);
+              return;
+            }
+          }
+          // handle other "switch" errors
+          setErrMsgObj({
+            index: 0,
+            errMsg: switchError.message
+          });
+          setCurrentButtonStatus(buttonStatus[8]);
+          updateStepStatus(0, 2);
+          return;
+        }
       }
       // Confirm Refund
       const data = generateCelerRefundData(refundData);
@@ -356,40 +403,80 @@ const EvmBridgeModal = ({
           updateRefundStatus(transferId);
         })
         .catch(() => {
+          setErrMsgObj({
+            index: 0,
+            errMsg: switchError.message
+          });
+          updateStepStatus(0, 2);
           setCurrentButtonStatus(buttonStatus[8]);
         });
     } else if (index === 10) {
       // Refunded, try again
       hideModal();
     } else if (index === 11) {
-      // Submit (Step 3)
-      try {
-        // switch user's metamask to moonbeam network
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [Chain.Moonbeam(config).ethMetadata]
+      // moonbeam to manta
+      if (errMsgObj.index === 2) {
+        setErrMsgObj({
+          index: 2,
+          errMsg: ''
         });
-
-        setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
-        updateStepStatus(2, 3);
-        // send token from moonbeam to manta
-        const txHash = await transferTokenFromMoonbeamToManta(
-          'MANTA',
-          config,
-          provider,
-          _bridgeGasFee,
-          destinationAddress
-        );
-        if (txHash) {
-          setTxStatus(TxStatus.finalized(txHash));
-          hideModal();
-        } else {
-          setTxStatus(TxStatus.failed('Transaction declined'));
+      }
+      // switch user's metamask to moonbeam network
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: Chain.Moonbeam(config).ethMetadata.chainId }]
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [Chain.Moonbeam(config).ethMetadata]
+            });
+          } catch (addError) {
+            // handle "add" error
+            setErrMsgObj({
+              index: 2,
+              errMsg: addError.message
+            });
+            setCurrentButtonStatus(buttonStatus[11]);
+            updateStepStatus(2, 2);
+            return;
+          }
         }
-      } catch (e) {
-        console.log('step3 error', e);
-        setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
-        updateStepStatus(2, 0);
+        // handle other "switch" errors
+        setErrMsgObj({
+          index: 2,
+          errMsg: switchError.message
+        });
+        setCurrentButtonStatus(buttonStatus[11]);
+        updateStepStatus(2, 2);
+        return;
+      }
+
+      setCurrentButtonStatus(buttonStatus[16]);
+      updateStepStatus(2, 3);
+      // send token from moonbeam to manta
+      const txHash = await transferTokenFromMoonbeamToManta(
+        'MANTA',
+        config,
+        provider,
+        _bridgeGasFee,
+        destinationAddress
+      );
+      if (txHash) {
+        setTxStatus(TxStatus.finalized(txHash));
+        hideModal();
+      } else {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+        setErrMsgObj({
+          index: 2,
+          errMsg: 'Transaction declined.'
+        });
+        setCurrentButtonStatus(buttonStatus[11]);
+        updateStepStatus(2, 2);
       }
     } else if (index === 12) {
       // manta to moonbeam
@@ -413,7 +500,7 @@ const EvmBridgeModal = ({
               });
             }
             updateStepStatus(0, 2);
-            setCurrentButtonStatus((prev) => ({ ...prev, loading: false }));
+            setCurrentButtonStatus(buttonStatus[12]);
           } else {
             // succeed
             updateStepStatus(0, 1);
@@ -422,27 +509,42 @@ const EvmBridgeModal = ({
         }
       };
 
-      setCurrentButtonStatus((prev) => ({ ...prev, loading: true }));
+      if (errMsgObj.index === 0) {
+        setErrMsgObj({
+          index: 0,
+          errMsg: ''
+        });
+      }
+      setCurrentButtonStatus(buttonStatus[16]);
       updateStepStatus(0, 3);
-      await sendSubstrate(handleTxRes);
+      try {
+        await sendSubstrate(handleTxRes);
+      } catch (e) {
+        setErrMsgObj({
+          index: 0,
+          errMsg: e.message
+        });
+        updateStepStatus(0, 2);
+        setCurrentButtonStatus(buttonStatus[12]);
+      }
     } else if (index === 13) {
       // approve moonbeam to ethereum
-      // switch user's metamask to moonbeam network
-      await provider.request({
-        method: 'wallet_addEthereumChain',
-        params: [Chain.Moonbeam(config).ethMetadata]
-      });
+      if (errMsgObj.index === 2) {
+        setErrMsgObj({
+          index: 2,
+          errMsg: ''
+        });
+      }
+      try {
+        // Approve Celer Contract Address to spend user's token
+        const data = await generateApproveData(
+          config.CelerContractOnMoonbeam,
+          senderAssetTargetBalance.sub(destGasFee).valueAtomicUnits.toString()
+        );
 
-      // Approve Celer Contract Address to spend user's token
-      const data = await generateApproveData(
-        config.CelerContractOnMoonbeam,
-        senderAssetTargetBalance.sub(destGasFee).valueAtomicUnits.toString()
-      );
-
-      updateStepStatus(2, 3);
-      setCurrentButtonStatus(buttonStatus[0]);
-      await provider
-        .request({
+        updateStepStatus(2, 3);
+        setCurrentButtonStatus(buttonStatus[16]);
+        await provider.request({
           method: 'eth_sendTransaction',
           params: [
             {
@@ -451,19 +553,27 @@ const EvmBridgeModal = ({
               data: data
             }
           ]
-        })
-        .then(() => {
-          const amount = senderAssetTargetBalance
-            .sub(destGasFee)
-            .valueAtomicUnits.toString();
-          queryAllowance(ethAddress, amount);
-        })
-        .catch(() => {
-          // ready to approve
-          setCurrentButtonStatus(buttonStatus[13]);
         });
+        const amount = senderAssetTargetBalance
+          .sub(destGasFee)
+          .valueAtomicUnits.toString();
+        queryAllowance(ethAddress, amount);
+      } catch (e) {
+        setErrMsgObj({
+          index: 2,
+          errMsg: e.message
+        });
+        updateStepStatus(2, 2);
+        setCurrentButtonStatus(buttonStatus[13]);
+      }
     } else if (index === 14) {
       // transfer moonbeam to ethereum
+      if (errMsgObj.index === 2) {
+        setErrMsgObj({
+          index: 2,
+          errMsg: ''
+        });
+      }
       const amount = senderAssetTargetBalance
         .sub(destGasFee)
         .valueAtomicUnits.toString();
@@ -479,9 +589,10 @@ const EvmBridgeModal = ({
         amount,
         maxSlippage
       );
-      setCurrentButtonStatus(buttonStatus[0]);
-      await provider
-        .request({
+      updateStepStatus(2, 3);
+      setCurrentButtonStatus(buttonStatus[16]);
+      try {
+        await provider.request({
           method: 'eth_sendTransaction',
           params: [
             {
@@ -490,14 +601,16 @@ const EvmBridgeModal = ({
               data: data
             }
           ]
-        })
-        .then(() => {
-          updateTransferStatus(transferId);
-        })
-        .catch(() => {
-          //ready to transfer token from moonbeam to ethereum
-          setCurrentButtonStatus(buttonStatus[14]);
         });
+        updateTransferStatus(transferId);
+      } catch (e) {
+        setErrMsgObj({
+          index: 2,
+          errMsg: e.message
+        });
+        updateStepStatus(2, 2);
+        setCurrentButtonStatus(buttonStatus[14]);
+      }
     } else {
       hideModal();
     }
