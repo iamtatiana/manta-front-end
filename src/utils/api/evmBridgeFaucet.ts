@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const baseUrl = 'http://8.218.132.38:3000';
+const baseUrl = 'https://faucet-test.oral-craft.com';
 
 export const getRandomStr = (manta_address: string) => {
   return axios.post(
