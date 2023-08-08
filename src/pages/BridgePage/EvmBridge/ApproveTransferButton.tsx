@@ -4,6 +4,7 @@ import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
+import { useTxStatus } from 'contexts/txStatusContext';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import TransferFeeDisplay from './TransferFeeDisplay';
 import {
@@ -14,7 +15,6 @@ import {
   estimateApproveGasFee,
   estimateSendGasFee
 } from './Util';
-import EvmBridge from './index';
 
 const buttonText = [
   '',
@@ -29,6 +29,7 @@ const EvmTransferButton = () => {
   const {
     originChain,
     destinationChain,
+    destinationAddress,
     senderAssetType,
     senderAssetTargetBalance
   } = useBridgeData();
@@ -38,8 +39,7 @@ const EvmTransferButton = () => {
   const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next
   const [isEstimatingFee, setIsEstimatingFee] = useState(false);
   const [bridgeFee, setBridgeFee] = useState({});
-  const [transferId, setTransferId] = useState('');
-  const [showEvmBridgeModal, setShowEvmBridgeModal] = useState(false);
+  const { currentEvmTx, setCurrentEvmTx } = useTxStatus();
 
   const onClick = () => {
     if (status === 1) {
@@ -47,7 +47,15 @@ const EvmTransferButton = () => {
     } else if (status === 2) {
       onTransferClick();
     } else if (status === 4) {
-      setShowEvmBridgeModal(true);
+      setCurrentEvmTx({
+        originChainName: 'Manta',
+        destinationChainName: 'Ethereum',
+        destinationAddress: destinationAddress,
+        transferId: '',
+        latency: bridgeFee.latency,
+        maxSlippage: bridgeFee.max_slippage,
+        amount: senderAssetTargetBalance.valueAtomicUnits.toString()
+      });
     }
   };
 
@@ -119,7 +127,6 @@ const EvmTransferButton = () => {
         ethAddress,
         originChainInfo.originChainGasFeeSymbol
       );
-      console.log('approveGasFee: ' + approveGasFee);
 
       latestBridgeFee.approveGasFee = approveGasFee;
       latestBridgeFee.sendGasFee = 'Waitting for approve';
@@ -204,8 +211,15 @@ const EvmTransferButton = () => {
         ]
       })
       .then(() => {
-        setTransferId(transferId);
-        setShowEvmBridgeModal(true);
+        setCurrentEvmTx({
+          originChainName: 'Ethereum',
+          destinationChainName: 'Manta',
+          destinationAddress: destinationAddress,
+          transferId: transferId,
+          latency: bridgeFee.latency,
+          maxSlippage: bridgeFee.max_slippage,
+          amount: senderAssetTargetBalance.valueAtomicUnits.toString()
+        });
         setStatus(1);
       })
       .catch(() => {
@@ -262,7 +276,7 @@ const EvmTransferButton = () => {
         numberOfDecimals={senderAssetType.numberOfDecimals}
       />
       <div>
-        {status === 0 && transferId.length === 0 ? (
+        {status === 0 && !currentEvmTx ? (
           <LoadingIndicator />
         ) : (
           <button
@@ -278,13 +292,6 @@ const EvmTransferButton = () => {
           </button>
         )}
       </div>
-      {showEvmBridgeModal && (
-        <EvmBridge
-          transferId={transferId}
-          latency={bridgeFee.latency}
-          maxSlippage={bridgeFee.max_slippage}
-        />
-      )}
     </div>
   );
 };

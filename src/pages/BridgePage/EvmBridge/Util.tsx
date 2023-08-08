@@ -323,19 +323,41 @@ export const queryCelerPendingHistory = async (celerEndpoint, address) => {
         }
       }
     );
-    const pendingHistory = response.data.action_transfer_history;
+    const pendingHistory = response.data.pending_transfer_history;
     const formattedPendingList = pendingHistory.map((item) => {
       const date = new Date(parseInt(item.update_ts));
+      let originChainName = item.src_send_info.chain.name;
+      let destinationChainName = item.dst_received_info.chain.name;
+
+      ////////////////////////////////////
+      // debug purpose
+      if (originChainName === 'Goerli') {
+        originChainName = 'Ethereum';
+      } else if (originChainName === 'Moonbase Alpha Testnet') {
+        originChainName = 'Moonbeam';
+      }
+      if (destinationChainName === 'Goerli') {
+        destinationChainName = 'Ethereum';
+      } else if (destinationChainName === 'Moonbase Alpha Testnet') {
+        destinationChainName = 'Moonbeam';
+      }
+      ////////////////////////////////////
+
       return {
+        originChainName: originChainName,
+        destinationChainName: destinationChainName,
+        destinationAddress: item.receiver,
+        transferId: item.transfer_id,
+        latency: 10,
+        maxSlippage: 5000,
         link: item.src_block_tx_link,
         time: date.toLocaleString('en-US', {
           hour12: false
         }),
-        amount: parseInt(item.src_send_info.amount) / decimal
+        amount: item.src_send_info.amount
       };
     });
-    console.log(formattedPendingList);
-    return response.data;
+    return formattedPendingList;
   } catch (e) {
     console.error(e);
     return null;

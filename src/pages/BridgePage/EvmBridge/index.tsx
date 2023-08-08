@@ -17,7 +17,6 @@ import TxStatus from 'types/TxStatus';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { stringToHex } from '@polkadot/util';
-import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
 import Indicator from './Indicator';
@@ -51,41 +50,34 @@ const buttonStatus = [
   { index: 15, text: 'Done', loading: false }
 ];
 
-type EvmBridgeData = {
-  transferId?: string;
-  latency?: number;
-  maxSlippage?: number;
-};
-
-const EvmBridgeModal = ({
-  transferId,
-  latency,
-  maxSlippage
-}: EvmBridgeData) => {
-  const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
+const EvmBridgeModal = () => {
+  const { setTxStatus, currentEvmTx, setCurrentEvmTx } = useTxStatus();
   const { provider, ethAddress } = useMetamask();
-  const {
-    originChain,
-    destinationChain,
-    destinationAddress,
-    senderAssetTargetBalance
-  } = useBridgeData();
-  const isEthereumToManta = originChain?.name === 'ethereum';
+  // const {
+  //   originChain,
+  //   destinationChain,
+  //   destinationAddress,
+  //   senderAssetTargetBalance
+  // } = useBridgeData();
+
   const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
 
   const { ModalWrapper, showModal, hideModal } = useModal({
-    closeCallback: () => SetEVMBridgeProcessing(false)
+    closeCallback: () => setCurrentEvmTx(null)
   });
   const [modalText, setModalText] = useState({});
-  const [currentButtonStatus, setCurrentButtonStatus] = useState(
-    isEthereumToManta ? buttonStatus[0] : buttonStatus[5]
-  );
   const [captcha, setCaptcha] = useState('');
   const [errMsgObj, setErrMsgObj] = useState({});
   const { selectedWallet } = useKeyring();
   const { externalAccount } = usePublicAccount();
   const [refundData, setRefundData] = useState({});
+
+  const isEthereumToManta =
+    currentEvmTx?.originChainName.toLowerCase() === 'ethereum';
+  const [currentButtonStatus, setCurrentButtonStatus] = useState(
+    isEthereumToManta ? buttonStatus[0] : buttonStatus[5]
+  );
 
   useEffect(() => {
     // captcha length is 4
@@ -97,15 +89,16 @@ const EvmBridgeModal = ({
   }, [captcha]);
 
   useEffect(() => {
-    SetEVMBridgeProcessing(true);
-    let originChainName = originChain.name;
-    originChainName =
-      originChainName.charAt(0).toUpperCase() + originChainName.slice(1);
+    if (!currentEvmTx) {
+      return;
+    }
+    const originChainName =
+      currentEvmTx.originChainName.charAt(0).toUpperCase() +
+      currentEvmTx.originChainName.slice(1);
 
-    let destinationChainName = destinationChain.name;
-    destinationChainName =
-      destinationChainName.charAt(0).toUpperCase() +
-      destinationChainName.slice(1);
+    const destinationChainName =
+      currentEvmTx.destinationChainName.charAt(0).toUpperCase() +
+      currentEvmTx.destinationChainName.slice(1);
 
     // status, 0 = default, 1 = success, 2 = failed, 3 = pending
     const initialModalText = {
@@ -130,7 +123,7 @@ const EvmBridgeModal = ({
           index: 1,
           title: `Send MANTA from ${originChainName} to Moonbeam`,
           subtitle: isEthereumToManta
-            ? `Please wait. Estimated time of arrival: ${latency} minutes`
+            ? `Please wait. Estimated time of arrival: ${currentEvmTx.latency} minutes`
             : 'Please send your MANTA from Manta to Moonbeam to via XCM.',
           status: isEthereumToManta ? 3 : 0,
           subtitleWarning: false
@@ -148,7 +141,7 @@ const EvmBridgeModal = ({
           title: `Send MANTA from Moonbeam to ${destinationChainName}`,
           subtitle: isEthereumToManta
             ? `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`
-            : `Please wait. Estimated time of arrival: ${latency} minutes`,
+            : `Please wait. Estimated time of arrival: ${currentEvmTx.latency} minutes`,
           status: 0,
           subtitleWarning: false
         }
@@ -159,12 +152,12 @@ const EvmBridgeModal = ({
     showModal();
     if (isEthereumToManta) {
       // query transfer status
-      updateTransferStatus(transferId);
+      updateTransferStatus(currentEvmTx.transferId);
     } else {
       // eligible to get free GLMR
       setCurrentButtonStatus(buttonStatus[5]);
     }
-  }, []);
+  }, [currentEvmTx]);
 
   const updateTransferStatus = async (transferId) => {
     try {
@@ -187,7 +180,7 @@ const EvmBridgeModal = ({
         // celer transfer complete
         updateStepStatus(currentIndex, 1);
         if (isEthereumToManta) {
-          setCurrentButtonStatus(buttonStatus[status]);
+          setCurrentButtonStatus(buttonStatus[11]);
         } else {
           // moonbeam to ethereum complete
           setCurrentButtonStatus(buttonStatus[15]);
@@ -345,7 +338,7 @@ const EvmBridgeModal = ({
           ]
         })
         .then(() => {
-          updateRefundStatus(transferId);
+          updateRefundStatus(currentEvmTx.transferId);
         })
         .catch(() => {
           setCurrentButtonStatus(buttonStatus[8]);
@@ -370,8 +363,8 @@ const EvmBridgeModal = ({
           'MANTA',
           config,
           provider,
-          senderAssetTargetBalance,
-          destinationAddress
+          currentEvmTx.amount,
+          currentEvmTx.destinationAddress
         );
         if (txHash) {
           setTxStatus(TxStatus.finalized(txHash));
@@ -430,7 +423,7 @@ const EvmBridgeModal = ({
       // Approve Celer Contract Address to spend user's token
       const data = await generateApproveData(
         config.CelerContractOnMoonbeam,
-        senderAssetTargetBalance.valueAtomicUnits.toString()
+        currentEvmTx.amount
       );
 
       updateStepStatus(2, 3);
@@ -447,8 +440,7 @@ const EvmBridgeModal = ({
           ]
         })
         .then(() => {
-          const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
-          queryAllowance(ethAddress, amount);
+          queryAllowance(ethAddress, currentEvmTx.amount);
         })
         .catch(() => {
           // ready to approve
@@ -456,17 +448,16 @@ const EvmBridgeModal = ({
         });
     } else if (index === 14) {
       // transfer moonbeam to ethereum
-      const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
       const sourceChainId = config.CelerMoonbeamChainId;
       const destinationChainId = config.CelerEthereumChainId;
 
       // Generate data of Celer Contract
-      const { data, transferId } = generateCelerContractData(
+      const { data, newTransferId } = generateCelerContractData(
         sourceChainId,
         destinationChainId,
         ethAddress,
         config.MantaContractOnMoonbeam,
-        amount,
+        currentEvmTx.amount,
         maxSlippage
       );
       setCurrentButtonStatus(buttonStatus[0]);
@@ -482,7 +473,7 @@ const EvmBridgeModal = ({
           ]
         })
         .then(() => {
-          updateTransferStatus(transferId);
+          updateTransferStatus(newTransferId);
         })
         .catch(() => {
           //ready to transfer token from moonbeam to ethereum

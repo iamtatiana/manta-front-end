@@ -8,7 +8,8 @@ export const TxStatusContextProvider = (props) => {
   const [txStatus, _setTxStatus] = useState(null);
   const txStatusRef = useRef(null);
 
-  const [EVMBridgeProcessing, SetEVMBridgeProcessing] = useState(false);
+  const [pendingEvmTxList, setPendingEvmTxList] = useState(null);
+  const [currentEvmTx, setCurrentEvmTx] = useState(null);
 
   const setTxStatus = (status) => {
     _setTxStatus(status);
@@ -19,8 +20,10 @@ export const TxStatusContextProvider = (props) => {
     txStatus,
     txStatusRef,
     setTxStatus,
-    EVMBridgeProcessing,
-    SetEVMBridgeProcessing
+    currentEvmTx,
+    setCurrentEvmTx,
+    pendingEvmTxList,
+    setPendingEvmTxList
   };
 
   return (

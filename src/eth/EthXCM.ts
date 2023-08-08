@@ -86,17 +86,17 @@ const xTokenContractAddressList = {
 
 /**
   * Transfer token from Moonbeam to Manta via XCM
-  * @param {string}    xTokenType - token type name
-  * @param {object}    config     - config object
-  * @param {object}    provider   - metamask provider
-  * @param {BigNumber} balance    - account balance
-  * @param {string}    address    - account address
+  * @param {string} xTokenType - token type name
+  * @param {object} config - config object
+  * @param {object} provider - metamask provider
+  * @param {string} amount - account balance
+  * @param {string} address - account address
   */
 export const transferTokenFromMoonbeamToManta = async (
   xTokenType,
   config,
   provider,
-  balance,
+  amount,
   address
 ) => {
   // init moonbeam contract
@@ -106,7 +106,6 @@ export const transferTokenFromMoonbeamToManta = async (
   const contract = new ethers.Contract(XTOKENS_PRECOMPILE_ADDRESS, abi, signer);
 
   // init XCM transaction data
-  const amount = balance.valueAtomicUnits.toString();
   const accountId = addressToAccountId(address);
   let parachainId;
   let tokenContractAddress;
