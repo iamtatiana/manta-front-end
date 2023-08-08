@@ -155,7 +155,7 @@ const EvmBridgeModal = () => {
       updateTransferStatus(currentEvmTx.transferId);
     } else {
       // eligible to get free GLMR
-      setCurrentButtonStatus(buttonStatus[5]);
+      setCurrentButtonStatus(buttonStatus[12]);
     }
   }, [currentEvmTx]);
 
@@ -180,7 +180,7 @@ const EvmBridgeModal = () => {
         // celer transfer complete
         updateStepStatus(currentIndex, 1);
         if (isEthereumToManta) {
-          setCurrentButtonStatus(buttonStatus[11]);
+          setCurrentButtonStatus(buttonStatus[status]);
         } else {
           // moonbeam to ethereum complete
           setCurrentButtonStatus(buttonStatus[15]);
@@ -200,7 +200,9 @@ const EvmBridgeModal = () => {
         setCurrentButtonStatus(buttonStatus[status]);
       }
     } catch (error) {
-      console.error('Error:', error);
+      setTimeout(async () => {
+        await updateTransferStatus(transferId);
+      }, 10000);
     }
   };
 
@@ -458,7 +460,7 @@ const EvmBridgeModal = () => {
         ethAddress,
         config.MantaContractOnMoonbeam,
         currentEvmTx.amount,
-        maxSlippage
+        currentEvmTx.maxSlippage
       );
       setCurrentButtonStatus(buttonStatus[0]);
       await provider

@@ -13,8 +13,7 @@ const decimal = Math.pow(10, 18);
 const TransactionHistory = () => {
   const config = useConfig();
   const { ethAddress } = useMetamask();
-  const { pendingEvmTxList, setPendingEvmTxList, setCurrentEvmTx } =
-    useTxStatus();
+  const { pendingEvmTxList, setPendingEvmTxList } = useTxStatus();
 
   useEffect(() => {
     initPendingList();
@@ -28,23 +27,23 @@ const TransactionHistory = () => {
       config.CelerEndpoint,
       ethAddress
     );
+    setPendingEvmTxList(() => pendingList);
+
     if (pendingList.length > 0) {
-      setPendingEvmTxList(() => pendingList);
+      setTimeout(() => {
+        initPendingList();
+      }, 10 * 1000);
     }
   };
 
   const [showTransactionList, setShowTransactionList] = useState(false);
-
-  const showTransferModal = (index) => {
-    setCurrentEvmTx(() => pendingEvmTxList[index]);
-  };
 
   const redirectToExplorer = (index) => {
     window.open(pendingEvmTxList[index].link, '_blank');
   };
 
   return (
-    pendingEvmTxList && (
+    pendingEvmTxList?.length > 0 && (
       <OutsideClickHandler onOutsideClick={() => setShowTransactionList(false)}>
         <div
           className={classNames(
@@ -60,44 +59,37 @@ const TransactionHistory = () => {
           </p>
         </div>
         {showTransactionList && (
-          <div className="w-90 flex flex-col mx-22 px-3 py-2 absolute right-0 top-full border border-white-light rounded-lg text-black dark:text-white">
+          <div className="bg-secondary w-85 flex flex-col mt-2 mx-2 px-3 py-2 absolute right-0 top-full rounded-lg text-black dark:text-white">
             {pendingEvmTxList.map((item, index) => {
-              const isEthereumToManta =
-                item.originChainName.toLowerCase() === 'ethereum';
               return (
-                <div key={index} className="bg-secondary px-2 my-2 rounded-lg">
-                  <div
-                    className={classNames('max-h-96 overflow-y-auto py-1', {
-                      'cursor-pointer': isEthereumToManta
-                    })}
-                    onClick={() =>
-                      isEthereumToManta && showTransferModal(index)
-                    }>
-                    <div className="flex flex-row items-center">
-                      {parseInt(item.amount) / decimal} MANTA from{' '}
-                      {item.originChainName} to {item.destinationChainName}
-                      {isEthereumToManta && (
+                <div key={index} className="px-2 my-2 rounded-lg flex flex-row">
+                  <div className="w-5 h-1 flex items-center justify-center space-x-1 mt-4 mr-2">
+                    <div className="w-1 h-1 rounded-full animate-pulse dark:bg-indigo-400" />
+                    <div className="w-1 h-1 rounded-full animate-pulse dark:bg-indigo-400" />
+                    <div className="w-1 h-1 rounded-full animate-pulse dark:bg-indigo-400" />
+                  </div>
+                  <div className="w-80">
+                    <div className={'overflow-y-auto py-1'}>
+                      <div className="flex flex-row items-center">
+                        {parseInt(item.amount) / decimal} MANTA from{' '}
+                        {item.originChainName} to {item.destinationChainName}
+                      </div>
+                    </div>
+                    <div className="overflow-y-auto py-1">
+                      <div className="flex flex-row items-center opacity-60	">
+                        Sent time: {item.time}
+                      </div>
+                    </div>
+                    <div
+                      className="overflow-y-auto py-1 cursor-pointer"
+                      onClick={() => redirectToExplorer(index)}>
+                      <div className="flex flex-row items-center opacity-60	">
+                        View Transaction
                         <Icon
                           className={'w-4 h-4 ml-2'}
                           name={'whiteDetail' as IconName}
                         />
-                      )}
-                    </div>
-                  </div>
-                  <div className="max-h-96 overflow-y-auto py-1">
-                    <div className="flex flex-row items-center opacity-60	">
-                      Sent time: {item.time}
-                    </div>
-                  </div>
-                  <div
-                    className="max-h-96 overflow-y-auto py-1 cursor-pointer"
-                    onClick={() => redirectToExplorer(index)}>
-                    <div className="flex flex-row items-center opacity-60	">
-                      View Transaction
-                      <Icon
-                        className={'w-3 h-3 ml-2'}
-                        name={'whiteDetail' as IconName}
-                      />
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -347,14 +347,12 @@ export const queryCelerPendingHistory = async (celerEndpoint, address) => {
         originChainName: originChainName,
         destinationChainName: destinationChainName,
         destinationAddress: item.receiver,
-        transferId: item.transfer_id,
-        latency: 10,
-        maxSlippage: 5000,
         link: item.src_block_tx_link,
         time: date.toLocaleString('en-US', {
           hour12: false
         }),
-        amount: item.src_send_info.amount
+        amount: item.src_send_info.amount,
+        status: item.status
       };
     });
     return formattedPendingList;
