@@ -59,18 +59,21 @@ const EvmTransferButton = () => {
     let celerContractAddress = '';
     let mantaContractAddress = '';
     let originChainGasFeeSymbol = '';
+    let isEthereumToManta = null;
     if (originChain.name === 'ethereum') {
       sourceChainId = config.CelerEthereumChainId;
       destinationChainId = config.CelerMoonbeamChainId;
       celerContractAddress = config.CelerContractOnEthereum;
       mantaContractAddress = config.MantaContractOnEthereum;
       originChainGasFeeSymbol = 'ETH';
+      isEthereumToManta = true;
     } else {
       sourceChainId = config.CelerMoonbeamChainId;
       destinationChainId = config.CelerEthereumChainId;
       celerContractAddress = config.CelerContractOnMoonbeam;
       mantaContractAddress = config.MantaContractOnMoonbeam;
       originChainGasFeeSymbol = 'GLMR';
+      isEthereumToManta = false;
     }
 
     return {
@@ -78,7 +81,8 @@ const EvmTransferButton = () => {
       destinationChainId: destinationChainId,
       celerContractAddress: celerContractAddress,
       mantaContractAddress: mantaContractAddress,
-      originChainGasFeeSymbol: originChainGasFeeSymbol
+      originChainGasFeeSymbol: originChainGasFeeSymbol,
+      isEthereumToManta: isEthereumToManta
     };
   };
 
@@ -117,7 +121,8 @@ const EvmTransferButton = () => {
       );
 
       latestBridgeFee.approveGasFee = approveGasFee;
-      latestBridgeFee.sendGasFee = 'Waitting for approve';
+      latestBridgeFee.sendGasFee = 'Waiting for approve';
+      latestBridgeFee.isEthereumToManta = originChainInfo.isEthereumToManta;
 
       if (latestBridgeFee.estimated_receive_amt < 0) {
         // The received amount cannot cover fee

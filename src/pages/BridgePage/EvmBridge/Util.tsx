@@ -26,39 +26,50 @@ export const queryCelerBridgeFee = async (
   amount,
   celerEndpoint
 ) => {
-  // Query celer bridge fee
-  const feeResponse = await axios.get(`${celerEndpoint}/estimateAmt`, {
-    params: {
-      src_chain_id: sourceChainId,
-      dst_chain_id: destinationChainId,
-      token_symbol: symbol,
-      amt: amount
-    },
-    headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-  // Query estimated time of arrival
-  const latency = await axios.get(
-    `${celerEndpoint}/getLatest7DayTransferLatencyForQuery`,
-    {
+  try {
+    // Query celer bridge fee
+    const feeResponse = await axios.get(`${celerEndpoint}/estimateAmt`, {
       params: {
         src_chain_id: sourceChainId,
-        dst_chain_id: destinationChainId
+        dst_chain_id: destinationChainId,
+        token_symbol: symbol,
+        amt: amount
       },
       headers: {
         'Content-Type': 'application/json'
       }
-    }
-  );
+    });
 
-  // Update bridge fee and time response
-  const latestBridgeFee = feeResponse.data;
-  latestBridgeFee.latency = Math.ceil(
-    latency.data.median_transfer_latency_in_second / 60
-  );
-  return latestBridgeFee;
+    // Query estimated time of arrival
+    const latency = await axios.get(
+      `${celerEndpoint}/getLatest7DayTransferLatencyForQuery`,
+      {
+        params: {
+          src_chain_id: sourceChainId,
+          dst_chain_id: destinationChainId
+        },
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    // Update bridge fee and time response
+    const latestBridgeFee = feeResponse.data;
+    latestBridgeFee.latency = Math.ceil(
+      latency.data.median_transfer_latency_in_second / 60
+    );
+    return latestBridgeFee;
+  } catch (e) {
+    console.log(e);
+    return await queryCelerBridgeFee(
+      sourceChainId,
+      destinationChainId,
+      symbol,
+      amount,
+      celerEndpoint
+    );
+  }
 };
 
 export const estimateApproveGasFee = async (
