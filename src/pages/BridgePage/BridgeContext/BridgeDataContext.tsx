@@ -391,7 +391,10 @@ export const BridgeDataContextProvider = (props) => {
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
         originFee: getOriginFee(inputConfig),
         destinationFee: getDestinationFee(inputConfig),
-        maxInput: getMaxInput(inputConfig),
+        maxInput:
+          originChain.name === 'ethereum'
+            ? senderAssetCurrentBalance
+            : getMaxInput(inputConfig),
         minInput: getMinInput(inputConfig)
       });
     };
@@ -433,9 +436,8 @@ export const BridgeDataContextProvider = (props) => {
         (await originXcmAdapter.wallet.isReady);
       const inputConfigParams = getInputConfigParams();
       if (originChain.name === 'ethereum') {
-        return;
-        // use xcm sdk on mainnet
         inputConfigParams.to = 'manta';
+        inputConfigParams.token = 'GLMR'; // mock to pass the xcm sdk process, will change it to MANTA on mainnet
       } else if (destinationChain.name === 'ethereum') {
         inputConfigParams.to = 'moonbeam';
       }

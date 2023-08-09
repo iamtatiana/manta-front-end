@@ -67,7 +67,6 @@ const ValidationButton = () => {
     validationMsg = 'Connecting to network';
   } else if (
     evmIsEnabled &&
-    originChainIsEvm &&
     Number(chainId) !== Number(evmChainId) &&
     !EVMBridgeProcessing
   ) {

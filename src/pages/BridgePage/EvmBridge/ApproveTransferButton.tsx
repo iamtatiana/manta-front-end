@@ -88,20 +88,6 @@ const EvmTransferButton = () => {
       const originChainInfo = getOriginChainInfo();
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
 
-      if (originChain.name === 'ethereum') {
-        // swith to ethereum
-        await provider.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
-        });
-      } else {
-        // swith to moonbeam
-        await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [Chain.Moonbeam(config).ethMetadata]
-        });
-      }
-
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
         originChainInfo.sourceChainId,
