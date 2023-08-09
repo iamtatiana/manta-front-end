@@ -84,6 +84,7 @@ const EvmBridgeModal = ({
   const config = useConfig();
 
   const { ModalWrapper, showModal, hideModal } = useModal({
+    closeDisabled: true,
     closeCallback: () => SetEVMBridgeProcessing(false)
   });
   const [modalText, setModalText] = useState({});
