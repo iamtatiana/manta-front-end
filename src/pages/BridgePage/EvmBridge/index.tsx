@@ -205,6 +205,7 @@ const EvmBridgeModal = ({
       } else {
         if (status === 8) {
           const newRefundData = {
+            transferId: transferId,
             wdmsg: data.wd_onchain,
             sortedSigs: data.sorted_sigs,
             signers: data.signers,
@@ -235,7 +236,7 @@ const EvmBridgeModal = ({
         // celer refund is still submitting
         setTimeout(async () => {
           await updateRefundStatus(transferId);
-        }, 10000);
+        }, 10 * 1000);
       } else {
         setCurrentButtonStatus(buttonStatus[status]);
       }
@@ -387,7 +388,7 @@ const EvmBridgeModal = ({
         }
       }
       // Confirm Refund
-      const data = generateCelerRefundData(refundData);
+      const data = await generateCelerRefundData(refundData);
       setCurrentButtonStatus(buttonStatus[0]);
       await provider
         .request({
@@ -401,7 +402,7 @@ const EvmBridgeModal = ({
           ]
         })
         .then(() => {
-          updateRefundStatus(transferId);
+          updateRefundStatus(refundData.transferId);
         })
         .catch(() => {
           setErrMsgObj({
