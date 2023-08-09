@@ -4,7 +4,6 @@ import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
-import Chain from 'types/Chain';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import TransferFeeDisplay from './TransferFeeDisplay';
 import {
@@ -22,7 +21,8 @@ const buttonText = [
   'Approve',
   'Transfer', // ethereum to moonbeam
   'The received amount cannot cover fee',
-  'Next' // show evm bridge modal
+  'Next', // show evm bridge modal
+  'The amount is larger than liquidity pool'
 ];
 
 // Transfer and approve button for the Ethereum chain
@@ -35,10 +35,11 @@ const EvmTransferButton = () => {
   } = useBridgeData();
 
   const config = useConfig();
+
   const { ethAddress, provider } = useMetamask();
-  const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next
+  const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next, 5 = The amount is larger than liquidity pool
   const [isEstimatingFee, setIsEstimatingFee] = useState(false);
-  const [bridgeFee, setBridgeFee] = useState({});
+  const [bridgeFee, setBridgeFee] = useState(null);
   const [transferId, setTransferId] = useState('');
   const [showEvmBridgeModal, setShowEvmBridgeModal] = useState(false);
 
@@ -97,6 +98,14 @@ const EvmTransferButton = () => {
         config.CelerEndpoint
       );
 
+      // estimate amount failed
+      if (latestBridgeFee.err) {
+        setBridgeFee(null);
+        setStatus(5);
+        setIsEstimatingFee(false);
+        return;
+      }
+
       // calculate approve gas fee
       const approveGasFee = await estimateApproveGasFee(
         amount,
@@ -106,7 +115,6 @@ const EvmTransferButton = () => {
         ethAddress,
         originChainInfo.originChainGasFeeSymbol
       );
-      console.log('approveGasFee: ' + approveGasFee);
 
       latestBridgeFee.approveGasFee = approveGasFee;
       latestBridgeFee.sendGasFee = 'Waitting for approve';
@@ -243,11 +251,13 @@ const EvmTransferButton = () => {
     <LoadingIndicator />
   ) : (
     <div className="mt-7">
-      <TransferFeeDisplay
-        bridgeFee={bridgeFee}
-        symbol={senderAssetType.baseTicker}
-        numberOfDecimals={senderAssetType.numberOfDecimals}
-      />
+      {bridgeFee && (
+        <TransferFeeDisplay
+          bridgeFee={bridgeFee}
+          symbol={senderAssetType.baseTicker}
+          numberOfDecimals={senderAssetType.numberOfDecimals}
+        />
+      )}
       <div>
         {status === 0 && transferId.length === 0 ? (
           <LoadingIndicator />
@@ -258,7 +268,8 @@ const EvmTransferButton = () => {
               'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
               'text-center text-white rounded-lg w-full',
               {
-                'filter brightness-50 cursor-not-allowed': status === 3
+                'filter brightness-50 cursor-not-allowed':
+                  status === 3 || status === 5
               }
             )}>
             {buttonText[status]}
