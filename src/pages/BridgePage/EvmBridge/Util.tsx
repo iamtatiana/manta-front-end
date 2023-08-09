@@ -69,26 +69,41 @@ export const estimateApproveGasFee = async (
   ethAddress,
   originChainGasFeeSymbol
 ) => {
-  const ethersProvider = new ethers.providers.Web3Provider(provider);
-  const feeData = await ethersProvider.getFeeData();
-  const gasPrice = ethers.utils.formatUnits(
-    feeData.maxPriorityFeePerGas,
-    'wei'
-  );
+  try {
+    const ethersProvider = new ethers.providers.Web3Provider(provider);
+    const feeData = await ethersProvider.getFeeData();
+    const gasPrice = ethers.utils.formatUnits(
+      feeData.maxPriorityFeePerGas,
+      'wei'
+    );
 
-  // calculate approved transaction gas fee
-  const approvedData = await generateApproveData(celerContractAddress, amount);
-  const approveGasLimit = await ethersProvider.estimateGas({
-    from: ethAddress,
-    to: mantaContractAddress,
-    data: approvedData
-  });
-  console.log('approveGasLimit: ' + approveGasLimit);
-  return (
-    ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
-    ' ' +
-    originChainGasFeeSymbol
-  );
+    // calculate approved transaction gas fee
+    const approvedData = await generateApproveData(
+      celerContractAddress,
+      amount
+    );
+    const approveGasLimit = await ethersProvider.estimateGas({
+      from: ethAddress,
+      to: mantaContractAddress,
+      data: approvedData
+    });
+    console.log('approveGasLimit: ' + approveGasLimit);
+    return (
+      ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
+      ' ' +
+      originChainGasFeeSymbol
+    );
+  } catch (e) {
+    console.log(e);
+    return await estimateApproveGasFee(
+      amount,
+      celerContractAddress,
+      mantaContractAddress,
+      provider,
+      ethAddress,
+      originChainGasFeeSymbol
+    );
+  }
 };
 
 export const estimateSendGasFee = async (
