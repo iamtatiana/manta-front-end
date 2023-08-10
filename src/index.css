@@ -119,3 +119,7 @@ svg {
 input {
   all: unset;
 }
+
+.el-tooltip__popper.is-dark {
+  background-color: #414764 !important;
+}

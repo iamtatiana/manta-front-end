@@ -13,7 +13,6 @@ import {
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import TxStatus from 'types/TxStatus';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
 import { stringToHex } from '@polkadot/util';
@@ -68,8 +67,8 @@ const EvmBridgeModal = ({
   maxSlippage,
   bridgeGasFee
 }: EvmBridgeData) => {
-  const { setTxStatus, SetEVMBridgeProcessing } = useTxStatus();
-  const { provider, ethAddress } = useMetamask();
+  const { SetEVMBridgeProcessing } = useTxStatus();
+  const { provider, ethAddress, chainId } = useMetamask();
   const {
     senderAssetType,
     destGasFee,
@@ -78,7 +77,10 @@ const EvmBridgeModal = ({
     destinationAddress,
     senderAssetTargetBalance
   } = useBridgeData();
-  const _bridgeGasFee = new Balance(senderAssetType, new BN(bridgeGasFee));
+  const _bridgeGasFee = new Balance(
+    senderAssetType,
+    new BN(bridgeGasFee.amount).sub(new BN(bridgeGasFee.estimated_receive_amt))
+  );
   const isEthereumToManta = originChain?.name === 'ethereum';
   const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
@@ -172,9 +174,60 @@ const EvmBridgeModal = ({
       updateTransferStatus(transferId);
     } else {
       // manta to moonbeam
-      setCurrentButtonStatus(buttonStatus[12]);
+      startMantaToMoonbeam();
     }
   }, []);
+
+  const startMantaToMoonbeam = async () => {
+    // manta to moonbeam
+    const handleTxRes = ({ status, dispatchError }) => {
+      if (status.isInBlock) {
+        if (dispatchError) {
+          if (dispatchError.isModule) {
+            const decoded = api?.registry.findMetaError(
+              dispatchError.asModule
+            ) as any;
+            const errorMsg = `${decoded.section}.${decoded.name}`;
+            setErrMsgObj({
+              index: 0,
+              errMsg: errorMsg
+            });
+          } else {
+            const errorMsg = dispatchError.toString();
+            setErrMsgObj({
+              index: 0,
+              errMsg: errorMsg
+            });
+          }
+          updateStepStatus(0, 2);
+          setCurrentButtonStatus(buttonStatus[12]);
+        } else {
+          // succeed
+          updateStepStatus(0, 1);
+          setCurrentButtonStatus(buttonStatus[5]);
+        }
+      }
+    };
+
+    if (errMsgObj.index === 0) {
+      setErrMsgObj({
+        index: 0,
+        errMsg: ''
+      });
+    }
+    setCurrentButtonStatus(buttonStatus[16]);
+    updateStepStatus(0, 3);
+    try {
+      await sendSubstrate(handleTxRes);
+    } catch (e) {
+      setErrMsgObj({
+        index: 0,
+        errMsg: e.message
+      });
+      updateStepStatus(0, 2);
+      setCurrentButtonStatus(buttonStatus[12]);
+    }
+  };
 
   const updateTransferStatus = async (transferId) => {
     try {
@@ -312,8 +365,13 @@ const EvmBridgeModal = ({
         const errMsg = e.response?.data?.message || e.message;
         setErrMsgObj({ index: 1, errMsg });
         if (e.response?.status === 400) {
-          // TODO, need to check the msg content with backend
-          if (errMsg === 'already have fetched free gas') {
+          const errReason = e.response.data.reason;
+          const reasons = [
+            'ADDRESS_EXCEED_LIMIT',
+            'SYSTEM_EXCEED_LIMIT',
+            'SYSTEM_EMERGENCY_STOP'
+          ];
+          if (reasons.includes(errReason)) {
             updateStepStatus(1, 1);
             setCurrentButtonStatus(
               isEthereumToManta ? buttonStatus[11] : buttonStatus[13]
@@ -469,10 +527,8 @@ const EvmBridgeModal = ({
         destinationAddress
       );
       if (txHash) {
-        setTxStatus(TxStatus.finalized(txHash));
-        hideModal();
+        setCurrentButtonStatus(buttonStatus[15]);
       } else {
-        setTxStatus(TxStatus.failed('Transaction declined'));
         setErrMsgObj({
           index: 2,
           errMsg: 'Transaction declined.'
@@ -481,56 +537,15 @@ const EvmBridgeModal = ({
         updateStepStatus(2, 2);
       }
     } else if (index === 12) {
-      // manta to moonbeam
-      const handleTxRes = ({ status, dispatchError }) => {
-        if (status.isInBlock) {
-          if (dispatchError) {
-            if (dispatchError.isModule) {
-              const decoded = api?.registry.findMetaError(
-                dispatchError.asModule
-              ) as any;
-              const errorMsg = `${decoded.section}.${decoded.name}`;
-              setErrMsgObj({
-                index: 0,
-                errMsg: errorMsg
-              });
-            } else {
-              const errorMsg = dispatchError.toString();
-              setErrMsgObj({
-                index: 0,
-                errMsg: errorMsg
-              });
-            }
-            updateStepStatus(0, 2);
-            setCurrentButtonStatus(buttonStatus[12]);
-          } else {
-            // succeed
-            updateStepStatus(0, 1);
-            setCurrentButtonStatus(buttonStatus[5]);
-          }
-        }
-      };
-
-      if (errMsgObj.index === 0) {
-        setErrMsgObj({
-          index: 0,
-          errMsg: ''
-        });
-      }
-      setCurrentButtonStatus(buttonStatus[16]);
-      updateStepStatus(0, 3);
-      try {
-        await sendSubstrate(handleTxRes);
-      } catch (e) {
-        setErrMsgObj({
-          index: 0,
-          errMsg: e.message
-        });
-        updateStepStatus(0, 2);
-        setCurrentButtonStatus(buttonStatus[12]);
-      }
+      await startMantaToMoonbeam();
     } else if (index === 13) {
       // approve moonbeam to ethereum
+      if (Number(chainId) !== Number(Chain.Moonbeam(config).ethChainId)) {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: Chain.Moonbeam(config).ethMetadata.chainId }]
+        });
+      }
       if (errMsgObj.index === 2) {
         setErrMsgObj({
           index: 2,
@@ -570,6 +585,13 @@ const EvmBridgeModal = ({
       }
     } else if (index === 14) {
       // transfer moonbeam to ethereum
+      if (Number(chainId) !== Number(Chain.Moonbeam(config).ethChainId)) {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: Chain.Moonbeam(config).ethMetadata.chainId }]
+        });
+      }
+
       if (errMsgObj.index === 2) {
         setErrMsgObj({
           index: 2,

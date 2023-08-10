@@ -22,7 +22,7 @@ const buttonText = [
   'Approve MANTA',
   'Transfer', // ethereum to moonbeam
   'The received amount cannot cover fee',
-  'Next', // show evm bridge modal
+  'Transfer', // show evm bridge modal
   'The amount is larger than liquidity pool'
 ];
 
@@ -293,7 +293,7 @@ const EvmTransferButton = () => {
           transferId={transferId}
           latency={bridgeFee.latency}
           maxSlippage={bridgeFee.max_slippage}
-          bridgeGasFee={bridgeFee.estimated_receive_amt}
+          bridgeGasFee={bridgeFee}
         />
       )}
     </div>
