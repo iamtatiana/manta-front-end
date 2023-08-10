@@ -108,7 +108,12 @@ const StepStatus = ({
                   </div>
                 )}
                 {index === errMsgObj.index && (
-                  <div style={{ color: '#f9413e', marginTop: '4px' }}>
+                  <div
+                    style={{
+                      color: '#f9413e',
+                      marginTop: '4px',
+                      wordBreak: 'break-all'
+                    }}>
                     {errMsg}
                   </div>
                 )}

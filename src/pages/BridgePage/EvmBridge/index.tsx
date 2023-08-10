@@ -49,7 +49,7 @@ const buttonStatus = [
   { index: 10, text: 'Transfer refund completed', loading: false },
   { index: 11, text: 'Submit', loading: false },
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
-  { index: 13, text: 'Approve', loading: false },
+  { index: 13, text: 'Approve MANTA', loading: false },
   { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
   { index: 15, text: 'Done', loading: false },
   { index: 16, text: 'Processing', loading: true }
