@@ -18,7 +18,7 @@ import EvmBridge from './index';
 
 const buttonText = [
   '',
-  'Approve',
+  'Approve MANTA',
   'Transfer', // ethereum to moonbeam
   'The received amount cannot cover fee',
   'Next', // show evm bridge modal
