@@ -56,6 +56,7 @@ export const queryCelerBridgeFee = async (
 
     // Update bridge fee and time response
     const latestBridgeFee = feeResponse.data;
+    latestBridgeFee.amount = amount;
     latestBridgeFee.latency = Math.ceil(
       latency.data.median_transfer_latency_in_second / 60
     );

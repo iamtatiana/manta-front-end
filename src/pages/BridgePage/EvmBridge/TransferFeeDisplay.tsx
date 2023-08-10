@@ -13,8 +13,8 @@ const TransferFeeDisplay = (params) => {
       parseInt(bridgeFee.estimated_receive_amt) / decimal
     ).toFixed(6);
     const celerFee = (
-      (parseInt(bridgeFee.base_fee) + parseInt(bridgeFee.perc_fee)) /
-      decimal
+      parseInt(bridgeFee.amount) / decimal -
+      estimateReceive
     ).toFixed(6);
 
     const gasFeeData = [
