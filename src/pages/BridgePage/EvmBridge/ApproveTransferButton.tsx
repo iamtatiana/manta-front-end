@@ -113,19 +113,19 @@ const EvmTransferButton = () => {
         return;
       }
 
-      // calculate approve gas fee
-      const approveGasFee = await estimateApproveGasFee(
-        amount,
-        originChainInfo.celerContractAddress,
-        originChainInfo.mantaContractAddress,
-        provider,
-        ethAddress,
-        originChainInfo.originChainGasFeeSymbol
-      );
+      // // calculate approve gas fee
+      // const approveGasFee = await estimateApproveGasFee(
+      //   amount,
+      //   originChainInfo.celerContractAddress,
+      //   originChainInfo.mantaContractAddress,
+      //   provider,
+      //   ethAddress,
+      //   originChainInfo.originChainGasFeeSymbol
+      // );
 
-      latestBridgeFee.approveGasFee = approveGasFee;
-      latestBridgeFee.sendGasFee = 'Waiting for approve';
-      latestBridgeFee.isEthereumToManta = originChainInfo.isEthereumToManta;
+      // latestBridgeFee.approveGasFee = approveGasFee;
+      // latestBridgeFee.sendGasFee = 'Waiting for approve';
+      // latestBridgeFee.isEthereumToManta = originChainInfo.isEthereumToManta;
 
       if (latestBridgeFee.estimated_receive_amt < 0) {
         // The received amount cannot cover fee
@@ -232,24 +232,24 @@ const EvmTransferButton = () => {
 
     if (allowance >= amount) {
       // calculate transfer gas fee
-      const originChainInfo = getOriginChainInfo();
-      const sendGasFee = await estimateSendGasFee(
-        originChainInfo.sourceChainId,
-        originChainInfo.destinationChainId,
-        senderAssetTargetBalance.valueAtomicUnits.toString(),
-        originChainInfo.celerContractAddress,
-        originChainInfo.mantaContractAddress,
-        provider,
-        ethAddress,
-        originChainInfo.originChainGasFeeSymbol,
-        bridgeFee.max_slippage
-      );
+      // const originChainInfo = getOriginChainInfo();
+      // const sendGasFee = await estimateSendGasFee(
+      //   originChainInfo.sourceChainId,
+      //   originChainInfo.destinationChainId,
+      //   senderAssetTargetBalance.valueAtomicUnits.toString(),
+      //   originChainInfo.celerContractAddress,
+      //   originChainInfo.mantaContractAddress,
+      //   provider,
+      //   ethAddress,
+      //   originChainInfo.originChainGasFeeSymbol,
+      //   bridgeFee.max_slippage
+      // );
 
-      // update gas fee
-      setBridgeFee((preState) => {
-        preState.sendGasFee = sendGasFee;
-        return preState;
-      });
+      // // update gas fee
+      // setBridgeFee((preState) => {
+      //   preState.sendGasFee = sendGasFee;
+      //   return preState;
+      // });
 
       setStatus(2);
     } else {
