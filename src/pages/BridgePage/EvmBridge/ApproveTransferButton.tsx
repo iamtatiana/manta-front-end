@@ -4,6 +4,7 @@ import { Loading } from 'element-react';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
+import { useDebouncedCallback } from 'use-debounce';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import TransferFeeDisplay from './TransferFeeDisplay';
 import {
@@ -33,9 +34,7 @@ const EvmTransferButton = () => {
     senderAssetType,
     senderAssetTargetBalance
   } = useBridgeData();
-
   const config = useConfig();
-
   const { ethAddress, provider } = useMetamask();
   const [status, setStatus] = useState(1); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next, 5 = The amount is larger than liquidity pool
   const [isEstimatingFee, setIsEstimatingFee] = useState(false);
@@ -87,9 +86,13 @@ const EvmTransferButton = () => {
   };
 
   useEffect(async () => {
-    // calculate transaction fee
     setIsEstimatingFee(true);
+    estimateGasFee();
+  }, [senderAssetTargetBalance.valueAtomicUnits]);
+
+  const estimateGasFee = useDebouncedCallback(async () => {
     try {
+      // calculate transaction fee
       const originChainInfo = getOriginChainInfo();
       const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
 
@@ -145,7 +148,7 @@ const EvmTransferButton = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-  }, [senderAssetTargetBalance.valueAtomicUnits]);
+  }, 1000);
 
   // Call metamask to approve token
   const onApproveClick = async () => {
