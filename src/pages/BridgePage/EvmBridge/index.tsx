@@ -619,7 +619,12 @@ const EvmBridgeModal = ({
   };
 
   // Query user address allowance
-  const queryAllowance = async (ethAddress, amount) => {
+  const queryAllowance = async (ethAddress, amount, retryTimes = 12) => {
+    if (retryTimes === 0) {
+      // show approve button
+      setCurrentButtonStatus(buttonStatus[13]);
+      return;
+    }
     const allowance = await queryTokenAllowance(
       provider,
       config.MantaContractOnMoonbeam,
@@ -631,8 +636,8 @@ const EvmBridgeModal = ({
       setCurrentButtonStatus(buttonStatus[14]);
     } else {
       setTimeout(() => {
-        queryAllowance(ethAddress, amount);
-      }, 3000);
+        queryAllowance(ethAddress, amount, --retryTimes);
+      }, 5 * 1000);
     }
   };
 

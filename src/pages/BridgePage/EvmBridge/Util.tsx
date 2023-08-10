@@ -98,7 +98,6 @@ export const estimateApproveGasFee = async (
       to: mantaContractAddress,
       data: approvedData
     });
-    console.log('approveGasLimit: ' + approveGasLimit);
     return (
       ((approveGasLimit * gasPrice) / decimal).toFixed(8) +
       ' ' +
@@ -206,7 +205,7 @@ export const generateCelerContractData = (
     approvedAmount +
     destinationChainIdHex +
     nonceHex +
-    numberToHex(1);
+    numberToHex(maxSlippage);
 
   // Show Bridge Processing Modal
   const transferId = ethers.utils.solidityKeccak256(
@@ -318,17 +317,22 @@ export const queryTokenAllowance = async (
   userAddress,
   spenderAddress
 ) => {
-  const ethersProvider = new ethers.providers.Web3Provider(provider);
-  // Init Manta Token Smart Contract
-  const mantaEthereumContract = new ethers.Contract(
-    contractAddress,
-    mantaContractABI,
-    ethersProvider
-  );
+  try {
+    const ethersProvider = new ethers.providers.Web3Provider(provider);
+    // Init Manta Token Smart Contract
+    const mantaEthereumContract = new ethers.Contract(
+      contractAddress,
+      mantaContractABI,
+      ethersProvider
+    );
 
-  const allowance = await mantaEthereumContract.allowance(
-    userAddress,
-    spenderAddress
-  );
-  return allowance.toString();
+    const allowance = await mantaEthereumContract.allowance(
+      userAddress,
+      spenderAddress
+    );
+    return allowance.toString();
+  } catch (e) {
+    console.log(e);
+    return 0;
+  }
 };

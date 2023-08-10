@@ -214,7 +214,12 @@ const EvmTransferButton = () => {
   };
 
   // Query user address allowance
-  const queryAllowance = async (ethAddress, amount) => {
+  const queryAllowance = async (ethAddress, amount, retryTimes = 12) => {
+    if (retryTimes === 0) {
+      // show approve button
+      setStatus(1);
+      return;
+    }
     const allowance = await queryTokenAllowance(
       provider,
       config.MantaContractOnEthereum,
@@ -236,7 +241,6 @@ const EvmTransferButton = () => {
         originChainInfo.originChainGasFeeSymbol,
         bridgeFee.max_slippage
       );
-      console.log('sendGasFee: ' + sendGasFee);
 
       // update gas fee
       setBridgeFee((preState) => {
@@ -247,8 +251,8 @@ const EvmTransferButton = () => {
       setStatus(2);
     } else {
       setTimeout(() => {
-        queryAllowance(ethAddress, amount);
-      }, 3000);
+        queryAllowance(ethAddress, amount, --retryTimes);
+      }, 5 * 1000);
     }
   };
 
