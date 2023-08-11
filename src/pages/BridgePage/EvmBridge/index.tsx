@@ -277,6 +277,7 @@ const EvmBridgeModal = ({
   };
 
   const showCompletedButton = () => {
+    updateStepStatus(2, 1);
     const finalButtonStatus = buttonStatus[15];
     finalButtonStatus.text =
       finalButtonStatus.text + (isEthereumToManta ? 'Manta' : 'Ethereum');
@@ -597,6 +598,7 @@ const EvmBridgeModal = ({
         setCurrentButtonStatus(buttonStatus[13]);
       }
     } else if (index === 14) {
+      updateStepStatus(2, 3);
       // transfer moonbeam to ethereum
       if (Number(chainId) !== Number(Chain.Moonbeam(config).ethChainId)) {
         await provider.request({
@@ -683,6 +685,7 @@ const EvmBridgeModal = ({
     );
 
     if (allowance >= amount) {
+      updateStepStatus(2, 0);
       setCurrentButtonStatus(buttonStatus[14]);
     } else {
       setTimeout(() => {
