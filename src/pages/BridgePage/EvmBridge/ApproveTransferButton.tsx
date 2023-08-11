@@ -293,7 +293,7 @@ const EvmTransferButton = () => {
           transferId={transferId}
           latency={bridgeFee.latency}
           maxSlippage={bridgeFee.max_slippage}
-          bridgeGasFee={bridgeFee}
+          estimatedReceiveAmt={bridgeFee.estimated_receive_amt}
         />
       )}
     </div>

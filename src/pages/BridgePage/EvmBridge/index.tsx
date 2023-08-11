@@ -58,14 +58,14 @@ type EvmBridgeData = {
   transferId?: string;
   latency?: number;
   maxSlippage?: number;
-  bridgeGasFee?: number;
+  estimatedReceiveAmt?: number;
 };
 
 const EvmBridgeModal = ({
   transferId,
   latency,
   maxSlippage,
-  bridgeGasFee
+  estimatedReceiveAmt
 }: EvmBridgeData) => {
   const { SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress, chainId } = useMetamask();
@@ -77,10 +77,7 @@ const EvmBridgeModal = ({
     destinationAddress,
     senderAssetTargetBalance
   } = useBridgeData();
-  const _bridgeGasFee = new Balance(
-    senderAssetType,
-    new BN(bridgeGasFee.amount).sub(new BN(bridgeGasFee.estimated_receive_amt))
-  );
+  const amount = new Balance(senderAssetType, new BN(estimatedReceiveAmt));
   const isEthereumToManta = originChain?.name === 'ethereum';
   const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
@@ -523,7 +520,7 @@ const EvmBridgeModal = ({
         'MANTA',
         config,
         provider,
-        _bridgeGasFee,
+        amount,
         destinationAddress
       );
       if (txHash) {
