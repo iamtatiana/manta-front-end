@@ -109,6 +109,7 @@ const StepStatus = ({
                 )}
                 {index === errMsgObj.index && (
                   <div
+                    className="w-96"
                     style={{
                       color: '#f9413e',
                       marginTop: '4px',

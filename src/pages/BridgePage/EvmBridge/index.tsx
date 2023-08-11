@@ -50,7 +50,11 @@ const buttonStatus = [
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
   { index: 13, text: 'Approve MANTA', loading: false },
   { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
-  { index: 15, text: 'Transfer completed', loading: false },
+  {
+    index: 15,
+    text: 'Completed! Your token is now available on ',
+    loading: false
+  },
   { index: 16, text: 'Processing', loading: true }
 ];
 
@@ -250,7 +254,7 @@ const EvmBridgeModal = ({
           setCurrentButtonStatus(buttonStatus[status]);
         } else {
           // moonbeam to ethereum complete
-          setCurrentButtonStatus(buttonStatus[15]);
+          showCompletedButton();
         }
       } else {
         if (status === 8) {
@@ -270,6 +274,13 @@ const EvmBridgeModal = ({
     } catch (error) {
       console.error('Error:', error);
     }
+  };
+
+  const showCompletedButton = () => {
+    const finalButtonStatus = buttonStatus[15];
+    finalButtonStatus.text =
+      finalButtonStatus.text + (isEthereumToManta ? 'Manta' : 'Ethereum');
+    setCurrentButtonStatus(finalButtonStatus);
   };
 
   const updateRefundStatus = async (transferId) => {
@@ -528,7 +539,7 @@ const EvmBridgeModal = ({
         destinationAddress
       );
       if (txHash) {
-        setCurrentButtonStatus(buttonStatus[15]);
+        showCompletedButton();
       } else {
         setErrMsgObj({
           index: 2,
@@ -553,15 +564,16 @@ const EvmBridgeModal = ({
           errMsg: ''
         });
       }
-      try {
-        // Approve Celer Contract Address to spend user's token
-        const data = await generateApproveData(
-          config.CelerContractOnMoonbeam,
-          senderAssetTargetBalance.sub(destGasFee).valueAtomicUnits.toString()
-        );
 
-        updateStepStatus(2, 3);
-        setCurrentButtonStatus(buttonStatus[16]);
+      // Approve Celer Contract Address to spend user's token
+      const data = await generateApproveData(
+        config.CelerContractOnMoonbeam,
+        senderAssetTargetBalance.sub(destGasFee).valueAtomicUnits.toString()
+      );
+
+      updateStepStatus(2, 3);
+      setCurrentButtonStatus(buttonStatus[16]);
+      try {
         await provider.request({
           method: 'eth_sendTransaction',
           params: [
@@ -579,7 +591,7 @@ const EvmBridgeModal = ({
       } catch (e) {
         setErrMsgObj({
           index: 2,
-          errMsg: e.message
+          errMsg: 'Send transaction failed, please try again'
         });
         updateStepStatus(2, 2);
         setCurrentButtonStatus(buttonStatus[13]);
@@ -606,7 +618,7 @@ const EvmBridgeModal = ({
       const destinationChainId = config.CelerEthereumChainId;
 
       // Generate data of Celer Contract
-      const { data, transferId } = generateCelerContractData(
+      const { data, transferId } = await generateCelerContractData(
         sourceChainId,
         destinationChainId,
         ethAddress,
@@ -631,7 +643,7 @@ const EvmBridgeModal = ({
       } catch (e) {
         setErrMsgObj({
           index: 2,
-          errMsg: e.message
+          errMsg: 'Send transaction failed, please try again'
         });
         updateStepStatus(2, 2);
         setCurrentButtonStatus(buttonStatus[14]);
@@ -704,7 +716,7 @@ const EvmBridgeModal = ({
           <div
             className={classNames(
               'bg-connect-wallet-button py-2 unselectable-text cursor-pointer',
-              'text-center text-white rounded-lg w-6/12',
+              'text-center text-white rounded-lg w-11/12',
               {
                 'filter brightness-50 cursor-not-allowed':
                   currentButtonStatus.loading
