@@ -354,9 +354,11 @@ const EvmBridgeModal = ({
           }
 
           updateStepStatus(1, 1);
-          setCurrentButtonStatus(
-            isEthereumToManta ? buttonStatus[11] : buttonStatus[13]
-          );
+          if (isEthereumToManta) {
+            setCurrentButtonStatus(buttonStatus[11]);
+          } else {
+            approveFromMoonbeamToEthereum();
+          }
         }
       } catch (e) {
         const errMsg = e.response?.data?.message || e.message;
@@ -370,9 +372,11 @@ const EvmBridgeModal = ({
           ];
           if (reasons.includes(errReason)) {
             updateStepStatus(1, 1);
-            setCurrentButtonStatus(
-              isEthereumToManta ? buttonStatus[11] : buttonStatus[13]
-            );
+            if (isEthereumToManta) {
+              setCurrentButtonStatus(buttonStatus[11]);
+            } else {
+              approveFromMoonbeamToEthereum();
+            }
             return;
           }
         }
@@ -634,6 +638,21 @@ const EvmBridgeModal = ({
       }
     } else {
       hideModal();
+    }
+  };
+
+  const approveFromMoonbeamToEthereum = async () => {
+    const allowance = await queryTokenAllowance(
+      provider,
+      config.MantaContractOnMoonbeam,
+      ethAddress,
+      config.CelerContractOnMoonbeam
+    );
+
+    if (allowance >= amount) {
+      setCurrentButtonStatus(buttonStatus[14]);
+    } else {
+      setCurrentButtonStatus(buttonStatus[13]);
     }
   };
 
