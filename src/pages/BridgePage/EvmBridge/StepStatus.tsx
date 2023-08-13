@@ -2,6 +2,9 @@
 import Icon, { IconName } from 'components/Icon';
 import { useEffect, useState } from 'react';
 import { getCaptcha } from 'utils/api/evmBridgeFaucet';
+import { useMetamask } from 'contexts/metamaskContext';
+import Chain from 'types/Chain';
+import { useConfig } from 'contexts/configContext';
 
 const failedColor = '#F9413E';
 const successColor = '#2EE9A5';
@@ -42,6 +45,8 @@ const StepStatus = ({
 }) => {
   const [captchaImg, setCaptchaImg] = useState('');
   const [errMsg, setErrMsg] = useState('');
+  const { provider } = useMetamask();
+  const config = useConfig();
 
   const fetch = async () => {
     if (!ethAddress) return;
@@ -52,6 +57,63 @@ const StepStatus = ({
   const handleInputChange = (e) => {
     setErrMsg('');
     setCaptcha(e.target.value);
+  };
+
+  const addMANTAToMetamask = async () => {
+    if (provider?.chainId !== Chain.Moonbeam(config).ethMetadata.chainId) {
+      // switch user's metamask to moonbeam network
+      try {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: Chain.Moonbeam(config).ethMetadata.chainId }]
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [Chain.Moonbeam(config).ethMetadata]
+            });
+          } catch (addError) {
+            // handle "add" error
+            setErrMsgObj({
+              index: 0,
+              errMsg: addError.message
+            });
+            return;
+          }
+        }
+        // handle other "switch" errors
+        setErrMsgObj({
+          index: 0,
+          errMsg: switchError.message
+        });
+        return;
+      }
+    }
+
+    provider
+      .request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: '0xfFFffFFf7D3875460d4509eb8d0362c611B4E841',
+            symbol: 'MANTA',
+            decimals: 18,
+            image: ''
+          }
+        }
+      })
+      .then((success) => {
+        if (success) {
+          console.log('MANTA successfully added to wallet!');
+        } else {
+          throw new Error('Something went wrong.');
+        }
+      })
+      .catch(console.error);
   };
 
   useEffect(() => {
@@ -88,6 +150,13 @@ const StepStatus = ({
                   }>
                   {item.subtitle}
                 </p>
+                {index === 0 && currentButtonIndex === 5 && (
+                  <button
+                    className="mt-2 text-manta-blue"
+                    onClick={addMANTAToMetamask}>
+                    add MANTA to Metamask on Moonbeam
+                  </button>
+                )}
                 {index === 1 && currentButtonIndex === 5 && (
                   <div className="mt-3">
                     <div

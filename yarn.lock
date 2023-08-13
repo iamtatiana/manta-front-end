@@ -11520,10 +11520,10 @@ makeerror@1.0.12:
   dependencies:
     tmpl "1.0.5"
 
-manta-bridge@^0.0.2-dev:
-  version "0.0.2-dev1"
-  resolved "https://registry.yarnpkg.com/manta-bridge/-/manta-bridge-0.0.2-dev1.tgz#a2461b8861cbd23a0018069aaf55d04562478a27"
-  integrity sha512-d7Mf+/W8n7m8iEIiBjKbe00hEjiQ0vhZq1NeW+j2WqMH/1KyL+Ye+GB3ab3SC5eOHnimGjXOIoHylu6+KZqIIw==
+manta-bridge@^0.0.2-dev4:
+  version "0.0.2-dev4"
+  resolved "https://registry.yarnpkg.com/manta-bridge/-/manta-bridge-0.0.2-dev4.tgz#373d5607e70436cf590170adb8bffb6be9e4d658"
+  integrity sha512-EfdllulA8WUFeTA9LkStk/BxFoeYb+JvU4OmHcQeuKqsEMgAHmzvNFvEsYuxDW73IELHPf0HODqfXNhsC//6rg==
   dependencies:
     "@acala-network/api" "^5"
     "@acala-network/sdk" "^4.1.8-14"

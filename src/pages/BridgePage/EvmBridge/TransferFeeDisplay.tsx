@@ -4,6 +4,7 @@ import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Icon from 'components/Icon';
 import { Tooltip } from 'element-react';
+import DotLoader from 'components/Loaders/DotLoader';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 
 const TransferFeeDisplay = (params) => {
@@ -11,25 +12,29 @@ const TransferFeeDisplay = (params) => {
     useBridgeData();
   const bridgeFee = params.bridgeFee;
   const symbol = params.symbol;
-  const decimal = Math.pow(10, params.numberOfDecimals);
   const [gasFee, setGasFee] = useState([]);
 
   useEffect(() => {
     if (originGasFee.isZero()) {
       return;
     }
-    const estimateReceive = (
-      parseInt(bridgeFee.estimated_receive_amt) / decimal
-    ).toFixed(6);
+    const estimateReceive = bridgeFee
+      ? new Balance(
+          senderAssetType,
+          new BN(bridgeFee.estimated_receive_amt)
+        ).sub(destGasFee)
+      : '--';
 
-    const celerFee = new Balance(
-      senderAssetType,
-      new BN(bridgeFee.amount).sub(new BN(bridgeFee.estimated_receive_amt))
-    );
-    let bridgeFees = celerFee.add(destGasFee);
+    const celerFee = bridgeFee
+      ? new Balance(
+          senderAssetType,
+          new BN(bridgeFee.amount).sub(new BN(bridgeFee.estimated_receive_amt))
+        )
+      : '--';
+    let bridgeFees = bridgeFee ? celerFee.add(destGasFee) : '--';
 
     const destIsEthereum = destinationChain.name === 'ethereum';
-    if (destIsEthereum) {
+    if (destIsEthereum && bridgeFee) {
       bridgeFees = bridgeFees.add(originGasFee);
     }
     // console.log('celerFee', celerFee.toFeeDisplayString());
@@ -40,9 +45,15 @@ const TransferFeeDisplay = (params) => {
       <div style={{ width: '300px', color: '#989292' }}>
         {destIsEthereum && (
           <>
-            <div>{`The Network Fee: ${originGasFee.toFeeDisplayString()}`}</div>
-            <div>{`The XCM Execution Fee: ${destGasFee.toFeeDisplayString()}`}</div>
-            <div>{`The cBridge Fee: ${celerFee.toFeeDisplayString()}`}</div>
+            <div>{`The Network Fee: ${
+              bridgeFee ? originGasFee.toFeeDisplayString() : '--'
+            }`}</div>
+            <div>{`The XCM Execution Fee: ${
+              bridgeFee ? destGasFee.toFeeDisplayString() : '--'
+            }`}</div>
+            <div>{`The cBridge Fee: ${
+              bridgeFee ? celerFee.toFeeDisplayString() : '--'
+            }`}</div>
             <div className="mt-2">
               The Network Fee: The network fee covers the gas cost for transfers
               on the Manta network.
@@ -59,8 +70,12 @@ const TransferFeeDisplay = (params) => {
         )}
         {!destIsEthereum && (
           <>
-            <div>{`The cBridge Fee: ${celerFee.toFeeDisplayString()}`}</div>
-            <div>{`The XCM Execution Fee: ${destGasFee.toFeeDisplayString()}`}</div>
+            <div>{`The cBridge Fee: ${
+              bridgeFee ? celerFee.toFeeDisplayString() : '--'
+            }`}</div>
+            <div>{`The XCM Execution Fee: ${
+              bridgeFee ? destGasFee.toFeeDisplayString() : '--'
+            }`}</div>
             <div className="mt-2">
               The cBridge Fee is for transferring from Ethereum to Moonbeam via
               Celer network.
@@ -89,7 +104,7 @@ const TransferFeeDisplay = (params) => {
             </Tooltip>
           </div>
         ),
-        value: `${bridgeFees} ${symbol}`
+        value: bridgeFee ? `${bridgeFees} ${symbol}` : <DotLoader />
       },
       {
         name: (
@@ -110,7 +125,7 @@ const TransferFeeDisplay = (params) => {
             </Tooltip>
           </div>
         ),
-        value: (
+        value: bridgeFee ? (
           <span>
             GLMR
             <span
@@ -119,6 +134,8 @@ const TransferFeeDisplay = (params) => {
               (Paid by Manta)
             </span>
           </span>
+        ) : (
+          <DotLoader />
         )
       },
       {
@@ -139,7 +156,7 @@ const TransferFeeDisplay = (params) => {
             </Tooltip>
           </div>
         ),
-        value: `${estimateReceive} ${symbol}`
+        value: bridgeFee ? `${estimateReceive} ${symbol}` : <DotLoader />
       }
     ];
 

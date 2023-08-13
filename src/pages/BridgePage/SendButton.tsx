@@ -78,11 +78,11 @@ const ValidationButton = () => {
     validationMsg = 'Switch Networks in Manta Wallet';
   } else if (!senderAssetTargetBalance) {
     validationMsg = 'Enter amount';
-  } else if (userHasSufficientFunds() === false) {
+  } else if (userHasSufficientFunds() === false && !EVMBridgeProcessing) {
     validationMsg = 'Insuffient balance';
   } else if (evmIsEnabled && !destinationAddress) {
     validationMsg = `Enter ${originChainIsEvm ? 'substrate' : 'EVM'} address`;
-  } else if (userCanPayOriginFee() === false) {
+  } else if (userCanPayOriginFee() === false && !EVMBridgeProcessing) {
     validationMsg = `Insufficient ${originChain.nativeAsset.ticker} to pay origin fee`;
   } else if (txIsOverMinAmount() === false) {
     const MIN_INPUT_DIGITS = 6;
