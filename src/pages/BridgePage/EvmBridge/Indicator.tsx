@@ -19,19 +19,18 @@ const Indicator = ({ chainList }: { chainList: Array<Chain> }) => {
       {indicator.map((item, index) => {
         // status, 0 = default, 1 = success, 2 = failed, 3 = pending
         const status = chainList[index].status;
+        let style = {};
+        if (status === 2) {
+          style = failedIndicator;
+        } else if (index === 0 || status === 1) {
+          style = successIndicator;
+        } else if (index === 1 && chainList[0].status === 1) {
+          style = successIndicator;
+        }
         return (
           <div key={index} className="flex flex-row">
             <div className="px-4 flex items-center justify-center">
-              <div
-                className="w-2 h-2 rounded-full bg-white "
-                style={
-                  status > 0 && status < 3
-                    ? status === 2
-                      ? failedIndicator
-                      : successIndicator
-                    : {}
-                }
-              />
+              <div className="w-2 h-2 rounded-full bg-white " style={style} />
             </div>
             {index + 1 < indicator.length && (
               <div className="px-4 flex items-center justify-center	">

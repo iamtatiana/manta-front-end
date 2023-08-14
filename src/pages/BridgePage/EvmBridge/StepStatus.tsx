@@ -143,14 +143,12 @@ const StepStatus = ({
               <div className="pl-10">
                 <p className="text-sm	font-semibold">{item.title}</p>
 
-                <p
-                  className="text-sm text-white text-opacity-60"
-                  style={item.status === 1 ? { color: successColor } : {}}>
+                <p className="text-sm text-white text-opacity-60">
                   {item.status === 1 ? item.success : item.subtitle}
                 </p>
                 {index === 0 && currentButtonIndex === 5 && (
                   <button
-                    className="mt-2 text-manta-blue"
+                    className="mt-2 text-green-light"
                     onClick={addMANTAToMetamask}>
                     Add MANTA to Metamask
                   </button>
