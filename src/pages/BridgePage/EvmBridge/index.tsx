@@ -45,7 +45,7 @@ const buttonStatus = [
   { index: 8, text: 'Confirm Refund', loading: false },
   { index: 9, text: 'Confirming your refund', loading: true },
   { index: 10, text: 'Transfer refund completed', loading: false },
-  { index: 11, text: 'Submit', loading: false },
+  { index: 11, text: 'Transfer', loading: false }, // moonbeam to manta
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
   { index: 13, text: 'Approve MANTA', loading: false },
   { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
@@ -496,6 +496,8 @@ const EvmBridgeModal = ({
       hideModal();
     } else if (index === 11) {
       // moonbeam to manta
+      setCurrentButtonStatus(buttonStatus[16]);
+      updateStepStatus(2, 3);
       if (errMsgObj.index === 2) {
         setErrMsgObj({
           index: 2,
@@ -536,9 +538,6 @@ const EvmBridgeModal = ({
         updateStepStatus(2, 2);
         return;
       }
-
-      setCurrentButtonStatus(buttonStatus[16]);
-      updateStepStatus(2, 3);
       // send token from moonbeam to manta
       const txHash = await transferTokenFromMoonbeamToManta(
         'MANTA',
