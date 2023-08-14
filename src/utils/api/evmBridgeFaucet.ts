@@ -27,7 +27,7 @@ export const getFreeGasEth2Manta = (evm_address: string, captcha: string) => {
   );
 };
 
-export const getFreeGasManta2Eth = (evm_address: string, captcha: string, manta_address: string, sign: string) => {
+export const getFreeGasManta2Eth = (evm_address: string, captcha: string, manta_address?: string, sign?: string) => {
   return axios.post(
     `${baseUrl}/v1/claim_with_captcha_verify/manta_2_eth`, {
       evm_address,

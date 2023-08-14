@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { useState } from 'react';
 import { useModal } from 'hooks';
 import {
-  getRandomStr,
   getFreeGasEth2Manta,
   getFreeGasManta2Eth,
   checkTxStatus
@@ -15,7 +14,7 @@ import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useKeyring } from 'contexts/keyringContext';
 import { usePublicAccount } from 'contexts/publicAccountContext';
-import { stringToHex } from '@polkadot/util';
+// import { stringToHex } from '@polkadot/util';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Chain from 'types/Chain';
@@ -331,21 +330,23 @@ const EvmBridgeModal = ({
         if (isEthereumToManta) {
           freeGas = await getFreeGasEth2Manta(ethAddress, captcha);
         } else {
-          const randomStr = await getRandomStr(externalAccount.address);
-          const signedMsg = randomStr.data.randomStr;
-          const { signature } = await selectedWallet._signer.signRaw({
-            address: externalAccount.address,
-            data: stringToHex(signedMsg),
-            type: 'bytes'
-          });
-          if (signature) {
-            freeGas = await getFreeGasManta2Eth(
-              ethAddress,
-              captcha,
-              externalAccount.address,
-              signature
-            );
-          }
+          // no need sign anymore because no need to valid polkadot assets for now
+          // const randomStr = await getRandomStr(externalAccount.address);
+          // const signedMsg = randomStr.data.randomStr;
+          // const { signature } = await selectedWallet._signer.signRaw({
+          //   address: externalAccount.address,
+          //   data: stringToHex(signedMsg),
+          //   type: 'bytes'
+          // });
+          // if (signature) {
+          //   freeGas = await getFreeGasManta2Eth(
+          //     ethAddress,
+          //     captcha,
+          //     externalAccount.address,
+          //     signature
+          //   );
+          // }
+          freeGas = await getFreeGasManta2Eth(ethAddress, captcha);
         }
         const txHash = freeGas?.data?.txHash;
         if (txHash) {
