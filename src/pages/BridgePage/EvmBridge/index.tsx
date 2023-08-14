@@ -681,26 +681,34 @@ const EvmBridgeModal = ({
 
   // Query user address allowance
   const queryAllowance = async (ethAddress, amount, retryTimes = 12) => {
-    if (retryTimes === 0) {
-      // show approve button
-      setCurrentButtonStatus(buttonStatus[13]);
-      return;
-    }
-    const allowance = await queryTokenAllowance(
-      provider,
-      config.MantaContractOnMoonbeam,
-      ethAddress,
-      config.CelerContractOnMoonbeam
-    );
+    try {
+      if (retryTimes === 0) {
+        // show approve button
+        setCurrentButtonStatus(buttonStatus[13]);
+        return;
+      }
+      const allowance = await queryTokenAllowance(
+        provider,
+        config.MantaContractOnMoonbeam,
+        ethAddress,
+        config.CelerContractOnMoonbeam
+      );
 
-    if (allowance >= amount) {
-      updateStepStatus(2, 0);
-      setCurrentButtonStatus(buttonStatus[14]);
-    } else {
-      setTimeout(() => {
-        queryAllowance(ethAddress, amount, --retryTimes);
-      }, 5 * 1000);
+      if (allowance >= amount) {
+        updateStepStatus(2, 0);
+        setCurrentButtonStatus(buttonStatus[14]);
+      } else {
+        retryQueryAllowance(ethAddress, amount, --retryTimes);
+      }
+    } catch (e) {
+      retryQueryAllowance(ethAddress, amount, --retryTimes);
     }
+  };
+
+  const retryQueryAllowance = (ethAddress, amount, retryTimes) => {
+    setTimeout(() => {
+      queryAllowance(ethAddress, amount, retryTimes);
+    }, 5 * 1000);
   };
 
   return (
