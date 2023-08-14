@@ -145,15 +145,15 @@ const EvmBridgeModal = ({
             ? `Please wait. Estimated time of arrival: ${latency} minutes`
             : 'Please send your MANTA from Manta to Moonbeam via XCM.',
           status: isEthereumToManta ? 3 : 0,
-          subtitleWarning: false
+          success: 'MANTA has been successfully sent to Moonbeam.'
         },
         {
           index: 2,
           title: 'Obtain free GLMR to cover transfer fee',
           subtitle: 'Obtain GLMR for free to cover your future transfer fees.',
           status: 0,
-          subtitleWarning: false,
-          withCaptcha: true
+          withCaptcha: true,
+          success: 'Free GLMR has been successfully sent to your account.'
         },
         {
           index: 3,
@@ -162,7 +162,7 @@ const EvmBridgeModal = ({
             ? `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`
             : `Please wait. Estimated time of arrival: ${latency} minutes`,
           status: 0,
-          subtitleWarning: false
+          success: `'MANTA has been successfully sent to ${destinationChainName}.`
         }
       ]
     };
@@ -384,7 +384,7 @@ const EvmBridgeModal = ({
             'SYSTEM_EMERGENCY_STOP'
           ];
           if (reasons.includes(errReason)) {
-            updateStepStatus(1, 1);
+            updateStepStatus(1, 2);
             if (isEthereumToManta) {
               setCurrentButtonStatus(buttonStatus[11]);
             } else {

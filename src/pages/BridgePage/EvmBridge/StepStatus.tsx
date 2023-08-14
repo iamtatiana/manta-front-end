@@ -19,7 +19,6 @@ type Step = {
   title: string;
   subtitle: string;
   status: number;
-  subtitleWarning: boolean;
 };
 
 type ErrMsgObj = {
@@ -133,6 +132,7 @@ const StepStatus = ({
     <div className="flex items-center justify-center py-10">
       <div className="flex flex-col text-white">
         {steps.map((item, index) => {
+          // status, 0 = default, 1 = success, 2 = failed, 3 = pending
           return (
             <div
               key={index}
@@ -142,13 +142,11 @@ const StepStatus = ({
 
               <div className="pl-10">
                 <p className="text-sm	font-semibold">{item.title}</p>
+
                 <p
-                  className={
-                    item.subtitleWarning
-                      ? 'text-sm text-white text-opacity-60 text-red-warning'
-                      : 'text-sm text-white text-opacity-60'
-                  }>
-                  {item.subtitle}
+                  className="text-sm text-white text-opacity-60"
+                  style={item.status === 1 ? { color: successColor } : {}}>
+                  {item.status === 1 ? item.success : item.subtitle}
                 </p>
                 {index === 0 && currentButtonIndex === 5 && (
                   <button
