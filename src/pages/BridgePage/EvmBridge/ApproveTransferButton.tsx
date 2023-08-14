@@ -264,6 +264,7 @@ const EvmTransferButton = () => {
           latency={bridgeFee.latency}
           maxSlippage={bridgeFee.max_slippage}
           estimatedReceiveAmt={bridgeFee.estimated_receive_amt}
+          setShowEvmBridgeModal={setShowEvmBridgeModal}
         />
       )}
     </div>

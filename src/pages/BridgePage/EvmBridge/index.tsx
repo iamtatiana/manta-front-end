@@ -62,13 +62,15 @@ type EvmBridgeData = {
   latency?: number;
   maxSlippage?: number;
   estimatedReceiveAmt?: number;
+  setShowEvmBridgeModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const EvmBridgeModal = ({
   transferId,
   latency,
   maxSlippage,
-  estimatedReceiveAmt
+  estimatedReceiveAmt,
+  setShowEvmBridgeModal
 }: EvmBridgeData) => {
   const { SetEVMBridgeProcessing } = useTxStatus();
   const { provider, ethAddress, chainId } = useMetamask();
@@ -85,7 +87,7 @@ const EvmBridgeModal = ({
   const { sendSubstrate } = useBridgeTx();
   const config = useConfig();
 
-  const { ModalWrapper, showModal, hideModal } = useModal({
+  const { ModalWrapper, showModal } = useModal({
     closeDisabled: true,
     closeCallback: () => SetEVMBridgeProcessing(false)
   });
@@ -493,7 +495,7 @@ const EvmBridgeModal = ({
         });
     } else if (index === 10) {
       // Refunded, try again
-      hideModal();
+      setShowEvmBridgeModal(false);
     } else if (index === 11) {
       // moonbeam to manta
       setCurrentButtonStatus(buttonStatus[16]);
@@ -658,7 +660,7 @@ const EvmBridgeModal = ({
         setCurrentButtonStatus(buttonStatus[14]);
       }
     } else {
-      hideModal();
+      setShowEvmBridgeModal(false);
     }
   };
 
