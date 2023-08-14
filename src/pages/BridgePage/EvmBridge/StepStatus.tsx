@@ -129,14 +129,14 @@ const StepStatus = ({
   }, [errMsgObj]);
 
   return (
-    <div className="flex items-center justify-center py-10">
+    <div className="flex items-center justify-center mt-8">
       <div className="flex flex-col text-white">
         {steps.map((item, index) => {
           // status, 0 = default, 1 = success, 2 = failed, 3 = pending
           return (
             <div
               key={index}
-              className="basis-1/3 flex flex-row items-center justify-content py-4"
+              className="basis-1/3 flex flex-row justify-content py-4"
               style={index < 2 ? borderStyle : {}}>
               <StepNumberIndicator currentStep={item} />
 
@@ -162,7 +162,7 @@ const StepStatus = ({
                       onClick={fetch}
                       dangerouslySetInnerHTML={{ __html: captchaImg }}
                     />
-                    <div className="block mb-2">
+                    <div className="block mb-2 text-sm font-semibold">
                       To continue, type the characters above:
                     </div>
                     <input

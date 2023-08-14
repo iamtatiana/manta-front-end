@@ -707,10 +707,10 @@ const EvmBridgeModal = ({
       <div
         className="rounded-xl bg-fourth"
         style={{ width: '638px', padding: '24px 72px', margin: '-24px' }}>
-        <div className="unselectable-text text-white text-center text-xl mb-2.5 font-semibold">
+        <div className="unselectable-text text-white text-center text-xl mb-2 font-semibold">
           {modalText.title}
         </div>
-        <div className="text-sm text-center text-white text-opacity-60">
+        <div className="text-sm text-center text-white">
           {modalText.subtitle}
         </div>
         <Indicator chainList={modalText.chainList} />

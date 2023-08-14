@@ -15,7 +15,7 @@ const Indicator = ({ chainList }: { chainList: Array<Chain> }) => {
   const successIndicator = { backgroundColor: successColor };
   const failedIndicator = { backgroundColor: failedColor };
   return (
-    <div className="flex flex-row pt-6 justify-center items-center">
+    <div className="flex flex-row mt-10 justify-center items-center">
       {indicator.map((item, index) => {
         // status, 0 = default, 1 = success, 2 = failed, 3 = pending
         const status = chainList[index].status;

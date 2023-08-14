@@ -19,7 +19,7 @@ const ChainStatus = ({ chainList }: { chainList: Array }) => {
     borderColor: 'rgba(249, 65, 62, 0.4)'
   };
   return (
-    <div className="flex flex-row	text-white pt-6">
+    <div className="flex flex-row	text-white pt-4">
       {chainList.map((item: Chain, index: number) => {
         // status, 0 = default, 1 = success, 2 = failed, 3 = pending
         const status = item.status;
