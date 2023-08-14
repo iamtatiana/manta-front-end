@@ -152,7 +152,7 @@ const StepStatus = ({
                   <button
                     className="mt-2 text-manta-blue"
                     onClick={addMANTAToMetamask}>
-                    add MANTA to Metamask on Moonbeam
+                    Add MANTA to Metamask
                   </button>
                 )}
                 {index === 1 && currentButtonIndex === 5 && (
