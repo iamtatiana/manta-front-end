@@ -143,9 +143,14 @@ const EvmBridgeModal = ({
         {
           index: 1,
           title: `Send MANTA from ${originChainName} to Moonbeam`,
-          subtitle: isEthereumToManta
-            ? `Please wait. Estimated time of arrival: ${latency} minutes`
-            : 'Please send your MANTA from Manta to Moonbeam via XCM.',
+          subtitle: isEthereumToManta ? (
+            <span>
+              Please wait. Estimated time of arrival:{' '}
+              <span style={{ color: '#FCCF86' }}>{latency} minutes</span>
+            </span>
+          ) : (
+            'Please send your MANTA from Manta to Moonbeam via XCM.'
+          ),
           status: isEthereumToManta ? 3 : 0,
           success: 'MANTA has been successfully sent to Moonbeam.'
         },
@@ -160,11 +165,16 @@ const EvmBridgeModal = ({
         {
           index: 3,
           title: `Send MANTA from Moonbeam to ${destinationChainName}`,
-          subtitle: isEthereumToManta
-            ? `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`
-            : `Please wait. Estimated time of arrival: ${latency} minutes`,
+          subtitle: isEthereumToManta ? (
+            `Please send your MANTA from Moonbeam to ${destinationChainName} via XCM.`
+          ) : (
+            <span>
+              Please wait. Estimated time of arrival:{' '}
+              <span style={{ color: '#FCCF86' }}>{latency} minutes</span>
+            </span>
+          ),
           status: 0,
-          success: `'MANTA has been successfully sent to ${destinationChainName}.`
+          success: `MANTA has been successfully sent to ${destinationChainName}.`
         }
       ]
     };
@@ -601,7 +611,7 @@ const EvmBridgeModal = ({
       } catch (e) {
         setErrMsgObj({
           index: 2,
-          errMsg: 'Send transaction failed, please try again'
+          errMsg: 'Approve transaction failed, please try again'
         });
         updateStepStatus(2, 2);
         setCurrentButtonStatus(buttonStatus[13]);

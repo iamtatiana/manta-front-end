@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useState, useEffect } from 'react';
-import { Loading } from 'element-react';
+import DotLoader from 'components/Loaders/DotLoader';
 import { useMetamask } from 'contexts/metamaskContext';
 import classNames from 'classnames';
 import { useConfig } from 'contexts/configContext';
@@ -273,12 +273,9 @@ const EvmTransferButton = () => {
 
 const LoadingIndicator = () => {
   return (
-    <div className="mt-7">
-      <Loading
-        style={{ alignSelf: 'center' }}
-        loading={true}
-        text="Processing..."
-      />
+    <div className="bg-connect-wallet-button py-2 unselectable-text text-center text-white rounded-lg w-full filter brightness-50 cursor-not-allowed">
+      Processing&nbsp;
+      <DotLoader />
     </div>
   );
 };
