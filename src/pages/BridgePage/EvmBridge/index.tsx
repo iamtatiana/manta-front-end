@@ -374,12 +374,19 @@ const EvmBridgeModal = ({
           }
         }
       } catch (e) {
-        const errMsg = e.response?.data?.message || e.message;
+        let errMsg = e.response?.data?.message || e.message;
+        if (e.response?.data?.reason === 'ADDRESS_EXCEED_LIMIT') {
+          errMsg =
+            'One request per address every 5 minutes. Please wait and try again later.';
+        } else if (e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP') {
+          errMsg =
+            'Faucet is temporarily unavailable. Please find GLMR from other sources.';
+        }
         setErrMsgObj({ index: 1, errMsg });
         if (e.response?.status === 400) {
           const errReason = e.response.data.reason;
           const reasons = [
-            'ADDRESS_EXCEED_LIMIT',
+            // 'ADDRESS_EXCEED_LIMIT',
             'SYSTEM_EXCEED_LIMIT',
             'SYSTEM_EMERGENCY_STOP'
           ];
