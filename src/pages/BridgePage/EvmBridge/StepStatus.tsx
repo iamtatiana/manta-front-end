@@ -178,9 +178,9 @@ const StepStatus = ({
                   <div
                     className="w-96"
                     style={{
-                      color: '#f9413e',
+                      color: errMsgObj.errMsgIsWarning ? '#FCCF86' : '#f9413e',
                       marginTop: '4px',
-                      wordBreak: 'break-all'
+                      wordWrap: 'break-word'
                     }}>
                     {errMsg}
                   </div>

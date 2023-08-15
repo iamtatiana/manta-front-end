@@ -403,20 +403,24 @@ const EvmBridgeModal = ({
         if (e.response?.data?.reason === 'ADDRESS_EXCEED_LIMIT') {
           errMsg =
             'One request per address every 5 minutes. Please wait and try again later.';
-        } else if (e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP') {
+        } else if (
+          e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP' ||
+          e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP2'
+        ) {
           errMsg =
             'Faucet is temporarily unavailable. Please find GLMR from other sources.';
         }
-        setErrMsgObj({ index: 1, errMsg });
         if (e.response?.status === 400) {
           const errReason = e.response.data.reason;
           const reasons = [
             // 'ADDRESS_EXCEED_LIMIT',
             'SYSTEM_EXCEED_LIMIT',
-            'SYSTEM_EMERGENCY_STOP'
+            'SYSTEM_EMERGENCY_STOP',
+            'SYSTEM_EMERGENCY_STOP2'
           ];
           if (reasons.includes(errReason)) {
-            updateStepStatus(1, 2);
+            setErrMsgObj({ index: 1, errMsg, errMsgIsWarning: true });
+            updateStepStatus(1, 1);
             if (isEthereumToManta) {
               setCurrentButtonStatus(buttonStatus[11]);
             } else {
@@ -425,6 +429,7 @@ const EvmBridgeModal = ({
             return;
           }
         }
+        setErrMsgObj({ index: 1, errMsg });
         updateStepStatus(1, 2);
         setCurrentButtonStatus({ ...buttonStatus[5], loading: false });
       }
