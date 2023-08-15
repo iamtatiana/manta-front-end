@@ -46,6 +46,9 @@ const EvmTransferButton = () => {
     } else if (status === 2) {
       onTransferClick();
     } else if (status === 4) {
+      if (!bridgeFee) {
+        return;
+      }
       setShowEvmBridgeModal(true);
     }
   };
