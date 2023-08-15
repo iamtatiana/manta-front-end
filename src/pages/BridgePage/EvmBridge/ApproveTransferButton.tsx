@@ -89,7 +89,7 @@ const EvmTransferButton = () => {
   useEffect(async () => {
     setIsEstimatingFee(true);
     estimateGasFee();
-  }, [senderAssetTargetBalance]);
+  }, [senderAssetTargetBalance, ethAddress]);
 
   const estimateGasFee = useDebouncedCallback(async () => {
     try {

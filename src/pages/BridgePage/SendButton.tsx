@@ -106,7 +106,8 @@ const ValidationButton = () => {
   const shouldShowSendButton =
     !disabled && !isConnectWallet && !validationMsg && !isSwitchNetwork;
   const shouldShowConnectWallet = !disabled && isConnectWallet;
-  const shouldShowValidation = !disabled && !isConnectWallet && validationMsg;
+  const shouldShowValidation =
+    !disabled && !isConnectWallet && validationMsg && !EVMBridgeProcessing;
   const shouldShowSwitchNetwork =
     !disabled && !isConnectWallet && !validationMsg && isSwitchNetwork;
 

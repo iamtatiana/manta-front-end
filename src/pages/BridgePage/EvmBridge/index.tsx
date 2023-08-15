@@ -405,7 +405,7 @@ const EvmBridgeModal = ({
             'One request per address every 5 minutes. Please wait and try again later.';
         } else if (
           e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP' ||
-          e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP2'
+          e.response?.data?.reason === 'SYSTEM_OUT_OF_GAS'
         ) {
           errMsg =
             'Faucet is temporarily unavailable. Please find GLMR from other sources.';
@@ -416,7 +416,7 @@ const EvmBridgeModal = ({
             // 'ADDRESS_EXCEED_LIMIT',
             'SYSTEM_EXCEED_LIMIT',
             'SYSTEM_EMERGENCY_STOP',
-            'SYSTEM_EMERGENCY_STOP2'
+            'SYSTEM_OUT_OF_GAS'
           ];
           if (reasons.includes(errReason)) {
             setErrMsgObj({ index: 1, errMsg, errMsgIsWarning: true });

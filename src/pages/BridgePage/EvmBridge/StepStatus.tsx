@@ -158,7 +158,7 @@ const StepStatus = ({
                 {index === 1 && currentButtonIndex === 5 && (
                   <div className="mt-3">
                     <div
-                      className="cursor-pointer h-10 rounded-lg inline-block"
+                      className="cursor-pointer h-10 rounded-lg inline-block overflow-hidden"
                       onClick={fetch}
                       dangerouslySetInnerHTML={{ __html: captchaImg }}
                     />
