@@ -394,7 +394,7 @@ const EvmBridgeModal = ({
           if (isEthereumToManta) {
             setCurrentButtonStatus(buttonStatus[11]);
           } else {
-            approveFromMoonbeamToEthereum();
+            queryAllowance(0);
           }
         }
       } catch (e) {
@@ -419,7 +419,7 @@ const EvmBridgeModal = ({
             if (isEthereumToManta) {
               setCurrentButtonStatus(buttonStatus[11]);
             } else {
-              approveFromMoonbeamToEthereum();
+              queryAllowance(0);
             }
             return;
           }
@@ -478,7 +478,7 @@ const EvmBridgeModal = ({
                 errMsg: addError.message
               });
               setCurrentButtonStatus(buttonStatus[8]);
-              updateStepStatus(0, 2);
+              updateStepStatus(2, 2);
               return;
             }
           }
@@ -488,7 +488,7 @@ const EvmBridgeModal = ({
             errMsg: switchError.message
           });
           setCurrentButtonStatus(buttonStatus[8]);
-          updateStepStatus(0, 2);
+          updateStepStatus(2, 2);
           return;
         }
       }
@@ -521,7 +521,7 @@ const EvmBridgeModal = ({
       if (isEthereumToManta) {
         setShowEvmBridgeModal(false);
       } else {
-        approveFromMoonbeamToEthereum();
+        queryAllowance(0);
       }
     } else if (index === 11) {
       // moonbeam to manta
@@ -621,10 +621,7 @@ const EvmBridgeModal = ({
             }
           ]
         });
-        const amount = senderAssetTargetBalance
-          .sub(destGasFee)
-          .valueAtomicUnits.toString();
-        queryAllowance(ethAddress, amount);
+        queryAllowance();
       } catch (e) {
         setErrMsgObj({
           index: 2,
@@ -691,29 +688,14 @@ const EvmBridgeModal = ({
     }
   };
 
-  const approveFromMoonbeamToEthereum = async () => {
-    const allowance = await queryTokenAllowance(
-      provider,
-      config.MantaContractOnMoonbeam,
-      ethAddress,
-      config.CelerContractOnMoonbeam
-    );
-
-    if (allowance >= amount) {
-      setCurrentButtonStatus(buttonStatus[14]);
-    } else {
-      setCurrentButtonStatus(buttonStatus[13]);
-    }
-  };
-
   // Query user address allowance
-  const queryAllowance = async (ethAddress, amount, retryTimes = 12) => {
+  const queryAllowance = async (retryTimes = 12) => {
+    updateStepStatus(2, 3);
+    setCurrentButtonStatus(buttonStatus[16]);
+    const approveAmount = senderAssetTargetBalance
+      .sub(destGasFee)
+      .valueAtomicUnits.toString();
     try {
-      if (retryTimes === 0) {
-        // show approve button
-        setCurrentButtonStatus(buttonStatus[13]);
-        return;
-      }
       const allowance = await queryTokenAllowance(
         provider,
         config.MantaContractOnMoonbeam,
@@ -721,20 +703,26 @@ const EvmBridgeModal = ({
         config.CelerContractOnMoonbeam
       );
 
-      if (allowance >= amount) {
+      if (parseInt(allowance) >= parseInt(approveAmount)) {
         updateStepStatus(2, 0);
         setCurrentButtonStatus(buttonStatus[14]);
       } else {
-        retryQueryAllowance(ethAddress, amount, --retryTimes);
+        if (retryTimes === 0) {
+          // show approve button
+          updateStepStatus(2, 0);
+          setCurrentButtonStatus(buttonStatus[13]);
+        } else {
+          retryQueryAllowance(--retryTimes);
+        }
       }
     } catch (e) {
-      retryQueryAllowance(ethAddress, amount, --retryTimes);
+      retryQueryAllowance(--retryTimes);
     }
   };
 
-  const retryQueryAllowance = (ethAddress, amount, retryTimes) => {
+  const retryQueryAllowance = (retryTimes) => {
     setTimeout(() => {
-      queryAllowance(ethAddress, amount, retryTimes);
+      queryAllowance(retryTimes);
     }, 5 * 1000);
   };
 

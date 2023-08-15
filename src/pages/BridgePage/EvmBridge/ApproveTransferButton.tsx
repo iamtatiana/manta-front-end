@@ -228,7 +228,7 @@ const EvmTransferButton = () => {
       config.CelerContractOnEthereum
     );
 
-    if (allowance >= amount) {
+    if (parseInt(allowance) >= parseInt(amount)) {
       setStatus(2);
     } else {
       setTimeout(() => {
