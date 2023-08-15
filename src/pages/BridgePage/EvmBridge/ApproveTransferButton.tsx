@@ -16,7 +16,7 @@ import {
 import EvmBridge from './index';
 
 const buttonText = [
-  '',
+  'Processing',
   'Approve MANTA',
   'Transfer', // ethereum to moonbeam
   'The received amount cannot cover fee',
@@ -34,7 +34,7 @@ const EvmTransferButton = () => {
   } = useBridgeData();
   const config = useConfig();
   const { ethAddress, provider } = useMetamask();
-  const [status, setStatus] = useState(originChain.name === 'ethereum' ? 1 : 4); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Next, 5 = The amount is larger than liquidity pool
+  const [status, setStatus] = useState(originChain.name === 'ethereum' ? 1 : 4); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Transfer, 5 = The amount is larger than liquidity pool
   const [isEstimatingFee, setIsEstimatingFee] = useState(true);
   const [bridgeFee, setBridgeFee] = useState(null);
   const [transferId, setTransferId] = useState('');
@@ -241,7 +241,7 @@ const EvmTransferButton = () => {
         symbol={senderAssetType.baseTicker}
       />
       <div>
-        {status === 0 && transferId.length === 0 ? (
+        {status === 0 ? (
           <LoadingIndicator />
         ) : (
           <button

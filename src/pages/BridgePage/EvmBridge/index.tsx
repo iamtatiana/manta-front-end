@@ -42,9 +42,9 @@ const buttonStatus = [
   { index: 5, text: 'Obtain free GLMR', loading: true },
   { index: 6, text: 'To be refunded', loading: true },
   { index: 7, text: 'Requesting refund', loading: true },
-  { index: 8, text: 'Confirm Refund', loading: false },
+  { index: 8, text: 'Request a refund', loading: false },
   { index: 9, text: 'Confirming your refund', loading: true },
-  { index: 10, text: 'Transfer refund completed', loading: false },
+  { index: 10, text: 'Resubmit', loading: false },
   { index: 11, text: 'Transfer', loading: false }, // moonbeam to manta
   { index: 12, text: 'Transfer', loading: false }, // manta to moonbeam
   { index: 13, text: 'Approve MANTA', loading: false },
@@ -54,7 +54,8 @@ const buttonStatus = [
     text: 'Completed! Your token is now available on ',
     loading: false
   },
-  { index: 16, text: 'Processing', loading: true }
+  { index: 16, text: 'Processing', loading: true },
+  { index: 17, text: 'Refunding', loading: true }
 ];
 
 type EvmBridgeData = {
@@ -277,6 +278,16 @@ const EvmBridgeModal = ({
             powers: data.powers
           };
           setRefundData(newRefundData);
+          setModalText((preState) => {
+            let index = 2;
+            if (isEthereumToManta) {
+              index = 0;
+            }
+            preState.steps[index].subtitle =
+              'Transaction failed. Please request a refund and resubmit the bridge.';
+            preState.steps[index].status = 2;
+            return preState;
+          });
         }
         // celer transfer failed
         updateStepStatus(currentIndex, 2);
@@ -320,6 +331,7 @@ const EvmBridgeModal = ({
 
   // update step UI layout
   const updateStepStatus = (index, status) => {
+    // status, 0 = default, 1 = success, 2 = failed, 3 = pending
     setModalText((preState) => {
       preState.chainList[index].status = status;
       preState.steps[index].status = status;
@@ -416,6 +428,8 @@ const EvmBridgeModal = ({
         setCurrentButtonStatus({ ...buttonStatus[5], loading: false });
       }
     } else if (index === 8) {
+      // Request a refund
+      setCurrentButtonStatus(buttonStatus[17]);
       if (errMsgObj.index === 0) {
         setErrMsgObj({
           index: 0,
@@ -480,7 +494,6 @@ const EvmBridgeModal = ({
       }
       // Confirm Refund
       const data = await generateCelerRefundData(refundData);
-      setCurrentButtonStatus(buttonStatus[0]);
       await provider
         .request({
           method: 'eth_sendTransaction',
@@ -495,7 +508,7 @@ const EvmBridgeModal = ({
         .then(() => {
           updateRefundStatus(refundData.transferId);
         })
-        .catch(() => {
+        .catch((switchError) => {
           setErrMsgObj({
             index: 0,
             errMsg: switchError.message
@@ -505,7 +518,11 @@ const EvmBridgeModal = ({
         });
     } else if (index === 10) {
       // Refunded, try again
-      setShowEvmBridgeModal(false);
+      if (isEthereumToManta) {
+        setShowEvmBridgeModal(false);
+      } else {
+        approveFromMoonbeamToEthereum();
+      }
     } else if (index === 11) {
       // moonbeam to manta
       setCurrentButtonStatus(buttonStatus[16]);
