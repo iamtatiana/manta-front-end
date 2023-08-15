@@ -51,7 +51,7 @@ const buttonStatus = [
   { index: 14, text: 'Transfer', loading: false }, // moonbeam to ethereum
   {
     index: 15,
-    text: 'Completed! Your token is now available on ',
+    text: '',
     loading: false
   },
   { index: 16, text: 'Processing', loading: true },
@@ -302,7 +302,8 @@ const EvmBridgeModal = ({
     updateStepStatus(2, 1);
     const finalButtonStatus = buttonStatus[15];
     finalButtonStatus.text =
-      finalButtonStatus.text + (isEthereumToManta ? 'Manta' : 'Ethereum');
+      'Completed! Your token is now available on ' +
+      (isEthereumToManta ? 'Manta' : 'Ethereum');
     setCurrentButtonStatus(finalButtonStatus);
   };
 
