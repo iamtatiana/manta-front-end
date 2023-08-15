@@ -525,6 +525,7 @@ const EvmBridgeModal = ({
     } else if (index === 10) {
       // Refunded, try again
       if (isEthereumToManta) {
+        SetEVMBridgeProcessing(false);
         setShowEvmBridgeModal(false);
       } else {
         queryAllowance(0);
@@ -690,6 +691,7 @@ const EvmBridgeModal = ({
         setCurrentButtonStatus(buttonStatus[14]);
       }
     } else {
+      SetEVMBridgeProcessing(false);
       setShowEvmBridgeModal(false);
     }
   };
