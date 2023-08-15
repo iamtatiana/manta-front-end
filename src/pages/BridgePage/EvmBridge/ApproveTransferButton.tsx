@@ -46,6 +46,9 @@ const EvmTransferButton = () => {
     } else if (status === 2) {
       onTransferClick();
     } else if (status === 4) {
+      if (!bridgeFee) {
+        return;
+      }
       setShowEvmBridgeModal(true);
     }
   };
@@ -225,7 +228,7 @@ const EvmTransferButton = () => {
       config.CelerContractOnEthereum
     );
 
-    if (allowance >= amount) {
+    if (parseInt(allowance) >= parseInt(amount)) {
       setStatus(2);
     } else {
       setTimeout(() => {
