@@ -143,7 +143,9 @@ const StepStatus = ({
               <div className="pl-10">
                 <p className="text-sm	font-semibold">{item.title}</p>
 
-                <p className="text-sm text-white text-opacity-60">
+                <p
+                  className="text-sm text-white text-opacity-60"
+                  style={item.status === 2 ? { color: failedColor } : {}}>
                   {item.status === 1 ? item.success : item.subtitle}
                 </p>
                 {index === 0 && currentButtonIndex === 5 && (
