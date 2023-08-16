@@ -171,6 +171,9 @@ const EvmTransferButton = () => {
 
   // Call metamask to approve token
   const onApproveClick = async () => {
+    if (isEstimatingFee) {
+      return;
+    }
     // Approve Celer Contract Address to spend user's token
     const data = await generateApproveData(
       config.CelerContractOnEthereum,
