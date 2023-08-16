@@ -418,13 +418,17 @@ const EvmBridgeModal = ({
           let maxRequest = '';
           try {
             const res = await getAppSetting();
-            interval = res.data?.maxClaimAmountInTimeGap;
-            maxRequest = res.data?.maxClaimAmount;
+            interval = (
+              res.data?.timeGapSecondsInCheckEvmAddressClaimAmount / 60
+            ).toFixed(2);
+            maxRequest = res.data?.maxRequestInTimeGap;
           } catch (e) {
             console.log(e.message);
           }
 
-          errMsg = `${maxRequest} GLMR request per address every ${interval} minutes. Please wait and try again later.`;
+          errMsg = `${maxRequest} ${
+            maxRequest > 1 ? 'requests' : 'request'
+          } per address every ${interval} minutes. Please wait and try again later.`;
         } else if (
           e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP' ||
           e.response?.data?.reason === 'SYSTEM_OUT_OF_GAS'
