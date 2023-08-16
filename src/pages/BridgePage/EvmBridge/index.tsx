@@ -471,14 +471,14 @@ const EvmBridgeModal = ({
     } else if (index === 8) {
       // Request a refund
       setCurrentButtonStatus(buttonStatus[17]);
-      if (errMsgObj.index === 0) {
-        setErrMsgObj({
-          index: 0,
-          errMsg: ''
-        });
-      }
       let to = '';
       if (isEthereumToManta) {
+        if (errMsgObj.index === 0) {
+          setErrMsgObj({
+            index: 0,
+            errMsg: ''
+          });
+        }
         to = config.CelerContractOnEthereum;
         // swith to ethereum
         try {
@@ -496,6 +496,12 @@ const EvmBridgeModal = ({
           return;
         }
       } else {
+        if (errMsgObj.index === 2) {
+          setErrMsgObj({
+            index: 2,
+            errMsg: ''
+          });
+        }
         to = config.CelerContractOnMoonbeam;
         // swith to moonbeam
         // switch user's metamask to moonbeam network
