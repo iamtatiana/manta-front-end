@@ -206,7 +206,7 @@ export const generateCelerContractData = (
     approvedAmount +
     destinationChainIdHex +
     nonceHex +
-    numberToHex(maxSlippage);
+    numberToHex(1);
 
   // Show Bridge Processing Modal
   const transferId = ethers.utils.solidityKeccak256(
