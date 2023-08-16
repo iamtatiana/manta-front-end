@@ -7,7 +7,8 @@ import { useModal } from 'hooks';
 import {
   getFreeGasEth2Manta,
   getFreeGasManta2Eth,
-  checkTxStatus
+  checkTxStatus,
+  getAppSetting
 } from 'utils/api/evmBridgeFaucet';
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -18,6 +19,7 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Chain from 'types/Chain';
+import store from 'store';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
@@ -28,7 +30,8 @@ import {
   generateCelerRefundData,
   generateCelerContractData,
   queryTokenAllowance,
-  generateApproveData
+  generateApproveData,
+  queryTransactionReceipt
 } from './Util';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -112,6 +115,7 @@ const EvmBridgeModal = ({
   }, [captcha]);
 
   useEffect(() => {
+    store.set('prevEthAddress', ethAddress);
     SetEVMBridgeProcessing(true);
     let originChainName = originChain.name;
     originChainName =
@@ -394,6 +398,15 @@ const EvmBridgeModal = ({
           updateStepStatus(1, 1);
           if (isEthereumToManta) {
             setCurrentButtonStatus(buttonStatus[11]);
+            const prevEthAddress = store.get('prevEthAddress');
+            if (prevEthAddress !== ethAddress) {
+              setErrMsgObj({
+                index: 2,
+                errMsg:
+                  'New account detected for this transaction. Confirm to continue?',
+                errMsgIsWarning: true
+              });
+            }
           } else {
             queryAllowance(0);
           }
@@ -401,30 +414,57 @@ const EvmBridgeModal = ({
       } catch (e) {
         let errMsg = e.response?.data?.message || e.message;
         if (e.response?.data?.reason === 'ADDRESS_EXCEED_LIMIT') {
-          errMsg =
-            'One request per address every 5 minutes. Please wait and try again later.';
-        } else if (e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP') {
+          let interval = '--';
+          let maxRequest = '';
+          try {
+            const res = await getAppSetting();
+            interval = (
+              res.data?.timeGapSecondsInCheckEvmAddressClaimAmount / 60
+            ).toFixed(2);
+            maxRequest = res.data?.maxRequestInTimeGap;
+          } catch (e) {
+            console.log(e.message);
+          }
+
+          errMsg = `${maxRequest} ${
+            maxRequest > 1 ? 'requests' : 'request'
+          } per address every ${interval} minutes. Please wait and try again later.`;
+        } else if (
+          e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP' ||
+          e.response?.data?.reason === 'SYSTEM_OUT_OF_GAS'
+        ) {
           errMsg =
             'Faucet is temporarily unavailable. Please find GLMR from other sources.';
         }
-        setErrMsgObj({ index: 1, errMsg });
         if (e.response?.status === 400) {
           const errReason = e.response.data.reason;
           const reasons = [
             // 'ADDRESS_EXCEED_LIMIT',
             'SYSTEM_EXCEED_LIMIT',
-            'SYSTEM_EMERGENCY_STOP'
+            'SYSTEM_EMERGENCY_STOP',
+            'SYSTEM_OUT_OF_GAS'
           ];
           if (reasons.includes(errReason)) {
-            updateStepStatus(1, 2);
+            setErrMsgObj({ index: 1, errMsg, errMsgIsWarning: true });
+            updateStepStatus(1, 1);
             if (isEthereumToManta) {
               setCurrentButtonStatus(buttonStatus[11]);
+              const prevEthAddress = store.get('prevEthAddress');
+              if (prevEthAddress !== ethAddress) {
+                setErrMsgObj({
+                  index: 2,
+                  errMsg:
+                    'New account detected for this transaction. Confirm to continue?',
+                  errMsgIsWarning: true
+                });
+              }
             } else {
               queryAllowance(0);
             }
             return;
           }
         }
+        setErrMsgObj({ index: 1, errMsg });
         updateStepStatus(1, 2);
         setCurrentButtonStatus({ ...buttonStatus[5], loading: false });
       }
@@ -520,6 +560,7 @@ const EvmBridgeModal = ({
     } else if (index === 10) {
       // Refunded, try again
       if (isEthereumToManta) {
+        SetEVMBridgeProcessing(false);
         setShowEvmBridgeModal(false);
       } else {
         queryAllowance(0);
@@ -662,10 +703,9 @@ const EvmBridgeModal = ({
         amount,
         maxSlippage
       );
-      updateStepStatus(2, 3);
       setCurrentButtonStatus(buttonStatus[16]);
       try {
-        await provider.request({
+        const txHash = await provider.request({
           method: 'eth_sendTransaction',
           params: [
             {
@@ -675,7 +715,7 @@ const EvmBridgeModal = ({
             }
           ]
         });
-        updateTransferStatus(transferId);
+        queryTxStatus(txHash, transferId);
       } catch (e) {
         setErrMsgObj({
           index: 2,
@@ -685,7 +725,30 @@ const EvmBridgeModal = ({
         setCurrentButtonStatus(buttonStatus[14]);
       }
     } else {
+      SetEVMBridgeProcessing(false);
       setShowEvmBridgeModal(false);
+    }
+  };
+
+  const queryTxStatus = async (txHash, transferId) => {
+    const status = await queryTransactionReceipt(provider, txHash);
+    if (status === 1) {
+      // transaction execute success
+      setCurrentButtonStatus(buttonStatus[0]);
+      updateTransferStatus(transferId);
+    } else if (status === 0) {
+      // transaction execute failed
+      setErrMsgObj({
+        index: 2,
+        errMsg: 'Send transaction failed, please try again'
+      });
+      updateStepStatus(2, 2);
+      setCurrentButtonStatus(buttonStatus[14]);
+    } else {
+      // waiting for transaction mined by blockchain miner
+      setTimeout(() => {
+        queryTxStatus(txHash, transferId);
+      }, 3 * 1000);
     }
   };
 

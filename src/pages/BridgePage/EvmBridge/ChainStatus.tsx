@@ -23,17 +23,19 @@ const ChainStatus = ({ chainList }: { chainList: Array }) => {
       {chainList.map((item: Chain, index: number) => {
         // status, 0 = default, 1 = success, 2 = failed, 3 = pending
         const status = item.status;
+        let style = {};
+        if (status === 2) {
+          style = failedChainName;
+        } else if (index === 0 || status === 1) {
+          style = successChainName;
+        } else if (index === 1 && chainList[0].status === 1) {
+          style = successChainName;
+        }
         return (
           <div key={index} className="flex-1 flex justify-center items-center">
             <div
               className="px-2 py-1 flex flex-row border border-white border-opacity-40 rounded-2xl bg-white bg-opacity-20 bg-manta-blue"
-              style={
-                status > 0 && status < 3
-                  ? status === 2
-                    ? failedChainName
-                    : successChainName
-                  : {}
-              }>
+              style={style}>
               <Icon
                 className="w-6 h-6 rounded-full"
                 name={item.logo as IconName}

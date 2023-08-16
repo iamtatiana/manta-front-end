@@ -45,3 +45,9 @@ export const checkTxStatus = (txHash: string) => {
     }
   );
 };
+
+export const getAppSetting = () => {
+  return axios.get(
+    `${baseUrl}/v1/get_app_setting`
+  );
+};

@@ -11,7 +11,8 @@ import {
   queryCelerBridgeFee,
   generateCelerContractData,
   generateApproveData,
-  queryTokenAllowance
+  queryTokenAllowance,
+  queryTransactionReceipt
 } from './Util';
 import EvmBridge from './index';
 
@@ -27,6 +28,7 @@ const buttonText = [
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
   const {
+    destGasFee,
     originChain,
     destinationChain,
     senderAssetType,
@@ -89,13 +91,15 @@ const EvmTransferButton = () => {
   useEffect(async () => {
     setIsEstimatingFee(true);
     estimateGasFee();
-  }, [senderAssetTargetBalance]);
+  }, [senderAssetTargetBalance, ethAddress]);
 
   const estimateGasFee = useDebouncedCallback(async () => {
     try {
       // calculate transaction fee
       const originChainInfo = getOriginChainInfo();
-      const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+      const amount = senderAssetTargetBalance
+        .sub(destGasFee)
+        .valueAtomicUnits.toString();
 
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
@@ -148,8 +152,31 @@ const EvmTransferButton = () => {
     }
   }, 1000);
 
+  const queryTxStatus = async (txHash, transferId) => {
+    const status = await queryTransactionReceipt(provider, txHash);
+    const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+
+    if (status === 1) {
+      // transaction execute success
+      setTransferId(transferId);
+      setShowEvmBridgeModal(true);
+      queryAllowance(ethAddress, amount, 0);
+    } else if (status === 0) {
+      // transaction execute failed
+      queryAllowance(ethAddress, amount, 0);
+    } else {
+      // waiting for transaction mined by blockchain miner
+      setTimeout(() => {
+        queryTxStatus(txHash, transferId);
+      }, 3 * 1000);
+    }
+  };
+
   // Call metamask to approve token
   const onApproveClick = async () => {
+    if (isEstimatingFee) {
+      return;
+    }
     // Approve Celer Contract Address to spend user's token
     const data = await generateApproveData(
       config.CelerContractOnEthereum,
@@ -193,8 +220,8 @@ const EvmTransferButton = () => {
     );
 
     setStatus(0);
-    await provider
-      .request({
+    try {
+      const txHash = await provider.request({
         method: 'eth_sendTransaction',
         params: [
           {
@@ -203,24 +230,15 @@ const EvmTransferButton = () => {
             data: data
           }
         ]
-      })
-      .then(() => {
-        setTransferId(transferId);
-        setShowEvmBridgeModal(true);
-        setStatus(1);
-      })
-      .catch(() => {
-        setStatus(2);
       });
+      queryTxStatus(txHash, transferId);
+    } catch (e) {
+      setStatus(2);
+    }
   };
 
   // Query user address allowance
   const queryAllowance = async (ethAddress, amount, retryTimes = 12) => {
-    if (retryTimes === 0) {
-      // show approve button
-      setStatus(1);
-      return;
-    }
     const allowance = await queryTokenAllowance(
       provider,
       config.MantaContractOnEthereum,
@@ -231,9 +249,14 @@ const EvmTransferButton = () => {
     if (parseInt(allowance) >= parseInt(amount)) {
       setStatus(2);
     } else {
-      setTimeout(() => {
-        queryAllowance(ethAddress, amount, --retryTimes);
-      }, 5 * 1000);
+      if (retryTimes === 0) {
+        // show approve button
+        setStatus(1);
+      } else {
+        setTimeout(() => {
+          queryAllowance(ethAddress, amount, --retryTimes);
+        }, 5 * 1000);
+      }
     }
   };
 
