@@ -28,6 +28,7 @@ const buttonText = [
 // Transfer and approve button for the Ethereum chain
 const EvmTransferButton = () => {
   const {
+    destGasFee,
     originChain,
     destinationChain,
     senderAssetType,
@@ -96,7 +97,9 @@ const EvmTransferButton = () => {
     try {
       // calculate transaction fee
       const originChainInfo = getOriginChainInfo();
-      const amount = senderAssetTargetBalance.valueAtomicUnits.toString();
+      const amount = senderAssetTargetBalance
+        .sub(destGasFee)
+        .valueAtomicUnits.toString();
 
       // Query latest Celer bridge fee
       const latestBridgeFee = await queryCelerBridgeFee(
