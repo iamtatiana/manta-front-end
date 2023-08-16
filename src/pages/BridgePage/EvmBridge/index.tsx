@@ -28,7 +28,8 @@ import {
   generateCelerRefundData,
   generateCelerContractData,
   queryTokenAllowance,
-  generateApproveData
+  generateApproveData,
+  queryTransactionReceipt
 } from './Util';
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -668,10 +669,9 @@ const EvmBridgeModal = ({
         amount,
         maxSlippage
       );
-      updateStepStatus(2, 3);
       setCurrentButtonStatus(buttonStatus[16]);
       try {
-        await provider.request({
+        const txHash = await provider.request({
           method: 'eth_sendTransaction',
           params: [
             {
@@ -681,7 +681,7 @@ const EvmBridgeModal = ({
             }
           ]
         });
-        updateTransferStatus(transferId);
+        queryTxStatus(txHash, transferId);
       } catch (e) {
         setErrMsgObj({
           index: 2,
@@ -693,6 +693,28 @@ const EvmBridgeModal = ({
     } else {
       SetEVMBridgeProcessing(false);
       setShowEvmBridgeModal(false);
+    }
+  };
+
+  const queryTxStatus = async (txHash, transferId) => {
+    const status = await queryTransactionReceipt(provider, txHash);
+    if (status === 1) {
+      // transaction execute success
+      setCurrentButtonStatus(buttonStatus[0]);
+      updateTransferStatus(transferId);
+    } else if (status === 0) {
+      // transaction execute failed
+      setErrMsgObj({
+        index: 2,
+        errMsg: 'Send transaction failed, please try again'
+      });
+      updateStepStatus(2, 2);
+      setCurrentButtonStatus(buttonStatus[14]);
+    } else {
+      // waiting for transaction mined by blockchain miner
+      setTimeout(() => {
+        queryTxStatus(txHash, transferId);
+      }, 3 * 1000);
     }
   };
 

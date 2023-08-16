@@ -337,3 +337,21 @@ export const queryTokenAllowance = async (
     return 0;
   }
 };
+
+/**
+ * Query transaction execute status
+ * @param {object} provider - metamask provider
+ * @param {string} transactionHash - transaction hash
+ */
+export const queryTransactionReceipt = async (provider, txHash) => {
+  try {
+    const ethersProvider = new ethers.providers.Web3Provider(provider);
+    const receipt = await ethersProvider.getTransactionReceipt(txHash);
+    // receipt.status
+    // 1 = execute success, 0 = execute failed, undefined = not found
+    return receipt?.status;
+  } catch (e) {
+    console.log(e);
+    return null;
+  }
+};
