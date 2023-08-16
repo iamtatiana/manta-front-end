@@ -556,11 +556,15 @@ const EvmBridgeModal = ({
           updateRefundStatus(refundData.transferId);
         })
         .catch((switchError) => {
+          let index = 2;
+          if (isEthereumToManta) {
+            index = 0;
+          }
           setErrMsgObj({
-            index: 2,
+            index: index,
             errMsg: switchError.message
           });
-          updateStepStatus(2, 2);
+          updateStepStatus(index, 2);
           setCurrentButtonStatus(buttonStatus[8]);
         });
     } else if (index === 10) {

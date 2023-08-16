@@ -131,18 +131,7 @@ const EvmTransferButton = () => {
           setStatus(4);
         } else {
           // approve token from ethereum to moonbeam
-          const allowance = await queryTokenAllowance(
-            provider,
-            config.MantaContractOnEthereum,
-            ethAddress,
-            config.CelerContractOnEthereum
-          );
-
-          if (allowance >= amount) {
-            setStatus(2);
-          } else {
-            setStatus(1);
-          }
+          queryAllowance(ethAddress, amount, 0);
         }
       }
       setBridgeFee(latestBridgeFee);
