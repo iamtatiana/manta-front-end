@@ -7,7 +7,8 @@ import { useModal } from 'hooks';
 import {
   getFreeGasEth2Manta,
   getFreeGasManta2Eth,
-  checkTxStatus
+  checkTxStatus,
+  getAppSetting
 } from 'utils/api/evmBridgeFaucet';
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
@@ -18,6 +19,7 @@ import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Chain from 'types/Chain';
+import store from 'store';
 import { useBridgeData } from '../BridgeContext/BridgeDataContext';
 import { useBridgeTx } from '../BridgeContext/BridgeTxContext';
 import ChainStatus from './ChainStatus';
@@ -113,6 +115,7 @@ const EvmBridgeModal = ({
   }, [captcha]);
 
   useEffect(() => {
+    store.set('prevEthAddress', ethAddress);
     SetEVMBridgeProcessing(true);
     let originChainName = originChain.name;
     originChainName =
@@ -395,6 +398,15 @@ const EvmBridgeModal = ({
           updateStepStatus(1, 1);
           if (isEthereumToManta) {
             setCurrentButtonStatus(buttonStatus[11]);
+            const prevEthAddress = store.get('prevEthAddress');
+            if (prevEthAddress !== ethAddress) {
+              setErrMsgObj({
+                index: 2,
+                errMsg:
+                  'New account detected for this transaction. Confirm to continue?',
+                errMsgIsWarning: true
+              });
+            }
           } else {
             queryAllowance(0);
           }
@@ -402,8 +414,17 @@ const EvmBridgeModal = ({
       } catch (e) {
         let errMsg = e.response?.data?.message || e.message;
         if (e.response?.data?.reason === 'ADDRESS_EXCEED_LIMIT') {
-          errMsg =
-            'One request per address every 5 minutes. Please wait and try again later.';
+          let interval = '--';
+          let maxRequest = '';
+          try {
+            const res = await getAppSetting();
+            interval = res.data?.maxClaimAmountInTimeGap;
+            maxRequest = res.data?.maxClaimAmount;
+          } catch (e) {
+            console.log(e.message);
+          }
+
+          errMsg = `${maxRequest} GLMR request per address every ${interval} minutes. Please wait and try again later.`;
         } else if (
           e.response?.data?.reason === 'SYSTEM_EMERGENCY_STOP' ||
           e.response?.data?.reason === 'SYSTEM_OUT_OF_GAS'
@@ -424,6 +445,15 @@ const EvmBridgeModal = ({
             updateStepStatus(1, 1);
             if (isEthereumToManta) {
               setCurrentButtonStatus(buttonStatus[11]);
+              const prevEthAddress = store.get('prevEthAddress');
+              if (prevEthAddress !== ethAddress) {
+                setErrMsgObj({
+                  index: 2,
+                  errMsg:
+                    'New account detected for this transaction. Confirm to continue?',
+                  errMsgIsWarning: true
+                });
+              }
             } else {
               queryAllowance(0);
             }
