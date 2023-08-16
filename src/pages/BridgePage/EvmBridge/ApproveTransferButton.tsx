@@ -36,7 +36,7 @@ const EvmTransferButton = () => {
   } = useBridgeData();
   const config = useConfig();
   const { ethAddress, provider } = useMetamask();
-  const [status, setStatus] = useState(originChain.name === 'ethereum' ? 1 : 4); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Transfer, 5 = The amount is larger than liquidity pool
+  const [status, setStatus] = useState(0); // status, 0 = Processing, 1 = Approve, 2 = Transfer, 3 = The received amount cannot cover fee, 4 = Transfer, 5 = The amount is larger than liquidity pool
   const [isEstimatingFee, setIsEstimatingFee] = useState(true);
   const [bridgeFee, setBridgeFee] = useState(null);
   const [transferId, setTransferId] = useState('');
@@ -89,6 +89,8 @@ const EvmTransferButton = () => {
   };
 
   useEffect(async () => {
+    setStatus(0);
+    setBridgeFee(null);
     setIsEstimatingFee(true);
     estimateGasFee();
   }, [senderAssetTargetBalance, ethAddress]);
@@ -131,7 +133,7 @@ const EvmTransferButton = () => {
           setStatus(4);
         } else {
           // approve token from ethereum to moonbeam
-          queryAllowance(ethAddress, amount, 0);
+          await queryAllowance(ethAddress, amount, 0);
         }
       }
       setBridgeFee(latestBridgeFee);
