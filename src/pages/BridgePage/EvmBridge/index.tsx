@@ -515,7 +515,7 @@ const EvmBridgeModal = ({
             } catch (addError) {
               // handle "add" error
               setErrMsgObj({
-                index: 0,
+                index: 2,
                 errMsg: addError.message
               });
               setCurrentButtonStatus(buttonStatus[8]);
@@ -525,7 +525,7 @@ const EvmBridgeModal = ({
           }
           // handle other "switch" errors
           setErrMsgObj({
-            index: 0,
+            index: 2,
             errMsg: switchError.message
           });
           setCurrentButtonStatus(buttonStatus[8]);
@@ -551,10 +551,10 @@ const EvmBridgeModal = ({
         })
         .catch((switchError) => {
           setErrMsgObj({
-            index: 0,
+            index: 2,
             errMsg: switchError.message
           });
-          updateStepStatus(0, 2);
+          updateStepStatus(2, 2);
           setCurrentButtonStatus(buttonStatus[8]);
         });
     } else if (index === 10) {
