@@ -419,9 +419,9 @@ const EvmBridgeModal = ({
           try {
             const res = await getAppSetting();
             interval = (
-              res.data?.timeGapSecondsInCheckEvmAddressClaimAmount / 60
+              res.data?.timeGapSecondsInCheckEvmAddressMaxRequestInTimeGap / 60
             ).toFixed(2);
-            maxRequest = res.data?.maxRequestInTimeGap;
+            maxRequest = res.data?.maxRequestsInTimeGap;
           } catch (e) {
             console.log(e.message);
           }
