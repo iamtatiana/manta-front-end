@@ -33,7 +33,8 @@ const StepStatus = ({
   captcha,
   setCaptcha,
   currentButtonIndex,
-  errMsgObj
+  errMsgObj,
+  isEthereumToManta
 }: {
   steps: Array<Step>;
   ethAddress: string;
@@ -41,6 +42,7 @@ const StepStatus = ({
   setCaptcha: React.Dispatch<React.SetStateAction<string>>;
   currentButtonIndex: number;
   errMsgObj: ErrMsgObj;
+  isEthereumToManta: boolean;
 }) => {
   const [captchaImg, setCaptchaImg] = useState('');
   const [errMsg, setErrMsg] = useState('');
@@ -59,6 +61,14 @@ const StepStatus = ({
   };
 
   const addMANTAToMetamask = async () => {
+    if (currentButtonIndex === 5) {
+      await addMANTAToMetamaskOnMoonbeam();
+    } else {
+      await addMANTAToMetamaskOnEthereum();
+    }
+  };
+
+  const addMANTAToMetamaskOnMoonbeam = async () => {
     if (provider?.chainId !== Chain.Moonbeam(config).ethMetadata.chainId) {
       // switch user's metamask to moonbeam network
       try {
@@ -115,6 +125,63 @@ const StepStatus = ({
       .catch(console.error);
   };
 
+  const addMANTAToMetamaskOnEthereum = async () => {
+    if (provider?.chainId !== Chain.Ethereum(config).ethMetadata.chainId) {
+      // switch user's metamask to moonbeam network
+      try {
+        await provider.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: Chain.Ethereum(config).ethMetadata.chainId }]
+        });
+      } catch (switchError) {
+        // This error code indicates that the chain has not been added to MetaMask.
+        if (switchError.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [Chain.Ethereum(config).ethMetadata]
+            });
+          } catch (addError) {
+            // handle "add" error
+            setErrMsgObj({
+              index: 2,
+              errMsg: addError.message
+            });
+            return;
+          }
+        }
+        // handle other "switch" errors
+        setErrMsgObj({
+          index: 2,
+          errMsg: switchError.message
+        });
+        return;
+      }
+    }
+
+    provider
+      .request({
+        method: 'wallet_watchAsset',
+        params: {
+          type: 'ERC20',
+          options: {
+            address: '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D',
+            symbol: 'MANTA',
+            decimals: 18,
+            image: ''
+          }
+        }
+      })
+      .then((success) => {
+        if (success) {
+          console.log('MANTA successfully added to wallet!');
+        } else {
+          throw new Error('Something went wrong.');
+        }
+      })
+      .catch(console.error);
+  };
+
   useEffect(() => {
     fetch();
   }, [ethAddress]);
@@ -148,9 +215,12 @@ const StepStatus = ({
                   style={item.status === 2 ? { color: failedColor } : {}}>
                   {item.status === 1 ? item.success : item.subtitle}
                 </p>
-                {index === 0 && currentButtonIndex === 5 && (
+                {((index === 0 && currentButtonIndex === 5) ||
+                  (index === 2 &&
+                    currentButtonIndex === 15 &&
+                    !isEthereumToManta)) && (
                   <button
-                    className="mt-2 text-green-light"
+                    className="mt-2 text-green-light text-sm"
                     onClick={addMANTAToMetamask}>
                     Add MANTA to Metamask
                   </button>

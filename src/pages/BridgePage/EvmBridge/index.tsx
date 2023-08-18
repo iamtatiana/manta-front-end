@@ -819,6 +819,7 @@ const EvmBridgeModal = ({
           setCaptcha={setCaptcha}
           currentButtonIndex={currentButtonStatus.index}
           errMsgObj={errMsgObj}
+          isEthereumToManta={isEthereumToManta}
         />
 
         <div className="flex items-center justify-center">
