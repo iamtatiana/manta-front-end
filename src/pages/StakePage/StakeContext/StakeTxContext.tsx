@@ -2,7 +2,6 @@
 import React, { createContext, useContext } from 'react';
 import PropTypes from 'prop-types';
 import { useSubstrate } from 'contexts/substrateContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import AssetType from 'types/AssetType';
 import BN from 'bn.js';
@@ -10,9 +9,9 @@ import TxStatus from 'types/TxStatus';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useConfig } from 'contexts/configContext';
+import { useWallet } from 'contexts/walletContext';
 import { BASE_MIN_DELEGATION, MAX_DELEGATIONS } from '../StakeConstants';
 import { useStakeData } from './StakeDataContext';
-
 
 const StakeTxContext = createContext();
 
@@ -20,7 +19,7 @@ export const StakeTxContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus } = useTxStatus();
-  const { externalAccount, externalAccountSigner } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const {
     userDelegations,
     userAvailableBalance,
@@ -28,9 +27,9 @@ export const StakeTxContextProvider = (props) => {
     selectedCollator,
     selectedCollatorDelegation,
     selectedUnstakeRequest,
-    unstakeTargetBalance,
+    unstakeTargetBalance
   } = useStakeData();
-  const address =  externalAccount?.address;
+  const address = externalAccount?.address;
 
   // Builds a stake transaction for an address that is not currently delegating to the selected collator
   const buildInitialStakeTx = () => {
@@ -47,7 +46,7 @@ export const StakeTxContextProvider = (props) => {
   const buildStakeMoreTx = () => {
     return api.tx.parachainStaking.delegatorBondMore(
       selectedCollator.address,
-      stakeTargetBalance?.valueAtomicUnits.toString() || new BN(0),
+      stakeTargetBalance?.valueAtomicUnits.toString() || new BN(0)
     );
   };
 
@@ -59,18 +58,17 @@ export const StakeTxContextProvider = (props) => {
     return buildInitialStakeTx();
   };
 
-
   // Returns true if unstaking would fall below the minimum allowed delegation amount
   const getUnstakeWouldBeBelowDelegationThreshold = () => {
     if (!unstakeTargetBalance) {
       return null;
     }
     const delegationThreshold = Balance.fromBaseUnits(
-      AssetType.Native(config), BASE_MIN_DELEGATION
+      AssetType.Native(config),
+      BASE_MIN_DELEGATION
     );
-    const balanceAfterUndelegation = selectedCollatorDelegation.delegatedBalance.sub(
-      unstakeTargetBalance
-    );
+    const balanceAfterUndelegation =
+      selectedCollatorDelegation.delegatedBalance.sub(unstakeTargetBalance);
     return balanceAfterUndelegation.lt(delegationThreshold);
   };
 
@@ -99,7 +97,9 @@ export const StakeTxContextProvider = (props) => {
 
   // Builds a transaction to schedule total unstaking of entire staked balance
   const buildRevokeDelegationTx = () => {
-    return api.tx.parachainStaking.scheduleRevokeDelegation(selectedCollator.address);
+    return api.tx.parachainStaking.scheduleRevokeDelegation(
+      selectedCollator.address
+    );
   };
 
   // Builds a transaction to execute a scheduled unstake request and return tokens to fully liquid state
@@ -112,7 +112,7 @@ export const StakeTxContextProvider = (props) => {
 
   // Estimates fees for the given transaction
   const getFeeEstimate = async (tx) => {
-    const info = await tx.paymentInfo(externalAccountSigner);
+    const info = await tx.paymentInfo(externalAccount.address);
     return Balance.Native(config, new BN(info.partialFee.toString()));
   };
 
@@ -151,7 +151,7 @@ export const StakeTxContextProvider = (props) => {
             );
             const extrinsicHash = extrinsic.hash.toHex();
             setTxStatus(TxStatus.finalized(extrinsicHash, config.SUBSCAN_URL));
-          } catch(error) {
+          } catch (error) {
             console.error(error);
           }
         }
@@ -200,7 +200,12 @@ export const StakeTxContextProvider = (props) => {
 
   // Returns whether the user is able to execute the desired stake transaction
   const getUserCanStake = async () => {
-    if (!stakeTargetBalance || !userAvailableBalance || !api || txStatus?.isProcessing()) {
+    if (
+      !stakeTargetBalance ||
+      !userAvailableBalance ||
+      !api ||
+      txStatus?.isProcessing()
+    ) {
       return false;
     } else if (getUserWouldExceedMaxDelegations()) {
       return false;
@@ -227,12 +232,19 @@ export const StakeTxContextProvider = (props) => {
 
   // Returns where the user has sufficient staked funds to unstake the desired amount
   const getUserHasSufficientStakedFundsToUnstake = () => {
-    return unstakeTargetBalance.lte(selectedCollatorDelegation.delegatedBalance);
+    return unstakeTargetBalance.lte(
+      selectedCollatorDelegation.delegatedBalance
+    );
   };
 
   // Returns whether the user is able to execute the desired unstake transaction
   const getUserCanUnstake = async () => {
-    if (!unstakeTargetBalance || !userAvailableBalance || !api || txStatus?.isProcessing()) {
+    if (
+      !unstakeTargetBalance ||
+      !userAvailableBalance ||
+      !api ||
+      txStatus?.isProcessing()
+    ) {
       return false;
     } else if (!getUnstakeAmountIsOverZero()) {
       return false;
@@ -246,7 +258,9 @@ export const StakeTxContextProvider = (props) => {
   // Returns whether the user is able to pay the fee to cancel a scheduled unstake
   const getUserHasSufficientFundsToCancelUnstake = async () => {
     const cancelUnstakeTx = buildCancelUnstakeTx();
-    const reservedNativeTokenBalance = await getReservedBalance(cancelUnstakeTx);
+    const reservedNativeTokenBalance = await getReservedBalance(
+      cancelUnstakeTx
+    );
     return userAvailableBalance.gte(reservedNativeTokenBalance);
   };
 
@@ -279,7 +293,11 @@ export const StakeTxContextProvider = (props) => {
   const publishTx = async (tx) => {
     // retrieve sender's next index/nonce, taking txs in the pool into account
     const nonce = await api.rpc.system.accountNextIndex(address);
-    await tx.signAndSend(externalAccountSigner, { nonce }, handleTxRes);
+    await tx.signAndSend(
+      externalAccount.address,
+      { nonce, signer: externalAccount.signer },
+      handleTxRes
+    );
   };
 
   // Attempts to execute the user's desired stake transaction if it is valid
@@ -347,7 +365,6 @@ export const StakeTxContextProvider = (props) => {
     withdraw,
     cancelUnstake
   };
-
 
   return (
     <StakeTxContext.Provider value={value}>

@@ -1,23 +1,21 @@
 // @ts-nocheck
 import { getSubstrateWallets } from 'utils';
 import PropTypes from 'prop-types';
-import {
-  createContext, useContext, useEffect, useRef, useState
-} from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import {
   getLastAccessedExternalAccount,
   setLastAccessedExternalAccountAddress
 } from 'utils/persistence/externalAccountStorage';
 import Version from 'types/Version';
-import { useKeyring } from './keyringContext';
-import { useSubstrate } from './substrateContext';
 import { useActive } from 'hooks/useActive';
+import { useWallet } from './walletContext';
+import { useSubstrate } from './substrateContext';
 
 const PublicAccountContext = createContext();
 
 export const PublicAccountContextProvider = (props) => {
   const { api } = useSubstrate();
-  const { keyring, isKeyringInit, keyringAddresses } = useKeyring();
+  const { keyring, isKeyringInit, keyringAddresses } = useWallet();
   const externalAccountRef = useRef(null);
   const [externalAccount, setExternalAccount] = useState(null);
   const [externalAccountSigner, setExternalAccountSigner] = useState(null);
@@ -37,7 +35,9 @@ export const PublicAccountContextProvider = (props) => {
       meta: { source, isInjected }
     } = externalAccount;
     const substrateWallets = getSubstrateWallets();
-    const substrateExtensions = substrateWallets.filter((wallet) => wallet.extension);
+    const substrateExtensions = substrateWallets.filter(
+      (wallet) => wallet.extension
+    );
     const extensionNames = substrateExtensions.map((ext) => ext.extensionName);
     if (isInjected && extensionNames.includes(source)) {
       const selectedWallet = substrateExtensions.find(
@@ -66,7 +66,7 @@ export const PublicAccountContextProvider = (props) => {
       // reset state if account(s) exist after disable selected external account
       const externalAccountOptions = keyring.getPairs();
       changeExternalAccountOptions(
-        account||externalAccountOptions[0],
+        account || externalAccountOptions[0],
         externalAccountOptions
       );
     } else {

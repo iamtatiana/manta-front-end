@@ -7,7 +7,7 @@ import {
   useMemo,
   useState
 } from 'react';
-import { KeyringContextProvider } from './keyringContext';
+import { WalletContextProvider } from './walletContext';
 
 const GlobalContext = createContext();
 
@@ -28,7 +28,7 @@ const GlobalContextProvider = ({ children }) => {
 
   return (
     <GlobalContext.Provider value={contextValue}>
-      <KeyringContextProvider>{children}</KeyringContextProvider>
+      <WalletContextProvider>{children}</WalletContextProvider>
     </GlobalContext.Provider>
   );
 };

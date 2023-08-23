@@ -8,7 +8,7 @@ import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { EventRecord, ExtrinsicStatus } from '@polkadot/types/interfaces';
 import { BN } from 'bn.js';
 import { WarningNotification } from 'components/NotificationContent';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { Notification } from 'element-react';
 import {
   ReactNode,
@@ -32,7 +32,6 @@ import { getLastAccessedWallet } from 'utils/persistence/walletStorage';
 import { useConfig } from './configContext';
 import { useGlobal } from './globalContexts';
 import { PrivateTransactionType, PrivateWallet } from './mantaWalletType';
-import { usePublicAccount } from './publicAccountContext';
 import { useSubstrate } from './substrateContext';
 import { useTxStatus } from './txStatusContext';
 
@@ -74,11 +73,10 @@ export const MantaWalletContextProvider = ({
   const config = useConfig();
   const { NETWORK_NAME: network } = config;
   const { api } = useSubstrate();
-  const { externalAccount } = usePublicAccount();
-  const publicAddress = externalAccount?.address;
+  const { selectedWallet, selectedAccount: externalAccount } = useWallet();
+  const publicAddress = externalAccount?.address || '';
   const { setTxStatus } = useTxStatus();
   const { pathname } = useLocation();
-  const { selectedWallet } = useKeyring();
 
   // private wallet
   const [privateWallet, setPrivateWallet] = useState<PrivateWallet | null>(
@@ -141,30 +139,18 @@ export const MantaWalletContextProvider = ({
       // @ts-ignore
       const _mantaWalletVersion = new Version(mantaWallet._extension.version);
       setMantaWalletVersion(_mantaWalletVersion);
-      const SUBSCRIBE_ACCOUNTS_FIRST_VERSION = new Version('0.0.12');
-      if (_mantaWalletVersion.gte(SUBSCRIBE_ACCOUNTS_FIRST_VERSION)) {
-        unsub = await mantaWallet.subscribeAccounts((accounts) => {
-          if (!accounts || accounts.length <= 0) {
-            return;
-          }
-          // @ts-ignore
-          const { zkAddress, network: walletNetwork } = accounts[0];
-          if (walletNetwork !== network) {
-            setShowChangeNetworkNotification(true);
-          } else {
-            setShowChangeNetworkNotification(false);
-          }
-          setPrivateAddress(zkAddress);
-        });
-      } else {
-        const accounts = await mantaWallet.getAccounts();
-        if (!accounts || accounts.length <= 0) {
-          return;
-        }
-        // @ts-ignore
-        const { zkAddress } = accounts[0];
-        setPrivateAddress(zkAddress);
+      const accounts = await mantaWallet.getAccounts();
+      if (!accounts || accounts.length <= 0) {
+        return;
       }
+      // @ts-ignore
+      const { zkAddress, network: walletNetwork } = accounts[0];
+      if (walletNetwork !== network) {
+        setShowChangeNetworkNotification(true);
+      } else {
+        setShowChangeNetworkNotification(false);
+      }
+      setPrivateAddress(zkAddress);
     };
     getZkAddress();
     return () => unsub && unsub();
@@ -308,7 +294,7 @@ export const MantaWalletContextProvider = ({
         }
         await lastTx.signAndSend(
           publicAddress,
-          { nonce: -1 },
+          { nonce: -1, signer: externalAccount?.signer },
           finalTxResHandler.current
         );
         setTxStatus(TxStatus.processing(null, lastTx.hash.toString()));
@@ -325,7 +311,7 @@ export const MantaWalletContextProvider = ({
         const internalTx: any = txQueue.current.shift();
         await internalTx.signAndSend(
           publicAddress,
-          { nonce: -1 },
+          { nonce: -1, signer: externalAccount?.signer },
           handleInternalTxRes
         );
       } catch (e) {

@@ -3,9 +3,7 @@ import Icon from 'components/Icon';
 import DowntimeModal from 'components/Modal/downtimeModal';
 import MobileNotSupportedModal from 'components/Modal/mobileNotSupported';
 import { useConfig } from 'contexts/configContext';
-import { useKeyring } from 'contexts/keyringContext';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { useEffect } from 'react';
 import userIsMobile from 'utils/ui/userIsMobile';
 import { useSend } from './SendContext';
 import SendFromForm from './SendFromForm';
@@ -13,7 +11,6 @@ import SendToForm from './SendToForm';
 
 const SendForm = () => {
   const config = useConfig();
-  const { keyring } = useKeyring();
   const {
     swapSenderAndReceiverArePrivate,
     isPrivateTransfer,
@@ -22,12 +19,6 @@ const SendForm = () => {
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
   const disabledSwapSenderReceiver = isPrivateTransfer() || isPublicTransfer();
-
-  useEffect(() => {
-    if (keyring) {
-      keyring.setSS58Format(config.SS58_FORMAT);
-    }
-  }, [keyring]);
 
   const onClickSwapSenderReceiver = () => {
     if (!disabled) {

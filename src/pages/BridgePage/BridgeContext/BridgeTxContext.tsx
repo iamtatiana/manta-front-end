@@ -1,7 +1,6 @@
 // @ts-nocheck
 import { FixedPointNumber } from '@acala-network/sdk-core';
 import { useMetamask } from 'contexts/metamaskContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
@@ -10,6 +9,7 @@ import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
 import { transferGlmrFromMoonbeamToManta } from 'eth/EthXCM';
 import { useConfig } from 'contexts/configContext';
 import Balance from 'types/Balance';
+import { useWallet } from 'contexts/walletContext';
 import { useBridgeData } from './BridgeDataContext';
 
 const BridgeTxContext = React.createContext();
@@ -18,8 +18,7 @@ export const BridgeTxContextProvider = (props) => {
   const config = useConfig();
   const { provider } = useMetamask();
   const { setTxStatus, txStatusRef } = useTxStatus();
-  const { externalAccount, externalAccountSigner, setApiSigner } =
-    usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const {
     isApiInitialized,
     isApiDisconnected,
@@ -101,9 +100,8 @@ export const BridgeTxContextProvider = (props) => {
   const userCanSign = () => {
     if (senderAssetType?.ethMetadata) {
       return provider !== null;
-    } else {
-      return externalAccountSigner !== null;
     }
+    return true;
   };
 
   // Checks that it is valid to attempt a transaction
@@ -190,10 +188,9 @@ export const BridgeTxContextProvider = (props) => {
       token: senderAssetTargetBalance.assetType.logicalTicker,
       address: destinationAddress
     });
-    setApiSigner(originApi);
     await tx.signAndSend(
-      externalAccountSigner,
-      { nonce: -1 },
+      externalAccount.address,
+      { nonce: -1, signer: externalAccount.signer },
       handleTxResCb || handleTxRes
     );
   };

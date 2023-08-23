@@ -6,7 +6,7 @@ import { faPlusCircle } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useTxStatus } from 'contexts/txStatusContext';
 import ConnectWalletModal from 'components/Modal/connectWalletModal';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 
 export const ConnectWalletButton = ({
   setIsMetamaskSelected = null,
@@ -29,9 +29,14 @@ export const ConnectWalletButton = ({
 };
 
 export const ConnectWalletIcon = ({ setIsMetamaskSelected = null }) => {
+  const { txStatus } = useTxStatus();
+  const disabled = txStatus?.isProcessing();
   const component = (
     <FontAwesomeIcon
-      className={'w-6 h-6 px-5 py-4 cursor-pointer z-10 text-secondary'}
+      className={classNames(
+        'w-6 h-6 px-5 py-4 z-10 text-secondary',
+        disabled ? 'cursor-not-allowed' : 'cursor-pointer'
+      )}
       icon={faPlusCircle}
     />
   );
@@ -44,7 +49,7 @@ export const ConnectWalletIcon = ({ setIsMetamaskSelected = null }) => {
 };
 
 const ConnectWallet = ({ component, setIsMetamaskSelected = null }) => {
-  const { resetWalletConnectingErrorMessages } = useKeyring();
+  const { resetWalletConnectingErrorMessages } = useWallet();
   const { ModalWrapper, showModal, hideModal } = useModal({
     closeCallback: () => resetWalletConnectingErrorMessages()
   });

@@ -2,36 +2,25 @@
 import React from 'react';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import { usePublicAccount } from 'contexts/publicAccountContext';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { getSubstrateWallets } from 'utils';
 import { setLastAccessedWallet } from 'utils/persistence/walletStorage';
 
 const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
-  const { changeExternalAccountOptions } = usePublicAccount();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const {
-    refreshWalletAccounts,
-    getLatestAccountAndPairs,
-    selectedWallet,
-    authedWalletList,
-    keyringIsBusy
-  } = useKeyring();
+  const { setSelectedWallet, selectedWallet, authedWalletList } = useWallet();
   const substrateWallets = getSubstrateWallets();
   const enabledExtentions = substrateWallets.filter((wallet) =>
     authedWalletList.includes(wallet.extensionName)
   );
-  const onClickWalletIconHandler = (wallet) => async () => {
-    if (keyringIsBusy.current === false && !disabled) {
-      await refreshWalletAccounts(wallet);
-      const { account, pairs } = getLatestAccountAndPairs();
-      changeExternalAccountOptions(account, pairs);
-      setLastAccessedWallet(wallet);
-      setIsMetamaskSelected(false);
-    }
+  const onClickWalletIconHandler = (wallet) => {
+    if (disabled) return;
+    setSelectedWallet(wallet);
+    setLastAccessedWallet(wallet);
+    setIsMetamaskSelected(false);
   };
 
   return enabledExtentions.map((wallet) => (
@@ -43,7 +32,7 @@ const SubstrateWallets = ({ isMetamaskSelected, setIsMetamaskSelected }) => {
         disabled: disabled
       })}
       key={wallet.extensionName}
-      onClick={onClickWalletIconHandler(wallet)}>
+      onClick={() => onClickWalletIconHandler(wallet)}>
       <img
         className="w-6 h-6 max-w-6 max-h-6"
         src={wallet.logo.src}

@@ -1,5 +1,5 @@
+import { useWallet } from 'contexts/walletContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useSend } from 'pages/SendPage/SendContext';
 import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
@@ -7,7 +7,7 @@ import getZkTransactBalanceText from 'utils/display/getZkTransactBalanceText';
 const useSenderBalanceText = () => {
   const { apiState } = useSubstrate();
   const { senderAssetCurrentBalance, senderIsPrivate } = useSend();
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const { privateAddress, isReady } = useMantaWallet();
 
   const apiIsDisconnected =

@@ -4,9 +4,8 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { ethers } from 'ethers';
 import { useMetamask } from 'contexts/metamaskContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { validatePublicAddress } from 'utils/validation/validateAddress';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import Icon from 'components/Icon';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
@@ -16,9 +15,8 @@ const BirdgeDestinationButton = ({ onChangeDestinationtInput }) => {
     useBridgeData();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { selectedWallet } = useKeyring();
+  const { selectedWallet, selectedAccount: externalAccount } = useWallet();
   const { ethAddress, configureMoonBeam } = useMetamask();
-  const { externalAccount } = usePublicAccount();
 
   const onClick = () => {
     if (!ethAddress && destinationChainIsEvm) {

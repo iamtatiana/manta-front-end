@@ -1,5 +1,4 @@
 // @ts-nocheck
-import NETWORK from 'constants/NetworkConstants';
 import {
   dummyPrivateTransfer,
   dummyPublicAddress,
@@ -10,7 +9,6 @@ import { bnToU8a } from '@polkadot/util';
 import BN from 'bn.js';
 import { useConfig } from 'contexts/configContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useActive } from 'hooks/useActive';
@@ -29,6 +27,7 @@ import { HISTORY_EVENT_STATUS } from 'types/TxHistoryEvent';
 import TxStatus from 'types/TxStatus';
 import getExtrinsicGivenBlockHash from 'utils/api/getExtrinsicGivenBlockHash';
 import { updateTxHistoryEventStatus } from 'utils/persistence/privateTransactionHistory';
+import { useWallet } from 'contexts/walletContext';
 import SEND_ACTIONS from './sendActions';
 import sendReducer, { buildInitState } from './sendReducer';
 
@@ -38,7 +37,7 @@ export const SendContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
   const { setTxStatus, txStatus, txStatusRef } = useTxStatus();
-  const { externalAccount, externalAccountSigner } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const privateWallet = useMantaWallet();
   const { isReady: privateWalletIsReady, privateAddress } = privateWallet;
   const [state, dispatch] = useReducer(sendReducer, buildInitState(config));
@@ -489,7 +488,6 @@ export const SendContextProvider = (props) => {
       privateWalletIsReady: privateWallet?.isReady,
       isPublicTransfer: isPublicTransfer(),
       api,
-      externalAccountSigner,
       receiverAddress,
       senderAssetTargetBalance,
       senderAssetCurrentBalance,
@@ -501,7 +499,6 @@ export const SendContextProvider = (props) => {
     return (
       (privateWallet?.isReady || isPublicTransfer()) &&
       api &&
-      externalAccountSigner &&
       receiverAddress &&
       senderAssetTargetBalance &&
       senderAssetCurrentBalance &&
@@ -749,7 +746,7 @@ export const SendContextProvider = (props) => {
       if (!tx) {
         return;
       }
-      const paymentInfo = await tx.paymentInfo(externalAccount);
+      const paymentInfo = await tx.paymentInfo(externalAccount.address);
       let feeEstimate = Balance.Native(
         config,
         new BN(paymentInfo.partialFee.toString())

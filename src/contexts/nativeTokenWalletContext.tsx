@@ -10,25 +10,28 @@ import { BN } from 'bn.js';
 import Balance from 'types/Balance';
 import PropTypes from 'prop-types';
 import { useSubstrate } from './substrateContext';
-import { usePublicAccount } from './publicAccountContext';
 import { useConfig } from './configContext';
+import { useWallet } from './walletContext';
 
 const NativeTokenWalletContext = createContext();
 
 export const NativeTokenWalletContextProvider = (props) => {
   const config = useConfig();
   const { api } = useSubstrate();
-  const { externalAccount, externalAccountRef } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const [nativeTokenBalance, setNativeTokenBalance] = useState(null);
   const refreshLoopIsActive = useRef(false);
 
   useEffect(() => {
     const refreshNativeTokenBalance = async () => {
       const spendableBalanceAmount = await api.query.system.account(
-        externalAccountRef.current.address
+        externalAccount.address
       );
       setNativeTokenBalance(
-        Balance.Native(config, new BN(spendableBalanceAmount.data.free.toString()))
+        Balance.Native(
+          config,
+          new BN(spendableBalanceAmount.data.free.toString())
+        )
       );
     };
     const refreshNativeTokenBalanceLoop = async () => {
@@ -49,14 +52,17 @@ export const NativeTokenWalletContextProvider = (props) => {
   }, [api, externalAccount]);
 
   const getTransactionFee = async (transaction) => {
-    const paymentInfo = await transaction.paymentInfo(externalAccount);
+    const paymentInfo = await transaction.paymentInfo(externalAccount.address);
     const feeAmount = new BN(paymentInfo.partialFee.toString());
     return Balance.Native(config, feeAmount);
   };
 
   const getUserCanPayFeeForNativeTokenTransfer = async (transaction) => {
     const fee = await getTransactionFee(transaction);
-    const transferAmount = Balance.Native(config, new BN(transaction.args[1].toString()));
+    const transferAmount = Balance.Native(
+      config,
+      new BN(transaction.args[1].toString())
+    );
     return fee.lt(nativeTokenBalance.sub(transferAmount));
   };
 

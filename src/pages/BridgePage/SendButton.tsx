@@ -6,13 +6,12 @@ import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MantaLoading from 'components/Loading';
 import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useMetamask } from 'contexts/metamaskContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import Chain from 'types/Chain';
 import { useConfig } from 'contexts/configContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import EvmTransferButton from './EvmBridge/ApproveTransferButton';
@@ -20,9 +19,8 @@ import EvmTransferButton from './EvmBridge/ApproveTransferButton';
 const ValidationButton = () => {
   const config = useConfig();
   const { apiState } = useSubstrate();
-  const { externalAccount } = usePublicAccount();
   const { showChangeNetworkNotification } = useMantaWallet();
-  const { selectedWallet } = useKeyring();
+  const { selectedWallet, selectedAccount: externalAccount } = useWallet();
   const {
     senderAssetType,
     minInput,

@@ -3,7 +3,6 @@ import React, { useReducer, useContext, useEffect, useState } from 'react';
 import { Wallet } from '@acala-network/sdk/wallet';
 import { EvmRpcProvider } from '@acala-network/eth-providers';
 import PropTypes from 'prop-types';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
 import Decimal from 'decimal.js';
@@ -16,6 +15,7 @@ import { useActive } from 'hooks/useActive';
 import { Bridge } from 'manta-bridge/build';
 import { ethers } from 'ethers';
 import Chain from 'types/Chain';
+import { useWallet } from 'contexts/walletContext';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 import mantaAbi from './mantaAbi';
@@ -25,7 +25,7 @@ const BridgeDataContext = React.createContext();
 export const BridgeDataContextProvider = (props) => {
   const { ethAddress, chainId } = useMetamask();
   const config = useConfig();
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
   const isActive = useActive();
 
@@ -125,10 +125,12 @@ export const BridgeDataContextProvider = (props) => {
       const ethereumChain = originChainOptions.find(
         (chain) => chain.name === 'ethereum'
       );
-      dispatch({
-        type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
-        chain: ethereumChain
-      });
+      if (ethereumChain) {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_API_IS_INITIALIZED,
+          chain: ethereumChain
+        });
+      }
 
       const xcmOriginChainOptions = originChainOptions.filter(
         (chain) => chain.name !== 'ethereum'
