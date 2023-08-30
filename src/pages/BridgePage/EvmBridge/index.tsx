@@ -13,8 +13,6 @@ import {
 import { transferTokenFromMoonbeamToManta } from 'eth/EthXCM';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import { useKeyring } from 'contexts/keyringContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 // import { stringToHex } from '@polkadot/util';
 import Balance from 'types/Balance';
 import BN from 'bn.js';
@@ -101,8 +99,6 @@ const EvmBridgeModal = ({
   );
   const [captcha, setCaptcha] = useState('');
   const [errMsgObj, setErrMsgObj] = useState({});
-  const { selectedWallet } = useKeyring();
-  const { externalAccount } = usePublicAccount();
   const [refundData, setRefundData] = useState({});
 
   useEffect(() => {

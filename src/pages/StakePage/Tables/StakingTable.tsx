@@ -4,13 +4,13 @@ import { ColDef } from 'ag-grid-community';
 import { useModal } from 'hooks';
 import Button from 'components/Button';
 import SortableTable from 'components/SortableTable';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import Delegation from 'types/Delegation';
 import getTableHeight from 'utils/ui/getTableHeight';
 import { useSubstrate } from 'contexts/substrateContext';
 import Collator from 'types/Collator';
 import { useConfig } from 'contexts/configContext';
 import AssetType from 'types/AssetType';
+import { useWallet } from 'contexts/walletContext';
 import { StakeModal } from '../Modals';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { UnstakeModal } from '../Modals/UnstakeModal';
@@ -19,7 +19,7 @@ import CollatorDisplayCell from './CollatorDisplayCell';
 
 const NothingStakedDisplay = () => {
   const config = useConfig();
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   let primaryText = '';
   let secondaryText = '';
   if (!externalAccount) {

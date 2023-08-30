@@ -37,22 +37,22 @@ const TransferFeeDisplay = (params) => {
     if (destIsEthereum && bridgeFee) {
       bridgeFees = bridgeFees.add(originGasFee);
     }
-    // console.log('celerFee', celerFee.toFeeDisplayString());
-    // console.log('destGasFee', destGasFee.toFeeDisplayString());
-    // console.log('originGasFee', originGasFee.toFeeDisplayString());
+    // console.log('celerFee', celerFee.toDisplayString());
+    // console.log('destGasFee', destGasFee.toDisplayString());
+    // console.log('originGasFee', originGasFee.toDisplayString());
 
     const bridgeFeesTooltip = (
       <div style={{ width: '300px', color: '#989292' }}>
         {destIsEthereum && (
           <>
             <div>{`The Network Fee: ${
-              bridgeFee ? originGasFee.toFeeDisplayString() : '--'
+              bridgeFee ? originGasFee.toDisplayString() : '--'
             }`}</div>
             <div>{`The XCM Execution Fee: ${
-              bridgeFee ? destGasFee.toFeeDisplayString() : '--'
+              bridgeFee ? destGasFee.toDisplayString() : '--'
             }`}</div>
             <div>{`The cBridge Fee: ${
-              bridgeFee ? celerFee.toFeeDisplayString() : '--'
+              bridgeFee ? celerFee.toDisplayString() : '--'
             }`}</div>
             <div className="mt-2">
               The Network Fee: The network fee covers the gas cost for transfers
@@ -71,10 +71,10 @@ const TransferFeeDisplay = (params) => {
         {!destIsEthereum && (
           <>
             <div>{`The cBridge Fee: ${
-              bridgeFee ? celerFee.toFeeDisplayString() : '--'
+              bridgeFee ? celerFee.toDisplayString() : '--'
             }`}</div>
             <div>{`The XCM Execution Fee: ${
-              bridgeFee ? destGasFee.toFeeDisplayString() : '--'
+              bridgeFee ? destGasFee.toDisplayString() : '--'
             }`}</div>
             <div className="mt-2">
               The cBridge Fee is for transferring from Ethereum to Moonbeam via

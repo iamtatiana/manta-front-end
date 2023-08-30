@@ -2,37 +2,35 @@
 import WALLET_NAME from 'constants/WalletConstants';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useState } from 'react';
 import OutsideClickHandler from 'react-outside-click-handler';
+import { useMantaWallet } from 'contexts/mantaWalletContext';
 import AccountSelectDropdown from './AccountSelectDropdown';
 import { ConnectWalletButton, ConnectWalletIcon } from './ConnectWallet';
 import WalletSelectBar from './WalletSelectIconBar';
 
 const DisplayAccountsButton = () => {
   const { ethAddress } = useMetamask();
-  const { selectedWallet } = useKeyring();
-  const { externalAccount } = usePublicAccount();
-  const { isReady: privateWalletIsReady } = useMantaWallet();
+  const { selectedWallet, selectedAccount } = useWallet();
   const [showAccountList, setShowAccountList] = useState(false);
   const [isMetamaskSelected, setIsMetamaskSelected] = useState(false);
+  const { privateWallet } = useMantaWallet();
 
   const isMetamaskEnabled =
     !!ethAddress && window?.location?.pathname?.includes('bridge');
 
   // using manta wallet zkAddress combined with other wallets public address
   const isOnlyUsingMantaWalletZKAddress =
-    privateWalletIsReady &&
     selectedWallet?.extensionName !== WALLET_NAME.MANTA &&
+    !!privateWallet &&
     window?.location?.pathname?.includes('transact');
 
   const succinctAccountName =
-    externalAccount?.meta.name.length > 11
-      ? `${externalAccount?.meta.name.slice(0, 11)}...`
-      : externalAccount?.meta.name;
+    selectedAccount?.name.length > 11
+      ? `${selectedAccount?.name.slice(0, 11)}...`
+      : selectedAccount?.name;
 
   const ExternalAccountBlock = ({ text }) => {
     return (
@@ -101,9 +99,9 @@ const DisplayAccountsButton = () => {
 };
 
 const AccountSelectMenu = () => {
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount } = useWallet();
 
-  return externalAccount ? (
+  return selectedAccount ? (
     <DisplayAccountsButton />
   ) : (
     <ConnectWalletButton

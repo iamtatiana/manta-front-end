@@ -52,7 +52,10 @@ export default class Balance {
     return valueBaseUnits;
   }
 
-  toString(decimals = 3) {
+  toString(decimals: number | null = null) {
+    if (decimals === null) {
+      decimals = this.assetType.displayDecimals;
+    }
     return this.valueBaseUnits()
       .toDecimalPlaces(decimals, Decimal.ROUND_DOWN)
       .toString();
@@ -62,23 +65,21 @@ export default class Balance {
     return this.valueBaseUnits().toDecimalPlaces(this.assetType.numberOfDecimals, Decimal.ROUND_DOWN).toString();
   }
 
-  toDisplayString(decimals = 3, roundDown = true): string {
+  toDisplayString(decimals = null, roundDown = true): string {
+    const displayDecimals = decimals || this.assetType.displayDecimals;
     const _valueBaseUnits = this.valueBaseUnits();
-    if (_valueBaseUnits.gt(0) && _valueBaseUnits.lt(0.01)) {
-      return `< 0.01 ${this.assetType.ticker}`;
+    const dustCutoff = 1 / Math.pow(10, displayDecimals);
+    if (_valueBaseUnits.gt(0) && _valueBaseUnits.lt(dustCutoff)) {
+      return `< ${1 / Math.pow(10, displayDecimals)} ${this.assetType.ticker}`;
     }
     const rounding = roundDown ? Decimal.ROUND_DOWN : Decimal.ROUND_UP;
     return `${_valueBaseUnits
-      .toDecimalPlaces(decimals, rounding)
+      .toDecimalPlaces(displayDecimals, rounding)
       .toNumber()
       .toLocaleString(undefined, {
-        maximumFractionDigits: decimals,
+        maximumFractionDigits: displayDecimals,
         minimumFractionDigits: 0
       })} ${this.assetType.ticker}`;
-  }
-
-  toFeeDisplayString(): string {
-    return this.toDisplayString(6, false);
   }
 
   toUsd(usdPerToken: Usd): Usd {

@@ -2,7 +2,6 @@
 import NETWORK from 'constants/NetworkConstants';
 import DeveloperConsole from 'components/Developer/DeveloperConsole';
 import { ConfigContextProvider, useConfig } from 'contexts/configContext';
-import { PublicAccountContextProvider } from 'contexts/publicAccountContext';
 import { MetamaskContextProvider } from 'contexts/metamaskContext';
 import { SubstrateContextProvider } from 'contexts/substrateContext';
 import { TxStatusContextProvider, useTxStatus } from 'contexts/txStatusContext';
@@ -48,11 +47,9 @@ const BasePage = ({ children }) => {
   return (
     <TxStatusContextProvider>
       <SubstrateContextProvider>
-        <PublicAccountContextProvider>
-          <DeveloperConsole />
-          <TxStatusHandler />
-          {children}
-        </PublicAccountContextProvider>
+        <DeveloperConsole />
+        <TxStatusHandler />
+        {children}
       </SubstrateContextProvider>
     </TxStatusContextProvider>
   );

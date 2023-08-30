@@ -2,12 +2,12 @@
 // This component will simply add utility functions to your developer console.
 import { useEffect } from 'react';
 import { useSubstrate } from 'contexts/substrateContext';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { useConfig } from 'contexts/configContext';
 
 export default function DeveloperConsole() {
   const { api, apiState } = useSubstrate();
-  const { keyring } = useKeyring();
+  const { keyring } = useWallet();
   const config = useConfig();
 
   if (!config.DEV_CONSOLE) {

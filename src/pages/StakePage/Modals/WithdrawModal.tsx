@@ -2,16 +2,17 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button';
 import ErrorText from 'components/Error/ErrorText';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { useWallet } from 'contexts/walletContext';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import ModalNotes from './ModalNotes';
 
-export const WithdrawModal = ({hideModal}) => {
+export const WithdrawModal = ({ hideModal }) => {
   const { selectedUnstakeRequest, userAvailableBalance } = useStakeData();
-  const { getUserCanWithdraw, getUserHasSufficientFundsToWithdraw, withdraw } = useStakeTx();
-  const { externalAccount } = usePublicAccount();
+  const { getUserCanWithdraw, getUserHasSufficientFundsToWithdraw, withdraw } =
+    useStakeTx();
+  const { selectedAccount: externalAccount } = useWallet();
   const { txStatus } = useTxStatus();
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -30,8 +31,7 @@ export const WithdrawModal = ({hideModal}) => {
         setErrorMessage('Wallet not connected');
       } else if (txStatus?.isProcessing()) {
         setErrorMessage('Transaction in progress');
-      }
-      else if (!selectedUnstakeRequest || !userAvailableBalance) {
+      } else if (!selectedUnstakeRequest || !userAvailableBalance) {
         setErrorMessage(null);
       } else if (!(await getUserHasSufficientFundsToWithdraw())) {
         setErrorMessage('Insufficient balance to pay fees');
@@ -42,7 +42,9 @@ export const WithdrawModal = ({hideModal}) => {
     getErrorMessage();
   }, [selectedUnstakeRequest, userAvailableBalance]);
 
-  const withdrawAmountText = `Withdrawal amount: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(0)} `;
+  const withdrawAmountText = `Withdrawal amount: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(
+    0
+  )} `;
   const notes = [
     'Withdrawn tokens are fully unstaked.',
     'You can transfer or stake withdrawn tokens without restriction.'
@@ -60,11 +62,13 @@ export const WithdrawModal = ({hideModal}) => {
           {withdrawAmountText}
         </h1>
       </div>
-      <ErrorText errorMessage={errorMessage}/>
+      <ErrorText errorMessage={errorMessage} />
       <div className="mt-3 w-full">
-        <Button className="w-full btn-primary" onClick={onClickWithdraw}>Withdraw</Button>
+        <Button className="w-full btn-primary" onClick={onClickWithdraw}>
+          Withdraw
+        </Button>
       </div>
-      <ModalNotes notes={notes}/>
+      <ModalNotes notes={notes} />
     </div>
   );
 };

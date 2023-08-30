@@ -3,13 +3,13 @@ import React from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import { useMetamask } from 'contexts/metamaskContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import getAbbreviatedName from 'utils/display/getAbbreviatedName';
 import Identicon from '@polkadot/react-identicon';
 import makeBlockie from 'ethereum-blockies-base64';
 import CopyPasteIcon from 'components/CopyPasteIcon';
 import Icon from 'components/Icon';
 import { useLocation } from 'react-router-dom';
+import { useWallet } from 'contexts/walletContext';
 
 type AddressDisplayProperties = {
   isPrivateAddress?: boolean;
@@ -144,12 +144,11 @@ const AccountSelectDropdown = ({ isMetamaskSelected }) => {
   const { ethAddress } = useMetamask();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { externalAccount, externalAccountOptions, changeExternalAccount } =
-    usePublicAccount();
+  const { selectedAccount, accountList, changeSelectedAccount } = useWallet();
 
   const isMetamaskEnabled = isMetamaskSelected && ethAddress;
   const onClickAccountHandler = (account) => () => {
-    !disabled && changeExternalAccount(account);
+    !disabled && changeSelectedAccount(account);
   };
 
   return isMetamaskEnabled ? (
@@ -162,15 +161,15 @@ const AccountSelectDropdown = ({ isMetamaskSelected }) => {
     />
   ) : (
     <div className="flex flex-col gap-5">
-      {externalAccountOptions.map((account: any) => (
+      {accountList.map((account: any) => (
         <SingleAccountDisplay
           key={account.address}
-          accountName={account.meta.name}
+          accountName={account.name}
           accountAddress={account.address}
-          isAccountSelected={account.address === externalAccount.address}
+          isAccountSelected={account.address === selectedAccount.address}
           isMetamaskSelected={isMetamaskEnabled}
           onClickAccountHandler={onClickAccountHandler(account)}
-          zkAddress={account.meta.zkAddress}
+          zkAddress={account.zkAddress}
         />
       ))}
     </div>

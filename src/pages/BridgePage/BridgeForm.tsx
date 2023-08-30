@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import ChainSelect from 'pages/BridgePage/ChainSelect';
 import SendButton from 'pages/BridgePage/SendButton';
 import { useTxStatus } from 'contexts/txStatusContext';
-import { useKeyring } from 'contexts/keyringContext';
+import { useWallet } from 'contexts/walletContext';
 import { useConfig } from 'contexts/configContext';
 import classNames from 'classnames';
 import Icon from 'components/Icon';
@@ -17,7 +17,7 @@ const BridgeForm = () => {
   const config = useConfig();
   const { txStatus } = useTxStatus();
   const disabled = txStatus?.isProcessing();
-  const { keyring } = useKeyring();
+  const { keyring } = useWallet();
   const {
     originChain,
     originChainOptions,

@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from 'react';
 import Button from 'components/Button';
 import ErrorText from 'components/Error/ErrorText';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { useTxStatus } from 'contexts/txStatusContext';
+import { useWallet } from 'contexts/walletContext';
 import { useStakeData } from '../StakeContext/StakeDataContext';
 import { useStakeTx } from '../StakeContext/StakeTxContext';
 import ModalNotes from './ModalNotes';
 
-export const CancelUnstakeModal = ({hideModal}) => {
+export const CancelUnstakeModal = ({ hideModal }) => {
   const { selectedUnstakeRequest, userAvailableBalance } = useStakeData();
   const {
     getUserCanCancelUnstake,
@@ -16,7 +16,7 @@ export const CancelUnstakeModal = ({hideModal}) => {
     cancelUnstake
   } = useStakeTx();
 
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const { txStatus } = useTxStatus();
 
   const [errorMessage, setErrorMessage] = useState(null);
@@ -46,7 +46,9 @@ export const CancelUnstakeModal = ({hideModal}) => {
     }
   };
 
-  const cancelAmountText = `Unstaking balance: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(0)} `;
+  const cancelAmountText = `Unstaking balance: ${selectedUnstakeRequest.unstakeAmount.toDisplayString(
+    0
+  )} `;
   const notes = [
     'This will restake your tokens and allow you to earn staking rewards again.',
     'You will need to unstake again and wait seven days before you can withdraw.'
@@ -64,9 +66,13 @@ export const CancelUnstakeModal = ({hideModal}) => {
           {cancelAmountText}
         </h1>
       </div>
-      <ErrorText errorMessage={errorMessage}/>
+      <ErrorText errorMessage={errorMessage} />
       <div className="mt-3 w-full">
-        <Button className="w-full btn-primary pt-2" onClick={onClickCancelUnstake}>Cancel Unstake</Button>
+        <Button
+          className="w-full btn-primary pt-2"
+          onClick={onClickCancelUnstake}>
+          Cancel Unstake
+        </Button>
       </div>
       <ModalNotes notes={notes} />
     </div>

@@ -4,9 +4,11 @@ import { useBridgeData } from './BridgeContext/BridgeDataContext';
 const BridgeFeeDisplay = () => {
   const { originFee, destinationFee } = useBridgeData();
 
-  const originFeeText = originFee ? originFee.toFeeDisplayString() : '--';
+  const originFeeText = originFee
+    ? originFee.toDisplayString(undefined, false)
+    : '--';
   const destinationFeeText = destinationFee
-    ? destinationFee.toFeeDisplayString()
+    ? destinationFee.toDisplayString(undefined, false)
     : '--';
 
   return (

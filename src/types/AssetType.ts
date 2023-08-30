@@ -19,7 +19,11 @@ const MantaAssetIds = {
   DOT: 8,
   GLMR: 10,
   ACA: 11,
-  ETH: null
+  DAI: 31,
+  WETH: 32,
+  USDC: 33,
+  tBTC: 34,
+  WBNB: 35
 };
 
 const getAssetIds = (config) => {
@@ -45,6 +49,7 @@ export default class AssetType {
   isTestnet: boolean;
   isNativeToken: boolean;
   coingeckoId: string;
+  displayDecimals: number;
 
   constructor(
     assetId,
@@ -57,7 +62,8 @@ export default class AssetType {
     coingeckoId,
     isTestnet,
     isNativeToken = false,
-    logicalTicker = null
+    logicalTicker = null,
+    displayDecimals = 2
   ) {
     this.assetId = assetId;
     this.baseName = baseName;
@@ -72,6 +78,7 @@ export default class AssetType {
     this.isTestnet = isTestnet;
     this.isNativeToken = isNativeToken;
     this.coingeckoId = coingeckoId;
+    this.displayDecimals = displayDecimals;
   }
 
   static Native(config) {
@@ -184,7 +191,7 @@ export default class AssetType {
   static Dai(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).DAI,
-      'Dai',
+      'DAI Stablecoin',
       'DAI',
       'dai',
       18,
@@ -263,7 +270,7 @@ export default class AssetType {
       'DOT',
       'polkadot',
       10,
-      new BN('500000000'),
+      new BN('10000000000'),
       isPrivate,
       'polkadot',
       config.IS_TESTNET,
@@ -276,9 +283,58 @@ export default class AssetType {
       'GLMR',
       'moonbeam',
       18,
-      new BN('1'),
+      new BN('2000000000000000'),
       isPrivate,
       'moonbeam',
+      config.IS_TESTNET,
+    );
+  }
+
+  static WETH(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).WETH,
+      'Wrapped Ether (MRL)',
+      'WETH',
+      'weth',
+      18,
+      new BN('5555555555555'),
+      isPrivate,
+      'weth',
+      config.IS_TESTNET,
+      false,
+      null,
+      8
+    );
+  }
+
+
+  static tBTC(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).tBTC,
+      'tBTC v2 (MRL)',
+      'tBTC',
+      'tbtc',
+      18,
+      new BN('1'),
+      isPrivate,
+      'tbtc',
+      config.IS_TESTNET,
+      false,
+      null,
+      8
+    );
+  }
+
+  static WBNB(config, isPrivate) {
+    return new AssetType(
+      getAssetIds(config).GLMR,
+      'Wrapped BNB (MRL)',
+      'WBNB',
+      'wbnb',
+      18,
+      new BN('1'),
+      isPrivate,
+      'wbnb',
       config.IS_TESTNET,
     );
   }
@@ -290,6 +346,11 @@ export default class AssetType {
         AssetType.Polkadot(config, isPrivate),
         AssetType.Acala(config, isPrivate),
         AssetType.Moonbeam(config, isPrivate),
+        AssetType.Dai(config, isPrivate),
+        AssetType.UsdCoin(config, isPrivate),
+        AssetType.tBTC(config, isPrivate),
+        AssetType.WBNB(config, isPrivate),
+        AssetType.WETH(config, isPrivate),
       ];
     } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
       return [

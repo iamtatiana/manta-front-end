@@ -4,11 +4,11 @@ import { ConnectWalletButton } from 'components/Accounts/ConnectWallet';
 import MantaLoading from 'components/Loading';
 import { useConfig } from 'contexts/configContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
-import { usePublicAccount } from 'contexts/publicAccountContext';
 import { API_STATE, useSubstrate } from 'contexts/substrateContext';
 import { useTxStatus } from 'contexts/txStatusContext';
 import Balance from 'types/Balance';
 import versionIsOutOfDate from 'utils/validation/versionIsOutOfDate';
+import { useWallet } from 'contexts/walletContext';
 import { useSend } from './SendContext';
 import useReceiverBalanceText from './SendToForm/useReceiverBalanceText';
 import useSenderBalanceText from './SendToForm/useSenderBalanceText';
@@ -73,7 +73,7 @@ const ValidationSendButton = () => {
   const { mantaWalletVersion, showChangeNetworkNotification } =
     useMantaWallet();
   const { privateWallet, hasFinishedInitialBlockDownload } = useMantaWallet();
-  const { externalAccount } = usePublicAccount();
+  const { selectedAccount: externalAccount } = useWallet();
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
   const { shouldShowLoader: receiverLoading } = useReceiverBalanceText();
