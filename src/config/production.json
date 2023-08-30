@@ -5,7 +5,7 @@
         {
             "name": "Manta",
             "path": "/manta",
-            "url": "wss://c2.manta.moonsea.systems",
+            "url": "wss://ws.manta.systems",
             "explorer": "manta.subscan.io"
           },
         {

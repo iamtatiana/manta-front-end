@@ -6,10 +6,16 @@ import PropTypes from 'prop-types';
 import React, { useContext } from 'react';
 import TxStatus from 'types/TxStatus';
 import extrinsicWasSentByUser from 'utils/api/ExtrinsicWasSendByUser';
-import { transferGlmrFromMoonbeamToManta } from 'eth/EthXCM';
+import {
+  transferGlmrFromMoonbeamToManta,
+  transferTokenFromMoonbeamToManta,
+  xTokenContractAddressList
+} from 'eth/EthXCM';
+import { transferMRLAssetsFromMantaToMoonbeam } from 'eth/MRL_XCM';
 import { useConfig } from 'contexts/configContext';
 import Balance from 'types/Balance';
 import { useWallet } from 'contexts/walletContext';
+import { useSubstrate } from 'contexts/substrateContext';
 import { useBridgeData } from './BridgeDataContext';
 
 const BridgeTxContext = React.createContext();
@@ -36,6 +42,7 @@ export const BridgeTxContextProvider = (props) => {
     senderNativeAssetCurrentBalance,
     originFee
   } = useBridgeData();
+  const { api } = useSubstrate();
 
   /**
    *
@@ -174,6 +181,15 @@ export const BridgeTxContextProvider = (props) => {
     if (originChainIsEvm) {
       await sendEth();
     } else {
+      const MRL_ASSETS = Object.keys(xTokenContractAddressList).filter(
+        (name) => name !== 'MANTA'
+      );
+      if (
+        MRL_ASSETS.includes(senderAssetType.baseTicker) &&
+        config.NETWORK_NAME === 'Manta'
+      ) {
+        return sendMRL();
+      }
       await sendSubstrate();
     }
   };
@@ -185,7 +201,7 @@ export const BridgeTxContextProvider = (props) => {
     const tx = originXcmAdapter.createTx({
       amount: FixedPointNumber.fromInner(value, 10),
       to: handleTxResCb ? 'moonbeam' : destinationChain.name,
-      token: senderAssetTargetBalance.assetType.logicalTicker,
+      token: senderAssetTargetBalance.assetType.baseTicker,
       address: destinationAddress
     });
     await tx.signAndSend(
@@ -195,10 +211,41 @@ export const BridgeTxContextProvider = (props) => {
     );
   };
 
+  const sendMRL = async () => {
+    if (!api) {
+      console.error('api not found');
+      return;
+    }
+    await transferMRLAssetsFromMantaToMoonbeam(
+      api,
+      externalAccount,
+      destinationAddress,
+      senderAssetType.baseTicker,
+      senderAssetTargetBalance.valueAtomicUnits.toString(),
+      handleTxRes
+    );
+  };
+
   // Attempts to build and send a bridge transaction with an Eth-like origin chain
   const sendEth = async () => {
-    if (originChain.name === 'moonriver' || originChain.name === 'moonbeam') {
+    if (
+      originChain.name === 'moonriver' ||
+      (originChain.name === 'moonbeam' && senderAssetType.baseTicker === 'GLMR')
+    ) {
       const txHash = await transferGlmrFromMoonbeamToManta(
+        config,
+        provider,
+        senderAssetTargetBalance,
+        destinationAddress
+      );
+      if (txHash) {
+        setTxStatus(TxStatus.finalized(txHash));
+      } else {
+        setTxStatus(TxStatus.failed('Transaction declined'));
+      }
+    } else {
+      const txHash = await transferTokenFromMoonbeamToManta(
+        senderAssetType.baseTicker,
         config,
         provider,
         senderAssetTargetBalance,

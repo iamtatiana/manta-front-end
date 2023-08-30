@@ -1,7 +1,7 @@
 // @ts-nocheck
 import WALLET_NAME from 'constants/WalletConstants';
 import NETWORK from 'constants/NetworkConstants';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import classNames from 'classnames';
 import { useTxStatus } from 'contexts/txStatusContext';
 import MantaLoading from 'components/Loading';
@@ -12,13 +12,15 @@ import Chain from 'types/Chain';
 import { useConfig } from 'contexts/configContext';
 import { useMantaWallet } from 'contexts/mantaWalletContext';
 import { useWallet } from 'contexts/walletContext';
+import { xTokenContractAddressList } from 'eth/EthXCM';
+import BN from 'bn.js';
 import { useBridgeTx } from './BridgeContext/BridgeTxContext';
 import { useBridgeData } from './BridgeContext/BridgeDataContext';
 import EvmTransferButton from './EvmBridge/ApproveTransferButton';
 
 const ValidationButton = () => {
   const config = useConfig();
-  const { apiState } = useSubstrate();
+  const { apiState, api } = useSubstrate();
   const { showChangeNetworkNotification } = useMantaWallet();
   const { selectedWallet, selectedAccount: externalAccount } = useWallet();
   const {
@@ -36,6 +38,7 @@ const ValidationButton = () => {
   const { ethAddress, chainId } = useMetamask();
   const { txStatus, EVMBridgeProcessing } = useTxStatus();
   const disabled = txStatus?.isProcessing();
+  const [GLMRBalance, setGLMRBalance] = useState('');
   const apiIsDisconnected =
     apiState === API_STATE.ERROR || apiState === API_STATE.DISCONNECTED;
 
@@ -55,6 +58,26 @@ const ValidationButton = () => {
         : Chain.Moonriver(config);
   }
   const evmChainId = evmChain.ethChainId;
+
+  const isFromMantaToMoonbeam =
+    originChain.name === 'manta' && destinationChain.name === 'moonbeam';
+  const isMRLAsset = Object.keys(xTokenContractAddressList)
+    .filter((name) => name !== 'MANTA')
+    .includes(senderAssetType.baseTicker);
+
+  useEffect(() => {
+    async function getGLMRBalance() {
+      const result = await api.query.assets.account(
+        10,
+        externalAccount.address
+      );
+      const balanceString = result?.value?.balance?.toString();
+      setGLMRBalance(balanceString);
+    }
+    if (isFromMantaToMoonbeam && isMRLAsset) {
+      getGLMRBalance();
+    }
+  });
 
   if (!externalAccount) {
     isConnectWallet = true;
@@ -87,6 +110,12 @@ const ValidationButton = () => {
     validationMsg = `Minimum ${
       senderAssetType.ticker
     } transaction is ${minInput.toDisplayString(MIN_INPUT_DIGITS)}`;
+  } else if (isFromMantaToMoonbeam && isMRLAsset) {
+    // transfer MRL assets from manta to moonbema
+    const minGasFee = '56362740000000000';
+    if (new BN(GLMRBalance).lt(new BN(minGasFee))) {
+      validationMsg = 'Insufficient GLMR to pay destination fee';
+    }
   }
 
   const ValidationText = ({ validationMsg }) => {

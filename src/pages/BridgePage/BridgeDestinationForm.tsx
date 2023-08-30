@@ -56,7 +56,7 @@ const BirdgeDestinationButton = ({ onChangeDestinationtInput }) => {
     if (destinationChainIsEvm) {
       return 'MetaMask';
     } else {
-      return externalAccount?.meta.name;
+      return externalAccount?.name;
     }
   };
 

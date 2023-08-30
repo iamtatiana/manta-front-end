@@ -79,10 +79,51 @@ export const transferGlmrFromMoonbeamToManta = async (config, provider, balance,
   }
 };
 
-// xToken contract address list
-const xTokenContractAddressList = {
-  'MANTA': '0xfFFffFFf7D3875460d4509eb8d0362c611B4E841'
+export const getEstimatedGasLimit = async (config, provider, balance, address) => {
+  const abi = Xtokens.abi;
+  const ethersProvider = new ethers.providers.Web3Provider(provider);
+  const signer = ethersProvider.getSigner();
+  const contract = new ethers.Contract(XTOKENS_PRECOMPILE_ADDRESS, abi, signer);
+
+  const amount = balance.valueAtomicUnits.toString();
+  const accountId = addressToAccountId(address);
+  let parachainId;
+  if (config.NETWORK_NAME === NETWORK.MANTA) {
+    parachainId = Chain.Manta(config).parachainId;
+  } else if (config.NETWORK_NAME === NETWORK.CALAMARI) {
+    parachainId = Chain.Calamari(config).parachainId;
+  } else {
+    throw new Error('Unsupported network');
+  }
+  const destination = getXtokensPrecompileLocation(parachainId, accountId);
+  const weight = DESTINATION_WEIGHT;
+
+  try {
+    const gas = await contract.estimateGas.transfer(ERC_PRECOMPILE_ADDRESS, amount, destination, weight);
+    return gas.toString();
+  } catch (error) {
+    console.error('getEstimatedGasLimit', error);
+    return 57783; // fallback
+  }
+};
+
+export type xTokenContractAddressListType = {
+  MANTA: string,
+  DAI: string,
+  USDC: string,
+  WBNB: string,
+  tBTC: string,
+  WETH: string
 }
+// xToken contract address list
+export const xTokenContractAddressList = {
+  MANTA: '0xfFFffFFf7D3875460d4509eb8d0362c611B4E841',
+  DAI: '0x06e605775296e851FF43b4dAa541Bb0984E9D6fD',
+  USDC: '0x931715FEE2d06333043d11F658C8CE934aC61D0c',
+  WBNB: '0xE3b841C3f96e647E6dc01b468d6D0AD3562a9eeb',
+  tBTC: '0xeCd65E4B89495Ae63b4f11cA872a23680A7c419c',
+  WETH: '0xab3f0245B83feB11d15AAffeFD7AD465a59817eD'
+};
 
 /**
   * Transfer token from Moonbeam to Manta via XCM

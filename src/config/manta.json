@@ -1,7 +1,7 @@
 {
   "NETWORK_NAME": "Manta",
   "SUBSCAN_URL": "https://manta.subscan.io",
-  "IS_TESTNET": true,
+  "IS_TESTNET": false,
   "SS58_FORMAT": 77,
   "SUBSCAN_API_ENDPOINT": "https://manta.api.subscan.io/api/scan",
   "MANTA_SUBSCAN_URL": "https://manta.subscan.io",
@@ -10,7 +10,7 @@
   "MOONBEAM_SUBSCAN_URL": "https://moonbeam.subscan.io",
   "TWITTER_URL": "https://twitter.com/MantaNetwork",
   "MANTA_URL": "https://manta.network/",
-  "MANTA_SOCKET": "wss://c2.manta.moonsea.systems",
+  "MANTA_SOCKET": "wss://ws.manta.systems",
   "POLKADOT_SOCKET": "wss://rpc.polkadot.io",
   "ACALA_SOCKET": "wss://acala-rpc-0.aca-api.network",
   "MOONBEAM_SOCKET": "wss://wss.api.moonbeam.network",

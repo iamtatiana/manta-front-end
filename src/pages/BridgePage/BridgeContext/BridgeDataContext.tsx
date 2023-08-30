@@ -16,6 +16,8 @@ import { Bridge } from 'manta-bridge/build';
 import { ethers } from 'ethers';
 import Chain from 'types/Chain';
 import { useWallet } from 'contexts/walletContext';
+import AssetType from 'types/AssetType';
+import { xTokenContractAddressList, getEstimatedGasLimit } from 'eth/EthXCM';
 import BRIDGE_ACTIONS from './bridgeActions';
 import bridgeReducer, { buildInitState } from './bridgeReducer';
 import mantaAbi from './mantaAbi';
@@ -23,7 +25,7 @@ import mantaAbi from './mantaAbi';
 const BridgeDataContext = React.createContext();
 
 export const BridgeDataContextProvider = (props) => {
-  const { ethAddress, chainId } = useMetamask();
+  const { ethAddress, chainId, provider } = useMetamask();
   const config = useConfig();
   const { selectedAccount: externalAccount } = useWallet();
   const { txStatus, txStatusRef, setTxStatus } = useTxStatus();
@@ -223,7 +225,7 @@ export const BridgeDataContextProvider = (props) => {
 
   const subscribeSenderBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      senderAssetType.logicalTicker,
+      senderAssetType.baseTicker,
       originAddress
     );
     const unsub = balanceObserveable.subscribe(async (balanceRaw) => {
@@ -248,7 +250,7 @@ export const BridgeDataContextProvider = (props) => {
 
   const subscribeSenderNativeTokenBalance = () => {
     const balanceObserveable = originXcmAdapter.subscribeTokenBalance(
-      originChain.nativeAsset.logicalTicker,
+      originChain.nativeAsset.baseTicker,
       originAddress
     );
     const unsub = balanceObserveable.subscribe((balanceRaw) => {
@@ -268,9 +270,10 @@ export const BridgeDataContextProvider = (props) => {
     async function getBalance() {
       if (
         !window.ethereum ||
-        originChain.name !== 'ethereum' ||
+        (originChain.name !== 'ethereum' && originChain.name !== 'moonbeam') ||
         !ethAddress ||
-        Number(chainId) !== Chain.Ethereum(config).ethChainId
+        (Number(chainId) !== Chain.Ethereum(config).ethChainId &&
+          Number(chainId) !== Chain.Moonbeam(config).ethChainId)
       ) {
         return;
       }
@@ -289,15 +292,27 @@ export const BridgeDataContextProvider = (props) => {
         senderNativeAssetCurrentBalance
       });
 
-      const mantaAddress = '0xd9b0DDb3e3F3721Da5d0B20f96E0817769c2B46D'; // MANTA token deployed in Goerli
-      const mantaContract = new ethers.Contract(
-        mantaAddress,
+      if (senderAssetType.baseTicker === originChain.nativeAsset.baseTicker) {
+        dispatch({
+          type: BRIDGE_ACTIONS.SET_SENDER_ASSET_CURRENT_BALANCE,
+          senderAssetCurrentBalance: senderNativeAssetCurrentBalance
+        });
+        return;
+      }
+
+      const tokenAddress =
+        xTokenContractAddressList[senderAssetType.baseTicker];
+      const tokenContract = new ethers.Contract(
+        tokenAddress,
         mantaAbi,
         provider
       );
-      const senderTokenBalance = await mantaContract.balanceOf(ethAddress);
-      const formatSenderTokenBalance =
-        ethers.utils.formatEther(senderTokenBalance);
+      const senderTokenBalance = await tokenContract.balanceOf(ethAddress);
+
+      const formatSenderTokenBalance = ethers.utils.formatUnits(
+        senderTokenBalance,
+        senderAssetType.numberOfDecimals
+      );
       const newBalance = Balance.fromBaseUnits(
         senderAssetType,
         new Decimal(formatSenderTokenBalance)
@@ -314,11 +329,12 @@ export const BridgeDataContextProvider = (props) => {
         senderAssetCurrentBalance: newBalance
       });
     }
+    getBalance();
     const timer = setInterval(async () => {
       getBalance();
     }, 3000);
     return () => clearInterval(timer);
-  }, [originChain, ethAddress, chainId]);
+  }, [originChain, ethAddress, chainId, senderAssetType]);
 
   useEffect(() => {
     let nativeTokenUnsub = null;
@@ -333,7 +349,7 @@ export const BridgeDataContextProvider = (props) => {
       ) {
         return;
       }
-      if (originChain.name === 'ethereum') {
+      if (originChain.name === 'ethereum' || originChain.name === 'moonbeam') {
         return;
       }
       nativeTokenUnsub = subscribeSenderNativeTokenBalance();
@@ -386,18 +402,90 @@ export const BridgeDataContextProvider = (props) => {
       );
     };
 
-    const handleInputConfigChange = (inputConfig) => {
-      setOriginGasFee(getOriginFee(inputConfig));
-      setDestGasFee(getDestinationFee(inputConfig));
+    const handleInputConfigChange = async (inputConfig) => {
+      let originFee = getOriginFee(inputConfig);
+      if (originChain.name === 'moonbeam') {
+        const gasLimit = await getEstimatedGasLimit(
+          config,
+          provider,
+          new Balance(senderAssetType, new BN(100000)), // dead
+          destinationAddress
+        );
+        // calculate gas
+        const _provider = new ethers.providers.Web3Provider(window.ethereum);
+        const { lastBaseFeePerGas, maxPriorityFeePerGas } =
+          await _provider.getFeeData();
+        const _lastBaseFeePerGas = new Balance(
+          AssetType.Moonbeam(config),
+          new BN(lastBaseFeePerGas?.toString())
+        );
+        const _maxPriorityFeePerGas = new Balance(
+          AssetType.Moonbeam(config),
+          new BN(maxPriorityFeePerGas?.toString())
+        );
+        originFee = _lastBaseFeePerGas
+          .add(_maxPriorityFeePerGas)
+          .mul(new BN(gasLimit));
+        // console.log(gasLimit, originFee.toStringUnrounded());
+      }
+
+      let destinationFee = getDestinationFee(inputConfig);
+      const isFromMantaToMoonbeam =
+        originChain.name === 'manta' && destinationChain.name === 'moonbeam';
+      const isMRLAsset = Object.keys(xTokenContractAddressList)
+        .filter((name) => name !== 'MANTA')
+        .includes(senderAssetType.baseTicker);
+      const isFromMoonbeamToManta =
+        originChain.name === 'moonbeam' && destinationChain.name === 'manta';
+
+      if (isFromMantaToMoonbeam && isMRLAsset) {
+        destinationFee = new Balance(
+          AssetType.Moonbeam(config),
+          new BN('28181370000000000').mul(new BN(2)) // got the xcm fee(GLMR) 28181370000000000 by testing, mul 2 for safer
+        );
+      } else if (
+        isFromMoonbeamToManta &&
+        Object.keys(xTokenContractAddressList).includes(
+          senderAssetType.baseTicker
+        )
+      ) {
+        const fees = {
+          MANTA: '0',
+          DAI: '25226300000000000',
+          WETH: '13774476078148',
+          USDC: '25226',
+          tBTC: '874343628633',
+          WBNB: '104378932143640'
+        };
+        destinationFee = new Balance(
+          senderAssetType,
+          new BN(fees[senderAssetType.baseTicker])
+        );
+      }
+
+      setOriginGasFee(originFee);
+      setDestGasFee(destinationFee);
+
+      let maxInput = getMaxInput(inputConfig);
+      if (
+        originChain.name === 'ethereum' ||
+        (originChain.name === 'moonbeam' &&
+          senderAssetType.baseTicker !== 'GLMR')
+      ) {
+        maxInput = senderAssetCurrentBalance;
+      }
+
+      let minInput = getMinInput(inputConfig);
+      if (originChain.name === 'moonbeam') {
+        minInput = new Balance(senderAssetType, new BN(0));
+      }
+
       dispatch({
         type: BRIDGE_ACTIONS.SET_FEE_ESTIMATES,
-        originFee: getOriginFee(inputConfig),
-        destinationFee: getDestinationFee(inputConfig),
-        maxInput:
-          originChain.name === 'ethereum'
-            ? senderAssetCurrentBalance
-            : getMaxInput(inputConfig),
-        minInput: getMinInput(inputConfig)
+        originFee,
+        destinationFee,
+        maxInput,
+        minInput
       });
     };
 
@@ -418,7 +506,7 @@ export const BridgeDataContextProvider = (props) => {
         address: address,
         amount: amount,
         to: destinationChain.name,
-        token: senderAssetType.logicalTicker
+        token: senderAssetType.baseTicker
       };
     };
 
@@ -437,9 +525,9 @@ export const BridgeDataContextProvider = (props) => {
       (originChain.name === 'karura' || originChain.name === 'acala') &&
         (await originXcmAdapter.wallet.isReady);
       const inputConfigParams = getInputConfigParams();
-      if (originChain.name === 'ethereum') {
+      if (originChain.name === 'ethereum' || originChain.name === 'moonbeam') {
         inputConfigParams.to = 'manta';
-        inputConfigParams.token = 'GLMR'; // mock to pass the xcm sdk process, will change it to MANTA on mainnet
+        inputConfigParams.token = 'GLMR'; // mock to pass the xcm sdk process
       } else if (destinationChain.name === 'ethereum') {
         inputConfigParams.to = 'moonbeam';
       }

@@ -69,7 +69,7 @@ export default class Chain {
       'mantaLogo',
       config.MANTA_SOCKET,
       config.MANTA_SUBSCAN_URL,
-      [AssetType.Manta(config), AssetType.Acala(config), AssetType.Polkadot(config), AssetType.Moonbeam(config)],
+      [AssetType.Manta(config), AssetType.Acala(config), AssetType.Polkadot(config), AssetType.Moonbeam(config), AssetType.Dai(config), AssetType.UsdCoin(config), AssetType.tBTC(config), AssetType.WETH(config), AssetType.WBNB(config)],
       AssetType.Manta(config),
       MantaAdapter,
       types
@@ -213,7 +213,7 @@ export default class Chain {
       'moonbeam',
       config.MOONBEAM_SOCKET,
       config.MOONBEAM_SUBSCAN_URL,
-      [AssetType.Moonbeam(config)],
+      [AssetType.Moonbeam(config), AssetType.Dai(config), AssetType.UsdCoin(config), AssetType.tBTC(config), AssetType.WETH(config), AssetType.WBNB(config)],
       AssetType.Moonbeam(config),
       MoonbeamAdapter,
       typesBundlePre900,
