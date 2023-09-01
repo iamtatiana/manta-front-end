@@ -293,9 +293,9 @@ export default class AssetType {
   static WETH(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).WETH,
-      'Wrapped Ether (MRL)',
+      'Wrapped Ether',
       'WETH',
-      'weth',
+      'ethereum',
       18,
       new BN('5555555555555'),
       isPrivate,
@@ -311,9 +311,9 @@ export default class AssetType {
   static tBTC(config, isPrivate) {
     return new AssetType(
       getAssetIds(config).tBTC,
-      'tBTC v2 (MRL)',
+      'tBTC v2',
       'tBTC',
-      'tbtc',
+      'bitcoin',
       18,
       new BN('1'),
       isPrivate,
@@ -327,10 +327,10 @@ export default class AssetType {
 
   static WBNB(config, isPrivate) {
     return new AssetType(
-      getAssetIds(config).GLMR,
-      'Wrapped BNB (MRL)',
+      getAssetIds(config).WBNB,
+      'Wrapped BNB',
       'WBNB',
-      'wbnb',
+      'bnb',
       18,
       new BN('1'),
       isPrivate,

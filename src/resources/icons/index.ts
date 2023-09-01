@@ -19,6 +19,7 @@ import { ReactComponent as statemine } from 'resources/icons/coins/statemine-ico
 import { ReactComponent as dai } from 'resources/icons/coins/dai-icon.svg';
 import { ReactComponent as usdc } from 'resources/icons/coins/usdc-icon.svg';
 import { ReactComponent as wbtc } from 'resources/icons/coins/wbtc-icon.svg';
+import { ReactComponent as bnb } from 'resources/icons/coins/bnb-icon.svg';
 
 // sidebar icons
 import { ReactComponent as audit } from 'resources/icons/sidebar/audit.svg';
@@ -89,8 +90,8 @@ import { ReactComponent as upDownArrow } from 'resources/icons/up-down-arrow.svg
 import { ReactComponent as txSuccess } from 'resources/icons/tx-success.svg';
 import { ReactComponent as txFailed } from 'resources/icons/tx-failed.svg';
 import { ReactComponent as txPending } from 'resources/icons/tx-pending.svg';
-import { ReactComponent as successIcon } from 'resources/icons/success-icon.svg'
-import { ReactComponent as failedIcon } from 'resources/icons/failed-icon.svg'
+import { ReactComponent as successIcon } from 'resources/icons/success-icon.svg';
+import { ReactComponent as failedIcon } from 'resources/icons/failed-icon.svg';
 
 // links icons
 import { ReactComponent as MantaWebsite } from 'resources/icons/links/MantaWebsite.svg';
@@ -124,6 +125,7 @@ const icons = {
   dai,
   usdc,
   wbtc,
+  bnb,
   statemine,
   audit,
   close,

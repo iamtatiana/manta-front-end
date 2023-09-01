@@ -181,16 +181,21 @@ export const BridgeTxContextProvider = (props) => {
     if (originChainIsEvm) {
       await sendEth();
     } else {
-      const MRL_ASSETS = Object.keys(xTokenContractAddressList).filter(
-        (name) => name !== 'MANTA'
-      );
-      if (
-        MRL_ASSETS.includes(senderAssetType.baseTicker) &&
-        config.NETWORK_NAME === 'Manta'
-      ) {
-        return sendMRL();
+      try {
+        const MRL_ASSETS = Object.keys(xTokenContractAddressList).filter(
+          (name) => name !== 'MANTA'
+        );
+        if (
+          MRL_ASSETS.includes(senderAssetType.baseTicker) &&
+          config.NETWORK_NAME === 'Manta'
+        ) {
+          return await sendMRL();
+        }
+        await sendSubstrate();
+      } catch (e) {
+        console.log(e.message);
+        txStatusRef.current?.isProcessing() && setTxStatus(TxStatus.failed());
       }
-      await sendSubstrate();
     }
   };
 

@@ -95,12 +95,11 @@ const dropdownStyles = (disabled) => {
       width: '185%',
       top: '70px',
       borderRadius: '0.5rem',
-      backgroundColor: 'transparent',
-
+      backgroundColor: 'transparent'
     }),
     menuList: () => ({
       paddingTop: '0px',
-      paddingBottom: '0px',
+      paddingBottom: '0px'
     }),
     container: () => ({
       position: 'absolute'
@@ -130,7 +129,7 @@ const AssetTypeOption = (props) => {
     <div {...innerProps}>
       <div
         id={value.ticker}
-        className="flex items-center inline w-full hover:bg-dropdown-hover">
+        className="flex items-center w-full hover:bg-dropdown-hover">
         <Icon className="ml-5 w-6 rounded-full" name={value?.icon} />
         <div className="p-2 pl-2.5 text-white">
           <components.Option {...props} />

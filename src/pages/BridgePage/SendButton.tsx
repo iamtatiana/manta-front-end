@@ -114,7 +114,7 @@ const ValidationButton = () => {
     // transfer MRL assets from manta to moonbema
     const minGasFee = '56362740000000000';
     if (new BN(GLMRBalance).lt(new BN(minGasFee))) {
-      validationMsg = 'Insufficient GLMR to pay destination fee';
+      validationMsg = 'Insufficient GLMR on Manta to pay destination fee';
     }
   }
 
