@@ -477,7 +477,7 @@ export const BridgeDataContextProvider = (props) => {
 
       let minInput = getMinInput(inputConfig);
       if (originChain.name === 'moonbeam') {
-        minInput = new Balance(senderAssetType, new BN(0));
+        minInput = destinationFee;
       }
 
       dispatch({
