@@ -81,8 +81,7 @@
         "build": "craco build",
         "test": "craco test",
         "lint": "npx eslint src/**/*.tsx",
-        "eject": "react-scripts eject",
-        "postinstall": "patch-package"
+        "eject": "react-scripts eject"
     },
     "development": [
         "last 1 chrome version",
