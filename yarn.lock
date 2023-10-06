@@ -55,17 +55,12 @@
     "@acala-network/api-derive" "5.1.2"
     "@acala-network/types" "5.1.2"
 
-"@acala-network/contracts@4.3.4":
-  version "4.3.4"
-  resolved "https://registry.yarnpkg.com/@acala-network/contracts/-/contracts-4.3.4.tgz#f37cf54894c72b762df539042a61f90b10b68600"
-  integrity sha512-oBgXGUjRW+lRo9TWGtCB1+OpEOFfhxW//wReb7V/YdbEElVvYuKw3lmfly/eZ/mdBgqxA3eXxNW0AgXiyOn2NQ==
-
 "@acala-network/contracts@~4.3.4":
   version "4.3.9"
   resolved "https://registry.yarnpkg.com/@acala-network/contracts/-/contracts-4.3.9.tgz#634d471081c3438e9a96a15443c5e0453657e201"
   integrity sha512-Eu2jg40c3mLA05WNNL1bg2TWweHZxxVmmDq9unV8A7rXCITgcbJsq6SrBjNmdz1UCfsyfyd+3cg+7Pfxzeq+sw==
 
-"@acala-network/eth-providers@2.5.9":
+"@acala-network/eth-providers@2.5.9", "@acala-network/eth-providers@^2.5.9", "@acala-network/eth-providers@~2.7.3":
   version "2.5.9"
   resolved "https://registry.yarnpkg.com/@acala-network/eth-providers/-/eth-providers-2.5.9.tgz#8cd6cb2932f5c270892a4e9c5e754d7c52e0b2a3"
   integrity sha512-qYDRxr9XNTIsekuSju+oZPFiRj0Hhg7gkkBEhnn5AOYsj83zh4rgGHEtLef7D6Xk7Uf6+X+Ute7qtlw8XRj6hQ==
@@ -99,44 +94,6 @@
     graphql-request "~3.6.1"
     lru-cache "~7.8.2"
 
-"@acala-network/eth-providers@^2.5.9":
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/@acala-network/eth-providers/-/eth-providers-2.7.3.tgz#424ddfbdbd5b343f84cfa20ef1acfc0e306c107d"
-  integrity sha512-/basCUvuUMSUjSkyx7EtJrdMbtlXI4aKZWhzEpuplDg85SYSEFRQWJviVrSlUaetUfO0H3jpYnhw/ysi5TtftA==
-  dependencies:
-    "@acala-network/contracts" "4.3.4"
-    "@acala-network/eth-transactions" "2.7.3"
-    "@ethersproject/abstract-provider" "~5.7.0"
-    "@ethersproject/address" "~5.7.0"
-    "@ethersproject/bignumber" "~5.7.0"
-    "@ethersproject/bytes" "~5.7.0"
-    "@ethersproject/contracts" "~5.7.0"
-    "@ethersproject/keccak256" "~5.7.0"
-    "@ethersproject/logger" "~5.7.0"
-    "@ethersproject/networks" "~5.7.0"
-    "@ethersproject/properties" "~5.7.0"
-    "@ethersproject/providers" "~5.7.0"
-    "@ethersproject/transactions" "~5.7.0"
-    "@ethersproject/wallet" "~5.7.0"
-    bn.js "~5.2.0"
-    ethers "~5.7.0"
-    graphql "~16.0.1"
-    graphql-request "~3.6.1"
-    lru-cache "~7.8.2"
-
-"@acala-network/eth-providers@~2.7.3":
-  version "2.7.9"
-  resolved "https://registry.yarnpkg.com/@acala-network/eth-providers/-/eth-providers-2.7.9.tgz#3c24306524448f6fc2ac624661c880fb20c8155a"
-  integrity sha512-YpjUMlHUXbDbGxRIloJX4GyOHgrA1eXv8JfCH5G7fAo8oidGtzNxDx+jYRw0Hp4mAuxIbqZ7F6OgwI38l1US6w==
-  dependencies:
-    "@acala-network/contracts" "4.3.4"
-    "@acala-network/eth-transactions" "2.7.9"
-    bn.js "~5.2.0"
-    ethers "~5.7.0"
-    graphql "~16.0.1"
-    graphql-request "~3.6.1"
-    lru-cache "~7.8.2"
-
 "@acala-network/eth-transactions@2.5.9":
   version "2.5.9"
   resolved "https://registry.yarnpkg.com/@acala-network/eth-transactions/-/eth-transactions-2.5.9.tgz#5e8d7c0e1ef1e49290aabd08ae2161f3321bf564"
@@ -153,34 +110,12 @@
     "@ethersproject/wallet" "~5.7.0"
     "@polkadot/util-crypto" "^9.0.1"
 
-"@acala-network/eth-transactions@2.7.3":
-  version "2.7.3"
-  resolved "https://registry.yarnpkg.com/@acala-network/eth-transactions/-/eth-transactions-2.7.3.tgz#937a86d07215463fb8b5e9dd9f1dcaaddc6733d4"
-  integrity sha512-ztIz4oP7NrfnRE8zSJYAsn8IqI38Q+WTdS0/LlBjz0iW0kLSLId/EBMvibbUJplpE2tbcgAgnBO8zo6pO5oeEg==
+"@acala-network/sdk-core@4.1.9-9":
+  version "4.1.9-9"
+  resolved "https://registry.yarnpkg.com/@acala-network/sdk-core/-/sdk-core-4.1.9-9.tgz#98ab198e3ee4cad7ce539e77cf5195d63e8f928a"
+  integrity sha512-YS8twco2QxklsMSTcLBwWWNNI+SM5arssNua1DtQyk4i+hMtsKCao8fC4liwnUSKuToN9W6OD7r6WhCZKi6VYQ==
   dependencies:
-    "@ethersproject/address" "~5.7.0"
-    "@ethersproject/bignumber" "~5.7.0"
-    "@ethersproject/bytes" "~5.7.0"
-    "@ethersproject/constants" "~5.7.0"
-    "@ethersproject/hash" "~5.7.0"
-    "@ethersproject/logger" "~5.7.0"
-    "@ethersproject/rlp" "~5.7.0"
-    "@ethersproject/transactions" "~5.7.0"
-    "@ethersproject/wallet" "~5.7.0"
-
-"@acala-network/eth-transactions@2.7.9":
-  version "2.7.9"
-  resolved "https://registry.yarnpkg.com/@acala-network/eth-transactions/-/eth-transactions-2.7.9.tgz#05b1aae440ad9f61a1e247cdae9ac284e654e5b0"
-  integrity sha512-Xubp94BF9uGM11AzpKkhF7o7wkdIQkqeWxtN0NUTzOkGPcRXQEtCGhA9O1T/QMaR+EZcKndDdxfw888BGA7SuA==
-  dependencies:
-    ethers "~5.7.0"
-
-"@acala-network/sdk-core@4.1.9-6":
-  version "4.1.9-6"
-  resolved "https://registry.yarnpkg.com/@acala-network/sdk-core/-/sdk-core-4.1.9-6.tgz#19cd6756e7572c9d5cc4ff1668db1790980ed40a"
-  integrity sha512-ZU9ne1hDyKvxwkPT7CU/HhAJ9Fw7aFE6KDYOD0kSWxhbP5308/GL6K3hY0ZPYz5AaTZiF9Y5cPGV8BaGEcBq0A==
-  dependencies:
-    "@acala-network/types" "^5.1.1"
+    "@acala-network/types" "^6.0.0-34"
     "@polkadot/api" "^10.9.1"
     bignumber.js "^9.0.0"
     lodash "^4.17.20"
@@ -197,14 +132,14 @@
     events "^3.2.0"
     lodash "^4.17.20"
 
-"@acala-network/sdk@4.1.9-6":
-  version "4.1.9-6"
-  resolved "https://registry.yarnpkg.com/@acala-network/sdk/-/sdk-4.1.9-6.tgz#cf405ffdcb5a0f93c80db58b1e21da5a1fb339df"
-  integrity sha512-LtyVYYJZQWNi5OiRq2jG5OKUja75T7rcjUKu7NoE1y+cAnH9mTtGqoIaSy0p1uXMFlJR2cmAu88+tlmA0U5UxA==
+"@acala-network/sdk@4.1.9-9":
+  version "4.1.9-9"
+  resolved "https://registry.yarnpkg.com/@acala-network/sdk/-/sdk-4.1.9-9.tgz#9389e70689635e175186351c5879e512d7275022"
+  integrity sha512-C3OFYJgYGAx0h+K6eZOJ1m2MTum9cG3Qu97YcXYPXXsqVTAAD3dI3d6WitR7llnV8P1GfHGarP6vTxwfDriJFw==
   dependencies:
     "@acala-network/api" "^5.1.1"
     "@acala-network/eth-providers" "~2.7.3"
-    "@acala-network/sdk-core" "4.1.9-6"
+    "@acala-network/sdk-core" "4.1.9-9"
     "@polkadot/api" "^10.9.1"
     axios "^0.24.0"
     ethers "~5.7.0"
@@ -279,12 +214,17 @@
     "@acala-network/type-definitions" "5.1.1"
     "@open-web3/orml-types" "^2.0.1"
 
-"@acala-network/types@5.1.2", "@acala-network/types@^5.1.1":
+"@acala-network/types@5.1.2":
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-5.1.2.tgz#a3f6dc2dba9ce3bef06356682022f64ab2424a23"
   integrity sha512-mU8yJQcxVB9WLhGSItlL6vTchI70Dxd+WXlZZkjL6kWsSrEzj2oP3hcOC9d43tSsWABacDkOjbCyh11EIpZSfA==
   dependencies:
     "@acala-network/type-definitions" "5.1.2"
+
+"@acala-network/types@^6.0.0-34":
+  version "6.0.2"
+  resolved "https://registry.yarnpkg.com/@acala-network/types/-/types-6.0.2.tgz#db3987b761fe355c2f5ef1d4f77e809e8bf581c1"
+  integrity sha512-xTSnw6Sbm1nff80bqd5VdDfcAsoEfrwDiiiZjksESPXq9BYd22YXrdK2cZLLp26PCMfTyk7sbyOUf1tHbeBh3w==
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
