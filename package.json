@@ -27,7 +27,7 @@
         "@polkadot/util": "^12",
         "@polkadot/util-crypto": "^12",
         "@polkadot/wasm-bridge": "^6.3.1",
-        "@polkadot/wasm-crypto": "^6.3.1",
+        "@polkadot/wasm-crypto": "^7.2.2",
         "@polkadot/x-randomvalues": "^12",
         "@talismn/connect-wallets": "^1.2.1",
         "@types/jest": "^27.4.1",
