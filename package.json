@@ -108,7 +108,7 @@
         "eslint-plugin-react": "^7.24.0",
         "eslint-plugin-react-hooks": "^4.2.0",
         "eslint-plugin-testing-library": "^4.11.0",
-        "serve": "^13.0.2"
+        "serve": "^14.2.1"
     },
     "resolutions": {
         "@types/react": "^17.0.43",
