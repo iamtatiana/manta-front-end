@@ -2,7 +2,7 @@
 
 Web app for interacting with Manta Network, Calamari Network, and Dolphin Testnet
 
-## Getting started (for opensource development)
+## Getting started
 
 1. Clone the repo.
 
